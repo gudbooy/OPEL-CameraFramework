@@ -1,4 +1,15 @@
-#include "cam_core.h"
+#ifndef _CAM_PROPERTY_H_
+#define _CAM_PROPERTY_H_
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
+#include <linux/videodev2.h>
+#include <libv4l1.h>
+#include <libv4l2.h>
+//#include "cam_core.h"
+
 class CameraProperty
 {
 				public: 
@@ -27,14 +38,8 @@ class CameraProperty
 								struct v4l2_buffer buf;
 								enum v4l2_buf_type type;
 								struct v4l2_queryctrl queryctrl;
-								struct timeval timestamp;								
+								struct timeval timestampi;
 };
-/*
-CameraProperty* CameraProperty::getInstance()
-{
-				if(cameraProperty == (void*)0)
-						cameraProperty = new CameraProperty();								
-				return cameraProperty;
-}
-*/
 
+
+#endif /*_CAM_PROPERTY_H_*/

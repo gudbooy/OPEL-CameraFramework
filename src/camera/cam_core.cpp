@@ -1,7 +1,6 @@
 #include "cam_core.h"
 
 Camera* Camera::cam = NULL;
-
 static void errno_exit(const char *s)
 {
 	fprintf(stderr, "%s error %d, %s\n", s, errno, strerror(errno));

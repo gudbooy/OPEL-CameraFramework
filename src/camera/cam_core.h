@@ -28,8 +28,9 @@
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
+/*User-Defined Header*/
+#include "cam_property.h"
 
-//#include "cam_property.h"
 
 #define SHM_KEY 1234
 
@@ -108,15 +109,15 @@ typedef struct Cam_V4L2
 					int pixelformat;
 					enum v4l2_field field;
 };*/
+
 class Record
 {
 				public:
 								//void getCameraInstance(Camera & cam);
-								
-
+								void getCameraProperty(CameraProperty& camProp);
+				
 				private:
 								char* output_path;
-								
 
 
 };

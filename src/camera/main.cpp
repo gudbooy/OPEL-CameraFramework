@@ -24,6 +24,9 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 }
 int main()
 {
+				CameraProperty* camProp = CameraProperty::getInstance();
+//				camProp->~CameraProperty();
+				
 				Camera* cam = Camera::getInstance();
 				if(!cam->open_device()){
 								errExit("open_device Error!!!\n"); }

@@ -1,4 +1,5 @@
 #include "cam_property.h"
+
 CameraProperty* CameraProperty::camProp = NULL;
 
 CameraProperty::~CameraProperty()
