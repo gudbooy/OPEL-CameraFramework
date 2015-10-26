@@ -10,7 +10,7 @@
 static void checkDeviceCapabilites(void)
 {
 		Camera* cam = Camera::getInstance();
-		int fd = cam->get_fd;
+		int fd = cam->get_fd();
 		if(xioctl(fd, VIDIOC_QUERYCAP, &cap))
 		{
 						fprintf(stderr, "%s querycap error!!!");

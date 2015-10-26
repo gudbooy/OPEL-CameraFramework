@@ -29,6 +29,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+//#include "cam_property.h"
 
 #define SHM_KEY 1234
 
@@ -87,7 +88,7 @@ typedef struct Cam_V4L2
 
 	struct timeval timestamp;
 }Cam_V4L2;
-class CamProperty
+/*class CamProperty
 {
 				public:
 					CamProperty();
@@ -102,14 +103,33 @@ class CamProperty
 					int getPixelformat(void) {return this->pixelformat;}
 					enum v4l2_field getField(void) {return this->field;}
 				private:
-					/* Streaming Data Set */
 					int width;
 					int height;
 					int pixelformat;
 					enum v4l2_field field;
-					/* Codec Data Set */
-};
+};*/
+class Record
+{
+				public:
+								//void getCameraInstance(Camera & cam);
+								
 
+				private:
+								char* output_path;
+								
+
+
+};
+class CameraForTPlib
+{
+	
+	public:
+
+	
+	private:
+
+
+};
 class Camera
 {
 public: 
@@ -123,7 +143,7 @@ public:
 	static Camera* getInstance();	
 	static Camera* getInstance(char* deviceName);	
 	static void* getSharedBufferPtr(void);
-	static int setInstance(CamProperty cp);
+//	static int setInstance(CamProperty cp);
 	~Camera();	
 private:
 	/* singleton */
