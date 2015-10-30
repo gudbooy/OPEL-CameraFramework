@@ -23,6 +23,135 @@ bool OPELCamera::open()
 {
 				return libv4l2_open(this->camProp) ? true : false;
 }
+bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
+{
+				
+				unsigned int i; 
+				int fd = camProp->getfd();
+				struct v4l2_requestbuffers* req = camProp->getRequestbuffers();
+				CLEAR(*(req));
+				req->count = 4;
+				camProp->setN_buffers(req->count);
+				req->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+				req->memory = V4L2_MEMORY_USERPTR;
+				
+				if(-1 == xioctl(fd, VIDIOC_REQBUFS, req))
+				{
+								if(EINVAL == errno)
+								{
+												fprintf(stderr, "%s does not support " " user pointer i/o\n", deviceName);
+												return false;
+								}
+								else
+								{
+											  fprintf(stderr, "VIDIOC_REQBUFS");
+												return false;
+								}
+				}
+
+				buffers = (buffer*)calloc(4, sizeof(*buffers)); 
+				if(!buffers){
+					fprintf(stderr, "Out of Memory\n");
+					return false;
+				}
+				if(!init_SharedMemorySpace(req->count, buffer_size, shmid, shmPtr))
+				{
+								fprintf(stderr, "Shared Memory Space Initialization Failed\n");
+								return false;
+				}
+				for(i=0; i< req->count; i++)
+				{
+								buffers[i].length = buffer_size;
+								buffers[i].start = shmPtr+i*buffer_size;
+				}
+
+				return true;
+				
+}
+bool OpenCVSupport::init_device()
+{
+				unsigned int min;
+				int fd = camProp->getfd();
+				struct v4l2_capability* cap = camProp->getCapability();
+				struct v4l2_cropcap* cropcap = camProp->getCropcap();
+				struct v4l2_crop* crop = camProp->getCrop();
+				struct v4l2_format* fmt = camProp->getFormat();
+				if(-1 == xioctl(fd, VIDIOC_QUERYCAP, cap))
+				{
+								if(EINVAL == errno)
+								{
+												fprintf(stderr, "%s is no V4L2 device \n", deviceName);
+												return false;
+								}
+								else
+								{
+												errno_exit("VIDIOC_QUERYCAP");
+												return false;
+								}
+				}
+				if(!(cap->capabilities & V4L2_CAP_VIDEO_CAPTURE))
+				{
+								fprintf(stderr, "%s is no video capture device\n", deviceName);
+								return false;
+				}
+				if(!(cap->capabilities & V4L2_CAP_STREAMING))
+				{
+								fprintf(stderr, "%s is no video capture device\n", deviceName);
+								return false;
+				}
+				CLEAR(*cropcap);
+				cropcap->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+				if(0 == xioctl(fd, VIDIOC_CROPCAP, cropcap))
+				{
+								crop->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+								crop->c = cropcap->defrect;
+								if(-1 == xioctl(fd, VIDIOC_S_CROP, crop))
+								{
+												switch(errno)
+												{
+																case EINVAL:
+																				fprintf(stderr, "Cropping Not Supported\n");
+																				break;
+																default:
+																				fprintf(stderr, "Errors Ignored\n");
+																				break;
+												}
+								}
+				}
+				else
+				{
+								/* Do Nothing */
+				}
+				CLEAR(*fmt);
+				fmt->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+				fmt->fmt.pix.width = camProp->getWidth();
+				fmt->fmt.pix.height = camProp->getHeight();
+				fmt->fmt.pix.pixelformat = camProp->getPixelformat();
+				fmt->fmt.pix.field = camProp->getField();
+				if(-1 == xioctl(fd, VIDIOC_S_FMT, fmt))
+				{
+								fprintf(stderr, "VIDIOC_S_FMT Error\n");
+								return false;
+				}
+
+				min = fmt->fmt.pix.width * 2;
+				if(fmt->fmt.pix.bytesperline < min)
+					fmt->fmt.pix.bytesperline = min;
+				min = fmt->fmt.pix.bytesperline * fmt->fmt.pix.height;
+				if(fmt->fmt.pix.sizeimage < min)
+					fmt->fmt.pix.sizeimage = min;
+
+				if(!init_userPointer(fmt->fmt.pix.sizeimage))
+				{
+								fprintf(stderr, "initialize user pointer failed\n");
+								return false;
+				}
+				return true;
+
+				//	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+
+}
 static bool libv4l2_open(CameraProperty* camProp)
 {
 				int fd;

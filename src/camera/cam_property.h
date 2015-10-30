@@ -16,7 +16,18 @@ class CameraProperty
 								static CameraProperty* getInstance();
 								~CameraProperty();
 								void setfd(int fd) { this->fd = fd; }		
-							  	
+							  int getfd(void) { return this->fd; } 
+								struct v4l2_requestbuffers* getRequestbuffers(void) { return this->req; } 	
+								void setN_buffers(unsigned int n_buffer) {this->n_buffer = n_buffer; }
+						    unsigned int getN_buffers(void) {return this->n_buffer; }	
+								struct v4l2_capability* getCapability(void) { return this->cap; }
+								struct v4l2_cropcap* getCropcap(void) { return this->cropcap; } 
+								struct v4l2_crop* getCrop(void) { return this->crop; }
+								struct v4l2_format* getFormat(void) {return this->fmt; }
+								int getWidth() { return this->width; }
+								int getHeight() { return this->height; }
+								int getPixelformat() { return this->pixelformat; }
+								enum v4l2_field getField() { return this->field; }
 								//	struct stat getStat() { return this->st; }
 							  //void setStat(struct stat st) { this->st = st; }
 								

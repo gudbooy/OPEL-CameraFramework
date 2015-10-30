@@ -122,7 +122,7 @@ static bool libv4l2_open(CameraProperty* camProp);
 static bool libv4l2_init(CameraProperty* camProp);
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmptr);
 static bool uinit_SharedMemorySpace(int shmid);
-
+//static bool libv4l2_userPointer(unsigned int buffer_size, CameraProperty* camProp, void* buffers);
 class OPELCamera
 {
 				public:
@@ -131,10 +131,12 @@ class OPELCamera
 								OPELCamera();
 								OPELCamera(CameraProperty* camProp);
 								bool open();
-
+			          virtual bool init_device() = 0;
+								//virtual bool init_userPointer(unsigned int) = 0;
 				protected:
-							  CameraProperty* camProp;			
-															
+								virtual bool init_userPointer(unsigned int) = 0;
+								CameraProperty* camProp;			
+																		
 };
 
 
@@ -149,13 +151,16 @@ class Record : public OPELCamera
 class OpenCVSupport : public OPELCamera
 {
 	public:
-		   
+		virtual	bool init_device();
+	  //virtual bool init_userPointer(unsigned int);
+	
 			
 	private:
+	 	  virtual bool init_userPointer(unsigned int);
+			buffer* buffers;
 			int shmid;
 			void* shmPtr; 
 			struct shmid_ds shm_info;
-			unsigned int n_buffers;
 };
 class Camera
 {
