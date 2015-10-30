@@ -15,9 +15,15 @@ class CameraProperty
 				public: 
 								static CameraProperty* getInstance();
 								~CameraProperty();
+								void setfd(int fd) { this->fd = fd; }		
+							  	
+								//	struct stat getStat() { return this->st; }
+							  //void setStat(struct stat st) { this->st = st; }
+								
 				private:
+								int fd;
 								static CameraProperty* camProp;
-								CameraProperty() {};
+								CameraProperty();
 								int deviceHandle;
 								int bufferIndex;
 								int width, height;
@@ -27,18 +33,19 @@ class CameraProperty
 								unsigned long long count;
 								unsigned int n_buffer;
 
-								struct v4l2_capability cap;
-								struct v4l2_input inp;
-								struct v4l2_format fmt;
-								struct v4l2_crop crop;
-								struct v4l2_cropcap cropcap;
-								struct v4l2_requestbuffers req;
-								struct v4l2_jpegcompression compr;
-								struct v4l2_control control;
-								struct v4l2_buffer buf;
+								struct v4l2_capability* cap;
+								struct v4l2_input* inp;
+								struct v4l2_format* fmt;
+								struct v4l2_crop* crop;
+								struct v4l2_cropcap* cropcap;
+								struct v4l2_requestbuffers* req;
+								struct v4l2_jpegcompression* compr;
+								struct v4l2_control* control;
+								struct v4l2_buffer* buf;
 								enum v4l2_buf_type type;
-								struct v4l2_queryctrl queryctrl;
-								struct timeval timestampi;
+								struct v4l2_queryctrl* queryctrl;
+								struct timeval* timestamp;
+//								struct stat* st;
 };
 
 

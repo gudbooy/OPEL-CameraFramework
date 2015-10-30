@@ -44,6 +44,15 @@
 #define OptLast 256
 
 
+static int xioctl(int fh, int request, void* arg);
+static void errno_exit(const char *s);
+
+static void streaming_set_cap(int fd);
+
+
+
+
+
 const static char* deviceName = "/dev/video0";
 
 
@@ -109,27 +118,44 @@ typedef struct Cam_V4L2
 					int pixelformat;
 					enum v4l2_field field;
 };*/
+static bool libv4l2_open(CameraProperty* camProp);
+static bool libv4l2_init(CameraProperty* camProp);
+static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmptr);
+static bool uinit_SharedMemorySpace(int shmid);
 
-class Record
+class OPELCamera
 {
 				public:
-								//void getCameraInstance(Camera & cam);
-								void getCameraProperty(CameraProperty& camProp);
-				
-				private:
-								char* output_path;
+								void setCameraProperty(CameraProperty* camProp);
+								CameraProperty* getCameraProperty() const;
+								OPELCamera();
+								OPELCamera(CameraProperty* camProp);
+								bool open();
 
-
+				protected:
+							  CameraProperty* camProp;			
+															
 };
-class CameraForTPlib
+
+
+class Record : public OPELCamera
 {
-	
+				public:
+									
+
+				private:
+					 char* output_path;
+};
+class OpenCVSupport : public OPELCamera
+{
 	public:
-
-	
+		   
+			
 	private:
-
-
+			int shmid;
+			void* shmPtr; 
+			struct shmid_ds shm_info;
+			unsigned int n_buffers;
 };
 class Camera
 {
@@ -202,8 +228,6 @@ protected:
 
 
 
-static void errno_exit(const char *s);
-static int xioctl(int fh, int request, void* arg);
 
 
 

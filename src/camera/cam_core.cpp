@@ -1,6 +1,59 @@
 #include "cam_core.h"
 
+static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmptr);
+static bool uinit_SharedMemorySpace(int shmid);
+
 Camera* Camera::cam = NULL;
+
+
+OPELCamera::OPELCamera()
+{
+					this->camProp = CameraProperty::getInstance();
+}
+
+void OPELCamera::setCameraProperty(CameraProperty* camProp)
+{
+				this->camProp = camProp;
+}
+CameraProperty* OPELCamera::getCameraProperty() const
+{
+				return this->camProp;
+}
+bool OPELCamera::open()
+{
+				return libv4l2_open(this->camProp) ? true : false;
+}
+static bool libv4l2_open(CameraProperty* camProp)
+{
+				int fd;
+				struct stat st; 
+				if(-1 == stat(deviceName,&st))
+				{
+						fprintf(stderr, "Cannot identify '%s' : %d, %s\n", deviceName, errno, strerror(errno));
+						return false;
+				}
+				if(!S_ISCHR(st.st_mode))
+				{
+						fprintf(stderr, "%s is no device\n", deviceName);
+						return false;
+				}
+				fd = open(deviceName, O_RDWR | O_NONBLOCK, 0);
+				if(-1 == fd)
+				{
+								fprintf(stderr, "Cannot open '%s' : %d, %s\n", deviceName, errno, strerror(errno));
+								return false;
+				}
+	//			camProp->setStat(st);
+				camProp->setfd(fd);
+				return true;
+}
+static bool libv4l2_init(CameraProperty* camProp)
+{
+				return true;
+}
+
+
+
 static void errno_exit(const char *s)
 {
 	fprintf(stderr, "%s error %d, %s\n", s, errno, strerror(errno));
@@ -87,6 +140,11 @@ bool Camera::open_device(void)
 }
 bool Camera::init_SharedMemoryRegion(int req_count, int buffer_size)
 {
+				return false;
+}
+
+static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmPtr)
+{
 				printf("buffer_len = %d, buffer_num = %d\n", buffer_size, req_count);
 				shmid = shmget((key_t)SHM_KEY, buffer_size*req_count, 0666|IPC_CREAT);
 				if(shmid == -1)
@@ -103,9 +161,14 @@ bool Camera::init_SharedMemoryRegion(int req_count, int buffer_size)
 				printf("Shared Memory Region Initialization Success\n");
 				return true;
 }
+
 bool Camera::uninit_SharedMemoryRegion()
 {
-				if(-1 == shmctl(this->shmid, IPC_RMID, 0))
+			return false;
+}
+static bool uninit_SharedMemorySpace(int shmid)
+{
+				if(-1 == shmctl(shmid, IPC_RMID, 0))
 				{
 								fprintf(stderr, "Failed to remove shared data region\n");
 								return false;
