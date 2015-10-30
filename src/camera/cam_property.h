@@ -24,10 +24,14 @@ class CameraProperty
 								struct v4l2_cropcap* getCropcap(void) { return this->cropcap; } 
 								struct v4l2_crop* getCrop(void) { return this->crop; }
 								struct v4l2_format* getFormat(void) {return this->fmt; }
+								struct v4l2_buffer* getBuffer(void) {return this->buf; }
+								enum v4l2_buf_type getType(void) {return this->type;}
 								int getWidth() { return this->width; }
 								int getHeight() { return this->height; }
 								int getPixelformat() { return this->pixelformat; }
 								enum v4l2_field getField() { return this->field; }
+							  unsigned long long* getCount() { return this->count; }
+								void setCount(unsigned long long count) { *(this->count) = count; }
 								//	struct stat getStat() { return this->st; }
 							  //void setStat(struct stat st) { this->st = st; }
 								
@@ -41,7 +45,7 @@ class CameraProperty
 								int pixelformat;
 								enum v4l2_field field;
 								int mode;
-								unsigned long long count;
+								unsigned long long* count;
 								unsigned int n_buffer;
 
 								struct v4l2_capability* cap;

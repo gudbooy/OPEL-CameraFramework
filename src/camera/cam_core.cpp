@@ -68,6 +68,78 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 				return true;
 				
 }
+static bool readFrame(CameraProperty* camProp)
+{
+
+}
+static bool mainLoop(CameraProperty* camProp)
+{
+			int count = *camProp->getCount();
+			int fd = camProp->getfd();
+			while(count-- > 0)
+			{
+							for(;;)
+							{
+											fd_set fds;
+											struct timeval tv;
+											int r;
+											FD_ZERO(&fds);
+											FD_SET(fd, &fds);
+											tv.tv_sec = 2;
+											tv.tv_usec = 2;
+											r = select(fd+1, &fds, NULL, NULL, &tv);
+											if(-1 == r){
+															if(EINTR == errno)
+																			continue;
+															fprintf(stderr, "Select Error\n");
+															return false;
+											}
+											if(0 == r){
+															fprintf(stderr, "Select Timeout\n");
+															return false;
+											}
+											if(readFrame(camProp))
+														break;			
+							}
+			}
+		  
+			return true;
+}
+bool OpenCVSupport::start()
+{
+				unsigned int i;
+				int fd = camProp->getfd();
+				unsigned int n_buffer = camProp->getN_buffers();
+				struct v4l2_buffer* buf = camProp->getBuffer();
+				enum v4l2_buf_type type = camProp->getType();
+				for(i=0; i< n_buffer; i++)
+				{
+								CLEAR(*buf);
+								buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+								buf->memory = V4L2_MEMORY_USERPTR;
+								buf->index = i;
+								buf->m.userptr = (unsigned long)buffers[i].start;
+								buf->length = buffers[i].length;
+								if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
+								{
+												fprintf(stderr, "VIDIOC_QBUF\n");
+												return false;
+								}
+				}
+				type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+				if(-1 == xioctl(fd, VIDIOC_STREAMON, &type))
+				{
+								fprintf(stderr, "VIDIOC_STREAMON\n");
+								return false;
+				}
+			  if(!mainLoop(this->camProp))
+				{
+								fprintf(stderr, "Main_Loop\n");
+								return false;
+				}
+
+				return true;
+}
 bool OpenCVSupport::init_device()
 {
 				unsigned int min;
@@ -149,8 +221,6 @@ bool OpenCVSupport::init_device()
 				return true;
 
 				//	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-
 }
 static bool libv4l2_open(CameraProperty* camProp)
 {
