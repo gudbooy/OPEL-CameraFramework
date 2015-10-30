@@ -123,6 +123,7 @@ static bool libv4l2_init(CameraProperty* camProp);
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmptr);
 static bool uinit_SharedMemorySpace(int shmid);
 static bool mainLoop(CameraProperty* camProp);
+static bool readFrame(CameraProperty* camProp);
 //static bool libv4l2_userPointer(unsigned int buffer_size, CameraProperty* camProp, void* buffers);
 class OPELCamera
 {
@@ -139,7 +140,6 @@ class OPELCamera
 								CameraProperty* camProp;			
 																		
 };
-
 
 class Record : public OPELCamera
 {

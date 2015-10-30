@@ -68,15 +68,48 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 				return true;
 				
 }
-static bool readFrame(CameraProperty* camProp)
+static bool readFrame(CameraProperty* camProp, buffer* buffers)
 {
-
+		struct v4l2_buffer* buf = camProp->getBuffer();
+		int fd = camProp->getfd();
+		int n_buffers = camProp->getN_buffers();
+		unsigned int i; 
+		CLEAR(buf);
+		buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+		buf->memory = V4L2_MEMORY_USERPTR;
+		if(-1 == xioctl(fd, VIDIOC_DQBUF, buf))
+		{
+						switch(errno){
+							case EAGAIN:
+											return false;
+											break;
+							case EIO: 
+											/*Ignore*/
+							default: 
+											fprintf(stderr, "VIDIOC_DQBUF\n");
+											return false;
+						}
+		}
+		for(i=0; i < n_buffers; ++i)
+		{
+				if(buf->m.userptr == (unsigned long)buffers[i].start && buf->length == buffers[i].length)
+								break;
+				assert(i < n_buffers);
+				
+				if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
+				{
+								fprintf(stderr, "VIDIOC_QBUF\n"); 
+								return false;
+				}
+				break;
+		}
+		return true;
 }
-static bool mainLoop(CameraProperty* camProp)
+static bool mainLoop(CameraProperty* camProp, buffer* buffers)
 {
-			int count = *camProp->getCount();
+			unsigned long long* count = camProp->getCount();
 			int fd = camProp->getfd();
-			while(count-- > 0)
+			while((*count)-- > 0)
 			{
 							for(;;)
 							{
@@ -98,7 +131,7 @@ static bool mainLoop(CameraProperty* camProp)
 															fprintf(stderr, "Select Timeout\n");
 															return false;
 											}
-											if(readFrame(camProp))
+											if(readFrame(camProp, buffers))
 														break;			
 							}
 			}
@@ -132,7 +165,7 @@ bool OpenCVSupport::start()
 								fprintf(stderr, "VIDIOC_STREAMON\n");
 								return false;
 				}
-			  if(!mainLoop(this->camProp))
+			  if(!mainLoop(this->camProp, this->buffers))
 				{
 								fprintf(stderr, "Main_Loop\n");
 								return false;

@@ -11,6 +11,7 @@ CameraProperty* CameraProperty::getInstance()
 
 CameraProperty::CameraProperty()
 {
+				this->count = (unsigned long long*)malloc(sizeof(unsigned long long));
 				this->cap = (struct v4l2_capability*)malloc(sizeof(struct v4l2_capability));
 				this->inp = (struct v4l2_input*)malloc(sizeof(struct v4l2_input));
 				this->fmt = (struct v4l2_format*)malloc(sizeof(struct v4l2_format));
@@ -26,6 +27,7 @@ CameraProperty::CameraProperty()
 }
 CameraProperty::~CameraProperty()
 {
+				free(this->count);
 				free(this->cap);
 				free(this->inp);
 				free(this->fmt);
