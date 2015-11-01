@@ -8,6 +8,10 @@
 
 #include <getopt.h>
 
+#include <config.h>
+#include <inttypes.h>
+#include <ctype.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -123,7 +127,7 @@ static bool libv4l2_init(CameraProperty* camProp);
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmptr);
 static bool uinit_SharedMemorySpace(int shmid);
 static bool mainLoop(CameraProperty* camProp);
-static bool readFrame(CameraProperty* camProp);
+static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last);
 //static bool libv4l2_userPointer(unsigned int buffer_size, CameraProperty* camProp, void* buffers);
 class OPELCamera
 {
@@ -135,8 +139,12 @@ class OPELCamera
 								bool open();
 			          virtual bool init_device() = 0;
 								virtual bool start() = 0;
+								virtual bool stop() = 0;
+								virtual bool close_device() = 0;
+								void deleteCameraProperty();		
 				protected:
 								virtual bool init_userPointer(unsigned int) = 0;
+							
 								CameraProperty* camProp;			
 																		
 };
@@ -144,7 +152,10 @@ class OPELCamera
 class Record : public OPELCamera
 {
 				public:
-									
+					virtual bool init_device();
+					virtual bool start();
+					virtual bool stop();
+					virtual bool close_device();
 
 				private:
 					 char* output_path;
@@ -154,6 +165,8 @@ class OpenCVSupport : public OPELCamera
 	public:
 		virtual	bool init_device();
 	 	virtual bool start();
+		virtual bool stop();
+		virtual bool close_device();
 		//virtual bool init_userPointer(unsigned int);
 	  
 			

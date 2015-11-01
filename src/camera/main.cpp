@@ -24,11 +24,46 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 }
 int main()
 {
-				CameraProperty* camProp = CameraProperty::getInstance();
+					OpenCVSupport* cam = new OpenCVSupport();
+					CameraProperty* camProp = cam->getCameraProperty();
+					camProp->printSetValue();
+					if(!cam->open())
+					{
+									fprintf(stderr, "DEVICE OPEN FAIL\n");
+									exit(-1);
+					}
+					if(!cam->init_device())
+					{
+									fprintf(stderr, "INIT DEVICE FAIL\n");
+									exit(-1);
+					}
+					if(!cam->start())
+					{
+									fprintf(stderr, "START FAIL\n");
+									exit(-1);
+					}
+					if(!cam->stop())
+					{
+									fprintf(stderr, "STOP FAIL\n");
+									exit(-1);
+					}
+					if(!cam->close_device())
+					{
+									fprintf(stderr, "CLOSE DEVICE FAIL\n");
+									exit(-1);
+					}
+
+
+					
+					
+					cam->deleteCameraProperty();
+					delete cam;	
+						
+//				CameraProperty* camProp = CameraProperty::getInstance();
 //				camProp->~CameraProperty();
 				
-				Camera* cam = Camera::getInstance();
-				if(!cam->open_device()){
+//				Camera* cam = Camera::getInstance();
+/*				if(!cam->open_device()){
 								errExit("open_device Error!!!\n"); }
 				std::cout << "Open Device Success\n";
 				if(!cam->init_device()){
@@ -45,7 +80,7 @@ int main()
 								errExit("close_device Error!!!\n");
 				}
 
-				
+	*/			
 	/*
 				
 				DBusConnection *conn;

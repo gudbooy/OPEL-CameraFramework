@@ -9,12 +9,19 @@ Camera* Camera::cam = NULL;
 OPELCamera::OPELCamera()
 {
 					this->camProp = CameraProperty::getInstance();
+				//	unsigned int* cnt = camProp->getCount();
+				//	printf("count : %d\n ", *cnt);
 }
 
 void OPELCamera::setCameraProperty(CameraProperty* camProp)
 {
 				this->camProp = camProp;
 }
+void OPELCamera::deleteCameraProperty()
+{
+				delete this->camProp;
+}
+				
 CameraProperty* OPELCamera::getCameraProperty() const
 {
 				return this->camProp;
@@ -22,6 +29,37 @@ CameraProperty* OPELCamera::getCameraProperty() const
 bool OPELCamera::open()
 {
 				return libv4l2_open(this->camProp) ? true : false;
+}
+bool OpenCVSupport::stop()
+{
+				int fd = this->camProp->getfd();
+				enum v4l2_buf_type  type;	
+				type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+				if(-1 == xioctl(fd, VIDIOC_STREAMOFF, &type))
+				{
+						fprintf(stderr, "VIDIOC_STREAMOFF");
+						return false;
+				}
+				return true;
+}
+bool OpenCVSupport::close_device()
+{
+				unsigned int i;
+				if(!uinit_SharedMemorySpace(this->shmid))
+				{
+								return false;
+				}
+				free(this->buffers);
+				return true;
+}
+static bool uinit_SharedMemorySpace(int shmid)
+{
+				if(-1 == shmctl(shmid, IPC_RMID, 0))
+				{
+								fprintf(stderr, "UnInit Shared Memory Space Failed\n");
+								return false;
+				}
+				return true;
 }
 bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 {
@@ -68,13 +106,15 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 				return true;
 				
 }
-static bool readFrame(CameraProperty* camProp, buffer* buffers)
+static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last)
 {
+		char ch = '<';
 		struct v4l2_buffer* buf = camProp->getBuffer();
 		int fd = camProp->getfd();
 		int n_buffers = camProp->getN_buffers();
-		unsigned int i; 
-		CLEAR(buf);
+		unsigned int i;
+		unsigned int* count = camProp->getCount();
+		CLEAR(*buf);
 		buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf->memory = V4L2_MEMORY_USERPTR;
 		if(-1 == xioctl(fd, VIDIOC_DQBUF, buf))
@@ -100,17 +140,44 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers)
 				{
 								fprintf(stderr, "VIDIOC_QBUF\n"); 
 								return false;
+
 				}
+		//		printf("palying\n");
 				break;
 		}
+	//	fprintf(stderr, "%c", ch);
+	//	fflush(stderr);
+
+		if(cnt == 0)
+		{
+						gettimeofday(&tv_last, NULL);
+		}else
+		{
+						struct timeval tv_cur, res;
+						gettimeofday(&tv_cur, NULL);
+						timersub(&tv_cur, &tv_last, &res);
+						if(res.tv_sec){
+								unsigned fps = (100*(cnt - last)) / (res.tv_sec * 100 + res.tv_usec / 10000);
+								last = cnt; 
+								tv_last = tv_cur;
+								fprintf(stderr, " %d fps\n", fps);
+						}
+		}
+		cnt++;
+
 		return true;
 }
 static bool mainLoop(CameraProperty* camProp, buffer* buffers)
 {
-			unsigned long long* count = camProp->getCount();
+			unsigned last = 0;
+			struct timeval tv_last;
+			unsigned int* count = camProp->getCount();
 			int fd = camProp->getfd();
+//			printf("Request Count is : %d", *count);
+			unsigned int cnt=0;
 			while((*count)-- > 0)
 			{
+	//						printf("count : %d\n", (*count));
 							for(;;)
 							{
 											fd_set fds;
@@ -131,8 +198,14 @@ static bool mainLoop(CameraProperty* camProp, buffer* buffers)
 															fprintf(stderr, "Select Timeout\n");
 															return false;
 											}
-											if(readFrame(camProp, buffers))
-														break;			
+											if(FD_ISSET(fd, &fds))
+											{
+														
+											}
+
+											if(readFrame(camProp, buffers, cnt, last, tv_last))
+														break;	
+
 							}
 			}
 		  

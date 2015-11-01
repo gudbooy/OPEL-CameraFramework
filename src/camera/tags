@@ -1,0 +1,205 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CLEAR	cam_core.h	41;"	d
+CamV4l2CapCheck	cam_cap_check.cpp	/^CamV4l2CapCheck::CamV4l2CapCheck()$/;"	f	class:CamV4l2CapCheck
+CamV4l2CapCheck	cam_cap_check.h	/^class CamV4l2CapCheck{$/;"	c
+Cam_V4L2	cam_core.h	/^typedef struct Cam_V4L2$/;"	s
+Cam_V4L2	cam_core.h	/^}Cam_V4L2;$/;"	t	typeref:struct:Cam_V4L2
+Camera	cam_core.cpp	/^Camera::Camera()$/;"	f	class:Camera
+Camera	cam_core.cpp	/^Camera::Camera(char* deviceName)$/;"	f	class:Camera
+Camera	cam_core.h	/^class Camera$/;"	c
+CameraProperty	cam_property.cpp	/^CameraProperty::CameraProperty()$/;"	f	class:CameraProperty
+CameraProperty	cam_property.h	/^class CameraProperty$/;"	c
+Camera_Ctrl	cam_ctrl.h	/^class Camera_Ctrl$/;"	c
+DEFAULT_COUNT	cam_property.h	14;"	d
+DEFAULT_HEIGHT	cam_property.h	18;"	d
+DEFAULT_WIDTH	cam_property.h	17;"	d
+H_FHD	cam_ctrl.h	22;"	d
+H_HD	cam_ctrl.h	19;"	d
+H_SVGA	cam_ctrl.h	10;"	d
+H_SXGA	cam_ctrl.h	16;"	d
+H_VGA	cam_ctrl.h	7;"	d
+H_XGA	cam_ctrl.h	13;"	d
+MAX_V4L2_BUFFERS	cam_core.h	42;"	d
+OPELCamera	cam_core.cpp	/^OPELCamera::OPELCamera()$/;"	f	class:OPELCamera
+OPELCamera	cam_core.h	/^class OPELCamera$/;"	c
+OPENCV_DEFAULT_PIXFORMAT	cam_property.h	15;"	d
+OpenCVSupport	cam_core.h	/^class OpenCVSupport : public OPELCamera$/;"	c
+OptLast	cam_core.h	44;"	d
+REC_DEFAULT_PIXFORMAT	cam_property.h	16;"	d
+Record	cam_core.h	/^class Record : public OPELCamera$/;"	c
+SHM_KEY	cam_core.h	35;"	d
+V4L2_DEFAULT_HEIGHT	cam_core.h	38;"	d
+V4L2_DEFAULT_WIDTH	cam_core.h	37;"	d
+W_FHD	cam_ctrl.h	21;"	d
+W_HD	cam_ctrl.h	18;"	d
+W_SVGA	cam_ctrl.h	9;"	d
+W_SXGA	cam_ctrl.h	15;"	d
+W_VGA	cam_ctrl.h	6;"	d
+W_XGA	cam_ctrl.h	12;"	d
+_CAM_CAP_CHECK_H_	cam_cap_check.h	2;"	d
+_CAM_CORE_H_	cam_core.h	2;"	d
+_CAM_CTRL_H_	cam_ctrl.h	2;"	d
+_CAM_PROPERTY_H_	cam_property.h	2;"	d
+_CAM_PROXY_H_	cam_proxy.h	2;"	d
+buf	cam_core.h	/^	struct v4l2_buffer buf;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_buffer
+buf	cam_property.h	/^								struct v4l2_buffer* buf;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_buffer
+buffer	cam_core.h	/^typedef struct buffer{$/;"	s
+buffer	cam_core.h	/^}buffer;$/;"	t	typeref:struct:buffer
+bufferIndex	cam_core.h	/^	int bufferIndex; $/;"	m	struct:Cam_V4L2
+bufferIndex	cam_core.h	/^	int bufferIndex;$/;"	m	class:Camera
+bufferIndex	cam_property.h	/^								int bufferIndex;$/;"	m	class:CameraProperty
+buffers	cam_core.h	/^			buffer* buffers;$/;"	m	class:OpenCVSupport
+buffers	cam_core.h	/^	buffer* buffers;$/;"	m	class:Camera
+cam	cam_core.cpp	/^Camera* Camera::cam = NULL;$/;"	m	class:Camera	file:
+cam	cam_core.h	/^	static Camera* cam;$/;"	m	class:Camera
+cam	cam_ctrl.h	/^		Camera* cam;$/;"	m	class:Camera_Ctrl
+camProp	cam_cap_check.h	/^				CameraProperty* camProp;$/;"	m	class:CamV4l2CapCheck
+camProp	cam_core.h	/^								CameraProperty* camProp;			$/;"	m	class:OPELCamera
+camProp	cam_property.cpp	/^CameraProperty* CameraProperty::camProp = NULL;$/;"	m	class:CameraProperty	file:
+camProp	cam_property.h	/^								static CameraProperty* camProp;$/;"	m	class:CameraProperty
+cap	cam_cap_check.h	/^struct v4l2_capability cap;$/;"	v	typeref:struct:v4l2_capability
+cap	cam_core.h	/^	struct v4l2_capability cap;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_capability
+cap	cam_core.h	/^	struct v4l2_capability cap;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_capability
+cap	cam_property.h	/^								struct v4l2_capability* cap;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_capability
+capabilities	cam_cap_check.h	/^static unsigned capabilities;$/;"	v
+checkDeviceCapabilites	cam_cap_check.cpp	/^void CamV4l2CapCheck::checkDeviceCapabilites(void)$/;"	f	class:CamV4l2CapCheck
+close_device	cam_core.cpp	/^bool Camera::close_device()$/;"	f	class:Camera
+close_device	cam_core.cpp	/^bool OpenCVSupport::close_device()$/;"	f	class:OpenCVSupport
+compr	cam_core.h	/^	struct v4l2_jpegcompression compr;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_jpegcompression
+compr	cam_core.h	/^	struct v4l2_jpegcompression compr;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_jpegcompression
+compr	cam_property.h	/^								struct v4l2_jpegcompression* compr;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_jpegcompression
+control	cam_core.h	/^	struct v4l2_control control;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_control
+control	cam_core.h	/^	struct v4l2_control control;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_control
+control	cam_property.h	/^								struct v4l2_control* control;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_control
+count	cam_core.h	/^	unsigned long long count;$/;"	m	class:Camera
+count	cam_property.h	/^								unsigned int* count;$/;"	m	class:CameraProperty
+crop	cam_core.h	/^	struct v4l2_crop crop;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_crop
+crop	cam_core.h	/^	struct v4l2_crop crop;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_crop
+crop	cam_property.h	/^								struct v4l2_crop* crop;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_crop
+cropcap	cam_core.h	/^	struct v4l2_cropcap cropcap;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_cropcap
+cropcap	cam_core.h	/^	struct v4l2_cropcap cropcap;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_cropcap
+cropcap	cam_property.h	/^								struct v4l2_cropcap* cropcap;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_cropcap
+ctl_parameters	cam_core.h	/^struct ctl_parameters{$/;"	s
+dbus_filter	main.cpp	/^static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message, void *user_data)$/;"	f	file:
+deleteCameraProperty	cam_core.cpp	/^void OPELCamera::deleteCameraProperty()$/;"	f	class:OPELCamera
+deviceHandle	cam_core.h	/^	int deviceHandle;$/;"	m	class:Camera
+deviceHandle	cam_core.h	/^	int deviceHandle;$/;"	m	struct:Cam_V4L2
+deviceHandle	cam_property.h	/^								int deviceHandle;$/;"	m	class:CameraProperty
+deviceName	cam_core.h	/^	char* deviceName;$/;"	m	struct:Cam_V4L2
+deviceName	cam_core.h	/^const static char* deviceName = "\/dev\/video0";$/;"	v
+errExit	main.cpp	10;"	d	file:
+errExit	test.cpp	4;"	d	file:
+errno_exit	cam_core.cpp	/^static void errno_exit(const char *s)$/;"	f	file:
+fd	cam_core.h	/^	int fd;$/;"	m	class:Camera
+fd	cam_property.h	/^								int fd;$/;"	m	class:CameraProperty
+fd_name	cam_core.h	/^	char fd_name[80];$/;"	m	struct:ctl_parameters
+field	cam_core.h	/^	enum v4l2_field field;$/;"	m	class:Camera	typeref:enum:Camera::v4l2_field
+field	cam_property.h	/^								enum v4l2_field field;$/;"	m	class:CameraProperty	typeref:enum:CameraProperty::v4l2_field
+filename_active	cam_core.h	/^	bool filename_active;$/;"	m	struct:ctl_parameters
+fmt	cam_core.h	/^	struct v4l2_format fmt;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_format
+fmt	cam_property.h	/^								struct v4l2_format* fmt;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_format
+form	cam_core.h	/^	struct v4l2_format form;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_format
+freq	cam_core.h	/^	double freq;$/;"	m	struct:ctl_parameters
+getBuffer	cam_property.h	/^								struct v4l2_buffer* getBuffer(void) {return this->buf; }$/;"	f	class:CameraProperty
+getCameraProperty	cam_core.cpp	/^CameraProperty* OPELCamera::getCameraProperty() const$/;"	f	class:OPELCamera
+getCapability	cam_property.h	/^								struct v4l2_capability* getCapability(void) { return this->cap; }$/;"	f	class:CameraProperty
+getCount	cam_property.h	/^							  unsigned int* getCount() { return this->count; }$/;"	f	class:CameraProperty
+getCrop	cam_property.h	/^								struct v4l2_crop* getCrop(void) { return this->crop; }$/;"	f	class:CameraProperty
+getCropcap	cam_property.h	/^								struct v4l2_cropcap* getCropcap(void) { return this->cropcap; } $/;"	f	class:CameraProperty
+getField	cam_property.h	/^								enum v4l2_field getField() { return this->field; }$/;"	f	class:CameraProperty
+getFormat	cam_property.h	/^								struct v4l2_format* getFormat(void) {return this->fmt; }$/;"	f	class:CameraProperty
+getHeight	cam_property.h	/^								int getHeight() { return this->height; }$/;"	f	class:CameraProperty
+getInstance	cam_core.cpp	/^Camera* Camera::getInstance()$/;"	f	class:Camera
+getInstance	cam_core.cpp	/^Camera* Camera::getInstance(char* deviceName)$/;"	f	class:Camera
+getInstance	cam_property.cpp	/^CameraProperty* CameraProperty::getInstance()$/;"	f	class:CameraProperty
+getN_buffers	cam_property.h	/^						    unsigned int getN_buffers(void) {return this->n_buffer; }	$/;"	f	class:CameraProperty
+getPixelformat	cam_property.h	/^								int getPixelformat() { return this->pixelformat; }$/;"	f	class:CameraProperty
+getRequestbuffers	cam_property.h	/^								struct v4l2_requestbuffers* getRequestbuffers(void) { return this->req; } 	$/;"	f	class:CameraProperty
+getType	cam_property.h	/^								enum v4l2_buf_type getType(void) {return this->type;}$/;"	f	class:CameraProperty
+getWidth	cam_property.h	/^								int getWidth() { return this->width; }$/;"	f	class:CameraProperty
+get_fd	cam_core.h	/^	int get_fd(void){ return this->fd; } 	$/;"	f	class:Camera
+getfd	cam_property.h	/^							  int getfd(void) { return this->fd; } $/;"	f	class:CameraProperty
+height	cam_core.h	/^	int width, height;$/;"	m	class:Camera
+height	cam_property.h	/^								int width, height;$/;"	m	class:CameraProperty
+heigth	cam_core.h	/^	int width, heigth;$/;"	m	struct:Cam_V4L2
+init_SharedMemoryRegion	cam_core.cpp	/^bool Camera::init_SharedMemoryRegion(int req_count, int buffer_size)$/;"	f	class:Camera
+init_SharedMemorySpace	cam_core.cpp	/^static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmPtr)$/;"	f	file:
+init_device	cam_core.cpp	/^bool Camera::init_device()$/;"	f	class:Camera
+init_device	cam_core.cpp	/^bool OpenCVSupport::init_device()$/;"	f	class:OpenCVSupport
+init_userPointer	cam_core.cpp	/^bool OpenCVSupport::init_userPointer(unsigned int buffer_size)$/;"	f	class:OpenCVSupport
+init_userp	cam_core.cpp	/^bool Camera::init_userp(unsigned int buffer_size)$/;"	f	class:Camera
+inp	cam_core.h	/^	struct v4l2_input inp;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_input
+inp	cam_core.h	/^	struct v4l2_input inp;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_input
+inp	cam_property.h	/^								struct v4l2_input* inp;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_input
+length	cam_core.h	/^	size_t length;$/;"	m	struct:buffer
+libv4l2_init	cam_core.cpp	/^static bool libv4l2_init(CameraProperty* camProp)$/;"	f	file:
+libv4l2_open	cam_core.cpp	/^static bool libv4l2_open(CameraProperty* camProp)$/;"	f	file:
+main	main.cpp	/^int main()$/;"	f
+main	test.cpp	/^int main()$/;"	f
+mainLoop	cam_core.cpp	/^static bool mainLoop(CameraProperty* camProp, buffer* buffers)$/;"	f	file:
+mainloop	cam_core.cpp	/^bool Camera::mainloop()$/;"	f	class:Camera
+mode	cam_core.h	/^	int mode; $/;"	m	class:Camera
+mode	cam_core.h	/^	int mode; $/;"	m	struct:Cam_V4L2
+mode	cam_property.h	/^								int mode;$/;"	m	class:CameraProperty
+n_buffer	cam_core.h	/^	unsigned int n_buffer;	$/;"	m	class:Camera
+n_buffer	cam_property.h	/^								unsigned int n_buffer;$/;"	m	class:CameraProperty
+n_buffers	cam_core.h	/^	unsigned int n_buffers;$/;"	m	class:Camera
+open	cam_core.cpp	/^bool OPELCamera::open()$/;"	f	class:OPELCamera
+open_device	cam_core.cpp	/^bool Camera::open_device(void)$/;"	f	class:Camera
+options	cam_core.h	/^	char options[OptLast];$/;"	m	struct:ctl_parameters
+out_capabilities	cam_cap_check.h	/^static unsigned out_capabilities;$/;"	v
+output_path	cam_core.h	/^					 char* output_path;$/;"	m	class:Record
+params	cam_core.h	/^static struct ctl_parameters params;$/;"	v	typeref:struct:ctl_parameters
+pixelformat	cam_core.h	/^	int pixelformat;$/;"	m	class:Camera
+pixelformat	cam_property.h	/^								int pixelformat;$/;"	m	class:CameraProperty
+printSetValue	cam_property.cpp	/^void CameraProperty::printSetValue(void)$/;"	f	class:CameraProperty
+process_image	cam_core.cpp	/^void process_image(const void *p, int size)$/;"	f
+queryctrl	cam_core.h	/^	struct v4l2_queryctrl queryctrl;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_queryctrl
+queryctrl	cam_core.h	/^	struct v4l2_queryctrl queryctrl;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_queryctrl
+queryctrl	cam_property.h	/^								struct v4l2_queryctrl* queryctrl;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_queryctrl
+readFrame	cam_core.cpp	/^static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last)$/;"	f	file:
+read_frame	cam_core.cpp	/^bool Camera::read_frame(void)$/;"	f	class:Camera
+req	cam_core.h	/^	struct v4l2_requestbuffers req;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_requestbuffers
+req	cam_core.h	/^	struct v4l2_requestbuffers req;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_requestbuffers
+req	cam_property.h	/^								struct v4l2_requestbuffers* req;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_requestbuffers
+setCameraProperty	cam_cap_check.cpp	/^void CamV4l2CapCheck::setCameraProperty(CameraProperty* camProp)$/;"	f	class:CamV4l2CapCheck
+setCameraProperty	cam_core.cpp	/^void OPELCamera::setCameraProperty(CameraProperty* camProp)$/;"	f	class:OPELCamera
+setCount	cam_property.h	/^								void setCount(unsigned long long count) { *(this->count) = count; }$/;"	f	class:CameraProperty
+setN_buffers	cam_property.h	/^								void setN_buffers(unsigned int n_buffer) {this->n_buffer = n_buffer; }$/;"	f	class:CameraProperty
+setfd	cam_property.h	/^								void setfd(int fd) { this->fd = fd; }		$/;"	f	class:CameraProperty
+shmPtr	cam_core.h	/^			void* shmPtr; $/;"	m	class:OpenCVSupport
+shmPtr	cam_core.h	/^	void* shmPtr;$/;"	m	class:Camera
+shm_buffer	cam_core.h	/^	void* shm_buffer;$/;"	m	struct:Cam_V4L2
+shm_info	cam_core.h	/^			struct shmid_ds shm_info;$/;"	m	class:OpenCVSupport	typeref:struct:OpenCVSupport::shmid_ds
+shm_info	cam_core.h	/^	struct shmid_ds shm_info;$/;"	m	class:Camera	typeref:struct:Camera::shmid_ds
+shmid	cam_core.h	/^			int shmid;$/;"	m	class:OpenCVSupport
+shmid	cam_core.h	/^	int shmid;$/;"	m	class:Camera
+start	cam_core.cpp	/^bool OpenCVSupport::start()$/;"	f	class:OpenCVSupport
+start	cam_core.h	/^	void *start;$/;"	m	struct:buffer
+start_capturing	cam_core.cpp	/^int Camera::start_capturing()$/;"	f	class:Camera
+stop	cam_core.cpp	/^bool OpenCVSupport::stop()$/;"	f	class:OpenCVSupport
+stop_capturing	cam_core.cpp	/^int Camera::stop_capturing()$/;"	f	class:Camera
+terminate_decoding	cam_core.h	/^	bool terminate_decoding;$/;"	m	struct:ctl_parameters
+timestamp	cam_core.h	/^	struct timeval timestamp; $/;"	m	class:Camera	typeref:struct:Camera::timeval
+timestamp	cam_core.h	/^	struct timeval timestamp;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::timeval
+timestamp	cam_property.h	/^								struct timeval* timestamp;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::timeval
+tuner_index	cam_core.h	/^	uint8_t tuner_index;$/;"	m	struct:ctl_parameters
+type	cam_core.h	/^	enum v4l2_buf_type type;$/;"	m	class:Camera	typeref:enum:Camera::v4l2_buf_type
+type	cam_core.h	/^	enum v4l2_buf_type type;$/;"	m	struct:Cam_V4L2	typeref:enum:Cam_V4L2::v4l2_buf_type
+type	cam_property.h	/^								enum v4l2_buf_type type;$/;"	m	class:CameraProperty	typeref:enum:CameraProperty::v4l2_buf_type
+uinit_SharedMemorySpace	cam_core.cpp	/^static bool uinit_SharedMemorySpace(int shmid)$/;"	f	file:
+uninit_SharedMemoryRegion	cam_core.cpp	/^bool Camera::uninit_SharedMemoryRegion()$/;"	f	class:Camera
+uninit_SharedMemorySpace	cam_core.cpp	/^static bool uninit_SharedMemorySpace(int shmid)$/;"	f	file:
+uninit_device	cam_core.cpp	/^bool Camera::uninit_device()$/;"	f	class:Camera
+wait_limit	cam_core.h	/^	uint32_t wait_limit;$/;"	m	struct:ctl_parameters
+width	cam_core.h	/^	int width, height;$/;"	m	class:Camera
+width	cam_core.h	/^	int width, heigth;$/;"	m	struct:Cam_V4L2
+width	cam_property.h	/^								int width, height;$/;"	m	class:CameraProperty
+xioctl	cam_core.cpp	/^static int xioctl(int fh, int request, void *arg)$/;"	f	file:
+~Camera	cam_core.cpp	/^Camera::~Camera()$/;"	f	class:Camera
+~CameraProperty	cam_property.cpp	/^CameraProperty::~CameraProperty()$/;"	f	class:CameraProperty

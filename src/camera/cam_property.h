@@ -5,10 +5,18 @@
 #include <string.h>
 #include <assert.h>
 
+#include <iostream>
 #include <linux/videodev2.h>
 #include <libv4l1.h>
 #include <libv4l2.h>
 //#include "cam_core.h"
+
+#define DEFAULT_COUNT 1000
+#define OPENCV_DEFAULT_PIXFORMAT 2 //RGB24
+#define REC_DEFAULT_PIXFORMAT 4 // h.264
+#define DEFAULT_WIDTH 640 
+#define DEFAULT_HEIGHT 320
+
 
 class CameraProperty
 {
@@ -30,8 +38,9 @@ class CameraProperty
 								int getHeight() { return this->height; }
 								int getPixelformat() { return this->pixelformat; }
 								enum v4l2_field getField() { return this->field; }
-							  unsigned long long* getCount() { return this->count; }
+							  unsigned int* getCount() { return this->count; }
 								void setCount(unsigned long long count) { *(this->count) = count; }
+								void printSetValue(void);
 								//	struct stat getStat() { return this->st; }
 							  //void setStat(struct stat st) { this->st = st; }
 								
@@ -45,8 +54,9 @@ class CameraProperty
 								int pixelformat;
 								enum v4l2_field field;
 								int mode;
-								unsigned long long* count;
+								unsigned int* count;
 								unsigned int n_buffer;
+								
 
 								struct v4l2_capability* cap;
 								struct v4l2_input* inp;

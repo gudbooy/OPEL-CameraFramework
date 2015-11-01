@@ -1,5 +1,4 @@
 #include "cam_cap_check.h"
-#include "cam_core.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -7,19 +6,29 @@
 
 #include <sys/ioctl.h>
 
-static void checkDeviceCapabilites(void)
+
+
+
+CamV4l2CapCheck::CamV4l2CapCheck()
 {
-		Camera* cam = Camera::getInstance();
-		int fd = cam->get_fd();
-		if(xioctl(fd, VIDIOC_QUERYCAP, &cap))
+				this->camProp = CameraProperty::getInstance();
+}
+void CamV4l2CapCheck::setCameraProperty(CameraProperty* camProp)
+{
+				this->camProp = camProp;
+}
+void CamV4l2CapCheck::checkDeviceCapabilities()
+{
+		int fd = camProp->getfd();
+		struct v4l2_capability* cap = camProp->getCapability();
+/*		if(xioctl(fd, VIDIOC_QUERYCAP, &cap))
 		{
 						fprintf(stderr, "%s querycap error!!!");
 						exit(0);
-		}
-		capabilities = cap.capabilities;
+		}*/
+/*		capabilities = cap.capabilities;
 		if(capabilities & V4L2_CAP_DEVICE_CAPS)
 						capabilities = cap.device_caps;
-
 		if(V4L2_CAP_VIDEO_CAPTURE & capabilities)
 						printf("Supports the single-planar API\n");
 		if(V4L2_CAP_VIDEO_CAPTURE_MPLANE & capabilities)
@@ -36,7 +45,7 @@ static void checkDeviceCapabilites(void)
 						printf("Supports the video overlay interface\n");
 		if(V4L2_CAP_ASYNCIO & capabilities)
 						printf("Supports the AsyncI/O\n");
-		
+		*/
 }
 
 

@@ -3,15 +3,18 @@
 #include "cam_core.h"
 
 
-static unsigned capabilities;
-static unsigned out_capabilities;
-struct v4l2_capability cap;
 
+class CamV4l2CapCheck{
 
-
-static void checkDeviceCapabilities(void);
-
-
+				public:
+			 	void checkDeviceCapabilities();
+				CamV4l2CapCheck();
+				void setCameraProperty(CameraProperty* camProp);
+				
+				private:
+				CameraProperty* camProp;
+				unsigned capabilities;
+};
 
 
 

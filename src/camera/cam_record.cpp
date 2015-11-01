@@ -2,6 +2,13 @@
 
 
 
+
+
+
+
+
+
+
 /*void Record::getCameraProperty(const CameraProperty& camProp)
 {
 				this->camProp = camProp;
