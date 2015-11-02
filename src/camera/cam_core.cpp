@@ -45,20 +45,26 @@ bool OpenCVSupport::stop()
 bool OpenCVSupport::close_device()
 {
 				unsigned int i;
-				if(!uinit_SharedMemorySpace(this->shmid))
+				if(!uinit_SharedMemorySpace(this->shmid, &shmPtr))
 				{
 								return false;
 				}
 				free(this->buffers);
 				return true;
 }
-static bool uinit_SharedMemorySpace(int shmid)
+static bool uinit_SharedMemorySpace(int shmid, void** shmPtr)
 {
-				if(-1 == shmctl(shmid, IPC_RMID, 0))
+				if(-1 == shmdt(*shmPtr))
+				{
+								fprintf(stderr, "Detach Shared Memory Space Failed\n");
+								return false;
+				}
+
+			/*	if(-1 == shmctl(shmid, IPC_RMID, 0))
 				{
 								fprintf(stderr, "UnInit Shared Memory Space Failed\n");
 								return false;
-				}
+				}*/
 				return true;
 }
 bool OpenCVSupport::init_userPointer(unsigned int buffer_size)

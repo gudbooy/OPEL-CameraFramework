@@ -124,7 +124,7 @@ typedef struct Cam_V4L2
 static bool libv4l2_open(CameraProperty* camProp);
 static bool libv4l2_init(CameraProperty* camProp);
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr);
-static bool uinit_SharedMemorySpace(int shmid);
+static bool uinit_SharedMemorySpace(int shmid, void** shmPtr);
 static bool mainLoop(CameraProperty* camProp);
 static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last);
 static void processImg(const void* p , int size);
