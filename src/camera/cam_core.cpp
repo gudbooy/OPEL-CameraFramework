@@ -1,6 +1,6 @@
 #include "cam_core.h"
 
-static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmptr);
+static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr);
 static bool uinit_SharedMemorySpace(int shmid);
 
 Camera* Camera::cam = NULL;
@@ -92,7 +92,7 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 					fprintf(stderr, "Out of Memory\n");
 					return false;
 				}
-				if(!init_SharedMemorySpace(req->count, buffer_size, shmid, shmPtr))
+				if(!init_SharedMemorySpace(req->count, buffer_size, shmid, &shmPtr))
 				{
 								fprintf(stderr, "Shared Memory Space Initialization Failed\n");
 								return false;
@@ -101,10 +101,26 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 				{
 								buffers[i].length = buffer_size;
 								buffers[i].start = shmPtr+i*buffer_size;
+								if(!buffers[i].start)
+								{
+												fprintf(stderr, "Link to SharedMemorySpace failed\n");
+												return false;
+								}
 				}
 
 				return true;
-				
+			
+
+}
+static void processImg(const void* p, int size)
+{
+			if(p != NULL)
+							fwrite(p, size, 1, stdout);
+			//else
+				//			fprintf(stderr, "Buffer is NULL\n");
+	//		fflush(stderr); 
+	//		fprintf(stderr, ".");
+	//		fflush(stdout);
 }
 static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last)
 {
@@ -135,7 +151,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 				if(buf->m.userptr == (unsigned long)buffers[i].start && buf->length == buffers[i].length)
 								break;
 				assert(i < n_buffers);
-				
+		//		processImg(buffers[0].start, buffers[0].length);
 				if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
 				{
 								fprintf(stderr, "VIDIOC_QBUF\n"); 
@@ -145,8 +161,8 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 		//		printf("palying\n");
 				break;
 		}
-	//	fprintf(stderr, "%c", ch);
-	//	fflush(stderr);
+		fprintf(stderr, "%c", ch);
+		fflush(stderr);
 
 		if(cnt == 0)
 		{
@@ -448,7 +464,7 @@ bool Camera::init_SharedMemoryRegion(int req_count, int buffer_size)
 				return false;
 }
 
-static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmPtr)
+static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmPtr)
 {
 				printf("buffer_len = %d, buffer_num = %d\n", buffer_size, req_count);
 				shmid = shmget((key_t)SHM_KEY, buffer_size*req_count, 0666|IPC_CREAT);
@@ -457,8 +473,9 @@ static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, vo
 								perror("shmget failed : ");
 								return false;
 				}
-				shmPtr = shmat(shmid, NULL, 0);
-				if(shmPtr == (void*)-1)
+				*shmPtr = shmat(shmid, NULL, 0);
+				
+				if(*shmPtr == (void*)-1)
 				{
 								perror("shmget failed : ");
 								return false;
@@ -503,7 +520,7 @@ bool Camera::init_userp(unsigned int buffer_size)
 												return false;
 								}
 				}	
-				buffers = (buffer*)calloc(4, sizeof(*buffers));
+			//	buffers = (buffer*)calloc(4, sizeof(*buffers));
 				if(!buffers){
 						fprintf(stderr, "Out of Memroy\n");
 						return false;

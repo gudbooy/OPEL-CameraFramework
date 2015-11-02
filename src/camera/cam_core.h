@@ -8,7 +8,6 @@
 
 #include <getopt.h>
 
-#include <config.h>
 #include <inttypes.h>
 #include <ctype.h>
 #include <dirent.h>
@@ -124,10 +123,11 @@ typedef struct Cam_V4L2
 };*/
 static bool libv4l2_open(CameraProperty* camProp);
 static bool libv4l2_init(CameraProperty* camProp);
-static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void* shmptr);
+static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr);
 static bool uinit_SharedMemorySpace(int shmid);
 static bool mainLoop(CameraProperty* camProp);
 static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last);
+static void processImg(const void* p , int size);
 //static bool libv4l2_userPointer(unsigned int buffer_size, CameraProperty* camProp, void* buffers);
 class OPELCamera
 {

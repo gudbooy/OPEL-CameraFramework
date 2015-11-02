@@ -13,7 +13,9 @@ void CameraProperty::printSetValue(void)
 				std::cout << "***** OPEL CAMERA PROPERTIES *****" <<std::endl;
 				std::cout << "Width : " << this->width << " Height : " << this->height << std::endl;
 				std::cout << "Pixelformat : " << this->pixelformat << std::endl;
-				std::cout << "Count : " << *(count) << std::endl; 
+				std::cout << "Number of Frame : " << *(count) << std::endl; 
+				std::cout << "Field : " << this->field << std::endl;
+				
 }
 
 CameraProperty::CameraProperty()
@@ -33,6 +35,8 @@ CameraProperty::CameraProperty()
 				this->buf = (struct v4l2_buffer*)malloc(sizeof(struct v4l2_buffer));
 				this->queryctrl = (struct v4l2_queryctrl*)malloc(sizeof(struct v4l2_queryctrl));
 				this->timestamp = (struct timeval*)malloc(sizeof(struct timeval));
+				*(this->count) = 100;
+				this->field = V4L2_FIELD_INTERLACED;
 				this->width = DEFAULT_WIDTH;
 				this->height = DEFAULT_HEIGHT;
 				this->pixelformat = OPENCV_DEFAULT_PIXFORMAT;
