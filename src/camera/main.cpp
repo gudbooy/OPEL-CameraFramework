@@ -18,6 +18,11 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 						std::cout << "Get Initialization Service Get\n";
 						return DBUS_HANDLER_RESULT_HANDLED;
 				}
+				if(dbus_message_is_signal(message, "org.opel.camera.daemon", "start"))
+				{	
+						std::cout << "Get Start Service Get\n";
+						return DBUS_HANDLER_RESULT_HANDLED;
+				}
 
 
 				return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -59,28 +64,6 @@ int main()
 					cam->deleteCameraProperty();
 					delete cam;	
 						
-//				CameraProperty* camProp = CameraProperty::getInstance();
-//				camProp->~CameraProperty();
-				
-//				Camera* cam = Camera::getInstance();
-/*				if(!cam->open_device()){
-								errExit("open_device Error!!!\n"); }
-				std::cout << "Open Device Success\n";
-				if(!cam->init_device()){
-								errExit("init_device Error!!!\n"); }
-				std::cout << "Init Device Success\n";
-				if(!cam->start_capturing()){
-								errExit("start_capturing Error!!!\n");}
-				std::cout << "Capturing Done\n";
-				if(!cam->stop_capturing()){
-								errExit("stop_capturing Error!!!\n");} 
-				if(!cam->uninit_device()){
-								errExit("uninit_device Error!!!\n");}
-				if(!cam->close_device()){
-								errExit("close_device Error!!!\n");
-				}
-
-	*/			
 	/*
 				
 				DBusConnection *conn;

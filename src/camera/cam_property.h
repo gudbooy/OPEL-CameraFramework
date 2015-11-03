@@ -11,11 +11,11 @@
 #include <libv4l2.h>
 //#include "cam_core.h"
 
-#define DEFAULT_COUNT 1000
+#define DEFAULT_COUNT 100000
 #define OPENCV_DEFAULT_PIXFORMAT 2 //RGB24
 #define REC_DEFAULT_PIXFORMAT 4 // h.264
 #define DEFAULT_WIDTH 640 
-#define DEFAULT_HEIGHT 320
+#define DEFAULT_HEIGHT 480
 
 
 class CameraProperty
@@ -36,7 +36,7 @@ class CameraProperty
 								enum v4l2_buf_type getType(void) {return this->type;}
 								int getWidth() { return this->width; }
 								int getHeight() { return this->height; }
-								int getPixelformat() { return this->pixelformat; }
+								unsigned int getPixelformat() { return this->pixelformat; }
 								enum v4l2_field getField() { return this->field; }
 							  unsigned int* getCount() { return this->count; }
 								void setCount(unsigned long long count) { *(this->count) = count; }
@@ -51,7 +51,7 @@ class CameraProperty
 								int deviceHandle;
 								int bufferIndex;
 								int width, height;
-								int pixelformat;
+								unsigned int pixelformat;
 								enum v4l2_field field;
 								int mode;
 								unsigned int* count;

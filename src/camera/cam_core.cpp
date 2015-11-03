@@ -248,6 +248,8 @@ bool OpenCVSupport::start()
 								buf->index = i;
 								buf->m.userptr = (unsigned long)buffers[i].start;
 								buf->length = buffers[i].length;
+							//	printf("buf->length : %d", buf->length);
+						//		fflush(stdout);
 								if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
 								{
 												fprintf(stderr, "VIDIOC_QBUF\n");
