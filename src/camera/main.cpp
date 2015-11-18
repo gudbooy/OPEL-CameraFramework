@@ -29,9 +29,15 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 }
 int main()
 {
+					bool isRec = true;
+					CameraProperty* openCV_camProp = new CameraProperty();
+      		CameraProperty* rec_camProp = new CameraProperty(isRec);
 					OpenCVSupport* cam = new OpenCVSupport();
-					CameraProperty* camProp = cam->getCameraProperty();
-					camProp->printSetValue();
+					cam->setCameraProperty(openCV_camProp);
+					//					CameraProperty* camProp = new CameraProperty();
+
+					
+					openCV_camProp->printSetValue();
 					if(!cam->open())
 					{
 									fprintf(stderr, "DEVICE OPEN FAIL\n");

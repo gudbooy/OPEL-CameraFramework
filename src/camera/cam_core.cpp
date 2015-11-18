@@ -8,7 +8,7 @@ Camera* Camera::cam = NULL;
 
 OPELCamera::OPELCamera()
 {
-					this->camProp = CameraProperty::getInstance();
+			//		this->camProp = CameraProperty::getInstance();
 				//	unsigned int* cnt = camProp->getCount();
 				//	printf("count : %d\n ", *cnt);
 }

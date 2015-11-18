@@ -12,17 +12,26 @@
 //#include "cam_core.h"
 
 #define DEFAULT_COUNT 100000
-#define OPENCV_DEFAULT_PIXFORMAT 2 //RGB24
-#define REC_DEFAULT_PIXFORMAT 4 // h.264
+#define OPENCV_DEFAULT_PIXFORMAT V4L2_PIX_FMT_RGB24 //RGB24
 #define DEFAULT_WIDTH 640 
 #define DEFAULT_HEIGHT 480
 
 
+
+#define REC_DEFAULT_WIDTH 1920
+#define REC_DEFAULT_HEIGHT 1080
+#define REC_DEFAULT_PIXFORMAT 4 // h.264
+
 class CameraProperty
 {
 				public: 
-								static CameraProperty* getInstance();
+//							static CameraProperty* getInstance();
+								
+							
 								~CameraProperty();
+								/*Default Constructor For OPNECV*/
+								CameraProperty();
+								CameraProperty(bool);
 								void setfd(int fd) { this->fd = fd; }		
 							  int getfd(void) { return this->fd; } 
 								struct v4l2_requestbuffers* getRequestbuffers(void) { return this->req; } 	
@@ -46,8 +55,8 @@ class CameraProperty
 								
 				private:
 								int fd;
-								static CameraProperty* camProp;
-								CameraProperty();
+							 //static CameraProperty* camProp;
+								//CameraProperty();
 								int deviceHandle;
 								int bufferIndex;
 								int width, height;

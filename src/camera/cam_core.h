@@ -125,9 +125,11 @@ static bool libv4l2_open(CameraProperty* camProp);
 static bool libv4l2_init(CameraProperty* camProp);
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr);
 static bool uinit_SharedMemorySpace(int shmid, void** shmPtr);
-static bool mainLoop(CameraProperty* camProp);
+static bool mainLoop(CameraProperty* camProp, buffer* buffers);
+static bool recMainLoop(CameraProperty* camProp, buffer* buffers);
 static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last);
 static void processImg(const void* p , int size);
+static int do_handle_cap(CameraProperty* camProp, buffer* buffers);
 //static bool libv4l2_userPointer(unsigned int buffer_size, CameraProperty* camProp, void* buffers);
 class OPELCamera
 {
@@ -158,6 +160,9 @@ class Record : public OPELCamera
 					virtual bool close_device();
 
 				private:
+				   buffer* buffers;
+					 	
+					 virtual bool init_userPointer(unsigned int);
 					 char* output_path;
 };
 class OpenCVSupport : public OPELCamera
@@ -168,8 +173,6 @@ class OpenCVSupport : public OPELCamera
 		virtual bool stop();
 		virtual bool close_device();
 		//virtual bool init_userPointer(unsigned int);
-	  
-			
 	private:
 	 	  virtual bool init_userPointer(unsigned int);
 			buffer* buffers;

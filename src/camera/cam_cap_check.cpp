@@ -11,11 +11,11 @@
 
 CamV4l2CapCheck::CamV4l2CapCheck()
 {
-				this->camProp = CameraProperty::getInstance();
+			//	this->camProp = CameraProperty::getInstance();
 }
 void CamV4l2CapCheck::setCameraProperty(CameraProperty* camProp)
 {
-				this->camProp = camProp;
+			//	this->camProp = camProp;
 }
 void CamV4l2CapCheck::checkDeviceCapabilities()
 {
