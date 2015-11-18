@@ -30,6 +30,16 @@ bool OPELCamera::open()
 {
 				return libv4l2_open(this->camProp) ? true : false;
 }
+bool OpenCVSupport::getEos(void)
+{
+	return this->eos;
+}
+void OpenCVSupport::setEos(bool eos)
+{
+	pthread_mutex_lock(&mutex);
+	this->eos = eos;
+	pthread_mutex_unlock(&mutex);	
+}
 bool OpenCVSupport::stop()
 {
 				int fd = this->camProp->getfd();
@@ -189,7 +199,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 
 		return true;
 }
-static bool mainLoop(CameraProperty* camProp, buffer* buffers)
+bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 {
 			unsigned last = 0;
 			struct timeval tv_last;
@@ -197,7 +207,7 @@ static bool mainLoop(CameraProperty* camProp, buffer* buffers)
 			int fd = camProp->getfd();
 //			printf("Request Count is : %d", *count);
 			unsigned int cnt=0;
-			while((*count)-- > 0)
+			while(((*count)-- > 0) && eos)
 			{
 	//						printf("count : %d\n", (*count));
 							for(;;)
@@ -229,6 +239,9 @@ static bool mainLoop(CameraProperty* camProp, buffer* buffers)
 														break;	
 
 							}
+					//		pthread_mutex_lock(&mutex);
+					//		if(eos)
+
 			}
 		  
 			return true;

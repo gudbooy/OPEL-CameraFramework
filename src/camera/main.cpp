@@ -21,6 +21,10 @@ static CameraProperty* openCV_camProp;
 static CameraProperty* rec_camProp;
 static OpenCVSupport* rec_cam;
 static OpenCVSupport* openCV_cam;
+CameraStatus* camStatus;
+pthread_mutex_t mutex_lock;
+
+//CameraStatus* camStatus;
 
 static bool is_openCVCamInit;
 
@@ -44,9 +48,17 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "OpenCVInit"))
 	{
-		is_openCVCamInit = false;
+		
+//		is_openCVCamInit = false;
 		std::cout << "Get[DBUS] : OpenCVInit\n";
-		rec_camProp->printSetValue();
+		//Recording Thread Can be preempted by OpenCV 
+		// Prioirity of Rec < Priority of OpenCV
+		//check if the recording is running
+		if(camStatus->getIsRecRunning() || camStatus->getIsRecInitialized())
+		{
+			//Impementation need	
+		}
+		openCV_camProp->printSetValue();
 		if(!openCV_cam->open())
 		{
 			fprintf(stderr, "DEVICE OPEN FAILED\n");
@@ -57,16 +69,24 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 			fprintf(stderr, "DEVICE INIT FAILED\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
-		is_openCVCamInit = true;
+		camStatus->setIsOpenCVInitialized(true);
+    //is_openCVCamInit = true;
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "OpenCVStart"))
 	{	
 		std::cout << "Get[DBUS] : OpenCVStart\n";
 	  //Checking that CamProp is initialized 	
-	  if(is_openCVCamInit){
+		if(camStatus->getIsOpenCVInitialized()){
+		  openCV_cam->setEos(true);
 		  //Running Thread for Recording Thread
 			thr_id[INDEX_OF_OPENCV_THR] = pthread_create(&OPELCamThread[0], NULL,  openCVCameraSupportThr, (void*)0);
+			if(thr_id < 0)
+			{
+				fprintf(stderr, "Create Thread Failed\n");
+				return DBUS_HANDLER_RESULT_HANDLED;
+			}
+			camStatus->setIsOpenCVRunning(true);
 		}
 		else
 		{
@@ -80,7 +100,38 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	{
 		std::cout << "Get[DBUS] : OpenCVStop\n";
 		//Stop the Thread for Recording Thread
+ 		openCV_cam->setEos(false);
+		if(!openCV_cam->stop())
+		{
+			fprintf(stderr, "DEVICE STOP FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		camStatus->setIsOpenCVRunning(false);
+		return DBUS_HANDLER_RESULT_HANDLED;
+	}
 	
+	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "OpenCVClose"))
+	{
+		std::cout << "Get[DBUS] : OpenCVClose\n";
+		//Stop the Thread for Recording Thread
+		openCV_cam->setEos(false);
+		if(!openCV_cam->stop())
+		{
+			fprintf(stderr, "DEVICE STOP FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		if(-1 == pthread_detach(OPELCamThread[0]))
+		{
+			fprintf(stderr, "Detatching the p_thread Failed\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		if(!openCV_cam->close_device())
+		{
+			fprintf(stderr, "DEVICE CLOSE FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		camStatus->setIsOpenCVRunning(false);
+		camStatus->setIsOpenCVInitialized(false);
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 /*
@@ -115,9 +166,8 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 
 int main()
 {
-	
-
 	bool isRec = true;		
+	pthread_mutex_t mutex_lock;
 	openCV_camProp = new CameraProperty(!isRec);
 	rec_camProp = new CameraProperty(isRec);
 
@@ -126,6 +176,10 @@ int main()
 
 	openCV_cam->setCameraProperty(openCV_camProp);
 	rec_cam->setCameraProperty(rec_camProp);
+  pthread_mutex_init(&mutex_lock, NULL);
+	camStatus = CameraStatus::getInstance();
+	camStatus->getThrMutex(mutex_lock);
+	openCV_cam->setThrMutex(mutex_lock);
 
 	DBusConnection *conn;
 	DBusError err;
@@ -133,7 +187,7 @@ int main()
 	loop = g_main_loop_new(NULL, false);
 	dbus_error_init(&err);
 	conn = dbus_bus_get(DBUS_BUS_SYSTEM, &err);
-	if(dbus_error_is_set(&err))
+  if(dbus_error_is_set(&err))
 	{
 		printf("Error Connecting to the Daemon Bus : %s", err.message);
 		dbus_error_free(&err);
@@ -144,6 +198,5 @@ int main()
 	dbus_connection_setup_with_g_main(conn, NULL);
 	g_main_loop_run(loop);
 
-
-				return 0;
+	return 0;
 }

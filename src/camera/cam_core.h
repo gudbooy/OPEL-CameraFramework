@@ -31,6 +31,7 @@
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <pthread.h>
 /*User-Defined Header*/
 #include "cam_property.h"
 #include "cam_status.h"
@@ -122,7 +123,7 @@ static bool libv4l2_open(CameraProperty* camProp);
 static bool libv4l2_init(CameraProperty* camProp);
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr, key_t shmkey);
 static bool uinit_SharedMemorySpace(int shmid, void** shmPtr);
-static bool mainLoop(CameraProperty* camProp, buffer* buffers);
+//static bool mainLoop(CameraProperty* camProp, buffer* buffers);
 static bool recMainLoop(CameraProperty* camProp, buffer* buffers);
 static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last);
 static void processImg(const void* p , int size);
@@ -169,13 +170,20 @@ class OpenCVSupport : public OPELCamera
 	 	virtual bool start();
 		virtual bool stop();
 		virtual bool close_device();
+		bool getEos(void); 
+		void setEos(bool eos);
+	  void setThrMutex(pthread_mutex_t& mutex){ this->mutex = mutex; }
 		//virtual bool init_userPointer(unsigned int);
+ 
 	private:
-	 	  virtual bool init_userPointer(unsigned int);
+	 	  bool mainLoop(CameraProperty* camProp, buffer* buffers);
+		  virtual bool init_userPointer(unsigned int);
 			buffer* buffers;
 			int shmid;
 			void* shmPtr; 
 			struct shmid_ds shm_info;
+			bool eos;
+			pthread_mutex_t mutex;
 };
 class Camera
 {
