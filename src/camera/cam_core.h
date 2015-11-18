@@ -33,6 +33,7 @@
 #include <sys/shm.h>
 /*User-Defined Header*/
 #include "cam_property.h"
+#include "cam_status.h"
 
 
 #define SHM_KEY 1234
@@ -49,11 +50,7 @@
 
 static int xioctl(int fh, int request, void* arg);
 static void errno_exit(const char *s);
-
 static void streaming_set_cap(int fd);
-
-
-
 
 
 const static char* deviceName = "/dev/video0";
@@ -123,7 +120,7 @@ typedef struct Cam_V4L2
 };*/
 static bool libv4l2_open(CameraProperty* camProp);
 static bool libv4l2_init(CameraProperty* camProp);
-static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr);
+static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr, key_t shmkey);
 static bool uinit_SharedMemorySpace(int shmid, void** shmPtr);
 static bool mainLoop(CameraProperty* camProp, buffer* buffers);
 static bool recMainLoop(CameraProperty* camProp, buffer* buffers);

@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #include <iostream>
 #include <linux/videodev2.h>
@@ -12,16 +14,17 @@
 //#include "cam_core.h"
 
 #define DEFAULT_COUNT 100000
+
 #define OPENCV_DEFAULT_PIXFORMAT V4L2_PIX_FMT_RGB24 //RGB24
 #define DEFAULT_WIDTH 640 
 #define DEFAULT_HEIGHT 480
-
+#define OPENCV_SHM_KEY 5315 
 
 
 #define REC_DEFAULT_WIDTH 1920
 #define REC_DEFAULT_HEIGHT 1080
-#define REC_DEFAULT_PIXFORMAT 4 // h.264
-
+#define REC_DEFAULT_PIXFORMAT V4L2_PIX_FMT_H264 // h.264
+#define REC_SHM_KEY 9447
 class CameraProperty
 {
 				public: 
@@ -32,6 +35,7 @@ class CameraProperty
 								/*Default Constructor For OPNECV*/
 								CameraProperty();
 								CameraProperty(bool);
+								key_t getShmKey(void){return this->shmkey;}
 								void setfd(int fd) { this->fd = fd; }		
 							  int getfd(void) { return this->fd; } 
 								struct v4l2_requestbuffers* getRequestbuffers(void) { return this->req; } 	
@@ -61,6 +65,7 @@ class CameraProperty
 								int bufferIndex;
 								int width, height;
 								unsigned int pixelformat;
+								key_t shmkey;
 								enum v4l2_field field;
 								int mode;
 								unsigned int* count;
@@ -79,7 +84,8 @@ class CameraProperty
 								enum v4l2_buf_type type;
 								struct v4l2_queryctrl* queryctrl;
 								struct timeval* timestamp;
-//								struct stat* st;
+								
+								//			  			struct stat* st;
 };
 
 

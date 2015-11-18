@@ -21,8 +21,9 @@ void CameraProperty::printSetValue(void)
 
 CameraProperty::CameraProperty(bool isRec)
 {
-	if(isRec)
+	if(!isRec)
 	{
+				fprintf(stderr, "Called Construct for OpenCV Support\n");
   			this->count = (unsigned int*)malloc(sizeof(unsigned int));
 				this->cap = (struct v4l2_capability*)malloc(sizeof(struct v4l2_capability));
 				this->inp = (struct v4l2_input*)malloc(sizeof(struct v4l2_input));
@@ -40,9 +41,11 @@ CameraProperty::CameraProperty(bool isRec)
 				this->width = DEFAULT_WIDTH;
 				this->height = DEFAULT_HEIGHT;
 				this->pixelformat = V4L2_PIX_FMT_RGB24;
+				this->shmkey = OPENCV_SHM_KEY;
 	}
 	else
 	{
+				fprintf(stderr, "Called Construct for Recording\n");
    			this->count = (unsigned int*)malloc(sizeof(unsigned int));
 				this->cap = (struct v4l2_capability*)malloc(sizeof(struct v4l2_capability));
 				this->inp = (struct v4l2_input*)malloc(sizeof(struct v4l2_input));
@@ -60,6 +63,7 @@ CameraProperty::CameraProperty(bool isRec)
 				this->width = REC_DEFAULT_WIDTH;
 				this->height = REC_DEFAULT_HEIGHT;
 				this->pixelformat = V4L2_PIX_FMT_H264;
+				this->shmkey = REC_SHM_KEY;
 	}
 
 }
