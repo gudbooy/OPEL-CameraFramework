@@ -6,6 +6,13 @@
 #include <assert.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/fcntl.h>
+#include <sys/mman.h>
+//#include <sys/sem.h>
+#include <semaphore.h>
 
 #include <iostream>
 #include <linux/videodev2.h>
@@ -20,11 +27,27 @@
 #define DEFAULT_HEIGHT 480
 #define OPENCV_SHM_KEY 5315 
 
+#define OPENCV_SHM_KEY_FOR_PROPERTY 4941
+//#define OPENCV_SEMAPHORE_FOR_PROPERTY 49411
 
 #define REC_DEFAULT_WIDTH 1920
 #define REC_DEFAULT_HEIGHT 1080
 #define REC_DEFAULT_PIXFORMAT V4L2_PIX_FMT_H264 // h.264
 #define REC_SHM_KEY 9447
+#define REC_SHM_KEY_FOR_PROPERTY 9988
+
+//char SEM_NAME[] = "openCVProperty";
+
+typedef struct property
+{
+	int width;
+	int height;
+	int buffer_size; 
+	int buffer_num; 
+	int n_buffer;	
+	bool isPropertyChanged;
+}property;
+
 class CameraProperty
 {
 				public: 
@@ -54,10 +77,20 @@ class CameraProperty
 							  unsigned int* getCount() { return this->count; }
 								void setCount(unsigned long long count) { *(this->count) = count; }
 								void printSetValue(void);
+							  void setBufferSize(int buffer_size);
+								void setBufferNum(int buffer_num);
+								int getBufferSize(void) { return this->buffer_size; }
+								int getBufferNum(void) { return this->buffer_num; } 
+							  void initProperty(property** prop);
+								bool InitSharedPropertyToTarget(property* prop);
+								bool uInitSharedPropertyToTarget(property* prop);
+								bool initSemaphore(void);
 								//	struct stat getStat() { return this->st; }
 							  //void setStat(struct stat st) { this->st = st; }
 								
+
 				private:
+								char* processName;
 								int fd;
 							 //static CameraProperty* camProp;
 								//CameraProperty();
@@ -66,11 +99,16 @@ class CameraProperty
 								int width, height;
 								unsigned int pixelformat;
 								key_t shmkey;
+								key_t shmkey_for_property;
+								int shmid_for_property;
+								void* shmPtr_for_property;
+
 								enum v4l2_field field;
 								int mode;
 								unsigned int* count;
 								unsigned int n_buffer;
-								
+								int buffer_size;
+								int buffer_num;
 
 								struct v4l2_capability* cap;
 								struct v4l2_input* inp;
@@ -84,8 +122,10 @@ class CameraProperty
 								enum v4l2_buf_type type;
 								struct v4l2_queryctrl* queryctrl;
 								struct timeval* timestamp;
-								
+								sem_t* mutex;
 								//			  			struct stat* st;
+
+
 };
 
 

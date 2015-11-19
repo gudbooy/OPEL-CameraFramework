@@ -31,7 +31,15 @@ static bool is_openCVCamInit;
 static pthread_t OPELCamThread[NUM_OF_THREADS]; 
 int thr_id[2] = {0,};
 
-
+void* recCameraSupportThr(void* args)
+{
+	if(!rec_cam->start())
+	{
+		fprintf(stderr, "START FIALED\n");
+		return NULL;
+	}
+	return (void*)1;
+}
 void* openCVCameraSupportThr(void* args)
 {
 		if(!openCV_cam->start())
@@ -56,6 +64,8 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		//check if the recording is running
 		if(camStatus->getIsRecRunning() || camStatus->getIsRecInitialized())
 		{
+			fprintf(stderr, "Recording Process is Running\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
 			//Impementation need	
 		}
 		openCV_camProp->printSetValue();
@@ -80,7 +90,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		if(camStatus->getIsOpenCVInitialized()){
 		  openCV_cam->setEos(true);
 		  //Running Thread for Recording Thread
-			thr_id[INDEX_OF_OPENCV_THR] = pthread_create(&OPELCamThread[0], NULL,  openCVCameraSupportThr, (void*)0);
+			thr_id[INDEX_OF_OPENCV_THR] = pthread_create(&OPELCamThread[INDEX_OF_OPENCV_THR], NULL,  openCVCameraSupportThr, (void*)0);
 			if(thr_id < 0)
 			{
 				fprintf(stderr, "Create Thread Failed\n");
@@ -108,8 +118,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		}
 		camStatus->setIsOpenCVRunning(false);
 		return DBUS_HANDLER_RESULT_HANDLED;
-	}
-	
+	}	
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "OpenCVClose"))
 	{
 		std::cout << "Get[DBUS] : OpenCVClose\n";
@@ -134,32 +143,97 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		camStatus->setIsOpenCVInitialized(false);
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
-/*
-	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "openCVInit"))
+	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recInit"))
 	{	
-		std::cout << "Get Start Service Get\n";
-		openCV_camProp->printSetValue();
+		std::cout << "Get[DBUS] : recInit\n";
+		rec_camProp->printSetValue();
+    //if OpenCV Service is running then stop the service
+		if(camStatus->getIsOpenCVRunning() || camStatus->getIsOpenCVInitialized())
+		{
+				if(!openCV_cam->stop())
+				{
+						fprintf(stderr, "STOP FAILED\n");
+				}
+				if(!openCV_cam->close_device())
+				{
+					fprintf(stderr, "CLOSE DEVICE FAILED\n");
+				}
+				//stop and uninit openCV
+				camStatus->getIsOpenCVRunning() ? camStatus->setIsOpenCVRunning(false) : camStatus->setIsOpenCVInitialized(false);
+		}
+		
+		if(!rec_cam->open())
+		{
+			fprintf(stderr, "DEVICE INIT FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		if(!rec_cam->init_device())
+		{
+			fprintf(stderr, "DEVICE INIT FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}	
+		camStatus->setIsRecInitialized(true);
 		//Stop the Thread for Recording Thread
-
-
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
-	
-	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "openCVStart"))
+
+	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recStart"))
 	{	
-		std::cout << "Get Start Service Get\n";
-		return DBUS_HANDLER_RESULT_HANDLED;
+		std::cout << "Get[DBUS] : recStart\n";
+	  rec_cam->setEos(true);
+		if(camStatus->getIsRecInitialized()){
+		thr_id[INDEX_OF_REC_THR] = pthread_create(&OPELCamThread[INDEX_OF_REC_THR], NULL, recCameraSupportThr, (void*)0);
+		if(thr_id[INDEX_OF_REC_THR] < 0)
+		{
+			fprintf(stderr, "CREATE THREAD FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		camStatus->setIsRecRunning(true);
+		}
+		else
+		{
+			fprintf(stderr, "CAMERA PROPERTY NOT INITIALIZED YET\n");
+			return DBUS_HANDLER_RESULT_HANDLED;	
+		}
+	  return DBUS_HANDLER_RESULT_HANDLED;	
 	}
-	
-	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "openCVStop"))
+
+	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recStop"))
 	{	
-		std::cout << "Get Start Service Get\n";
+		std::cout << "Get[DBUS] : recStop\n";	 
+		rec_cam->setEos(false);
+		if(!rec_cam->stop())
+		{
+			fprintf(stderr, "DEVICE STOP FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		camStatus->setIsRecRunning(false);
+
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
-*/
-
-
-
+	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recClose"))
+	{	
+		std::cout << "Get[DBUS] : recClose\n";
+		rec_cam->setEos(false);
+		if(!rec_cam->stop())
+		{
+			fprintf(stderr, "DEVICE STOP FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		if(-1 == pthread_detach(OPELCamThread[INDEX_OF_REC_THR]))
+		{
+			fprintf(stderr, "Detatching the p_thread failed\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		if(!rec_cam->close_device())
+		{
+			fprintf(stderr, "DEVICE CLOSE FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		camStatus->setIsRecRunning(false);
+		camStatus->setIsRecInitialized(false);
+		return DBUS_HANDLER_RESULT_HANDLED;
+	}
 
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }

@@ -108,6 +108,8 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 					fprintf(stderr, "Out of Memory\n");
 					return false;
 				}
+				camProp->setBufferSize(buffer_size);
+				camProp->setBufferNum(req->count);
 				if(!init_SharedMemorySpace(req->count, buffer_size, shmid, &shmPtr, camProp->getShmKey()))
 				{
 								fprintf(stderr, "Shared Memory Space Initialization Failed\n");
@@ -488,6 +490,7 @@ bool Camera::init_SharedMemoryRegion(int req_count, int buffer_size)
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmPtr, key_t shmkey)
 {
 				printf("buffer_len = %d, buffer_num = %d\n", buffer_size, req_count);
+					
 				shmid = shmget((key_t)shmkey, buffer_size*req_count, 0666|IPC_CREAT);
 				if(shmid == -1)
 				{
