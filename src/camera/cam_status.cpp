@@ -15,7 +15,18 @@ CameraStatus::CameraStatus()
 		this->isOpenCVInitialized = false;
 		this->isRecRunning = false;
 		this->isRecInitialized = false;
-
+		this->statusMutex = sem_open("camStatus", O_CREAT, 0666, 1);
+		if(this->statusMutex == SEM_FAILED)
+		{
+			fprintf(stderr, "[CameraStatus::CameraStatus]: Sem_open Error\n");
+			sem_unlink("camStatus");	
+			this->statusMutex = NULL;
+		}	
+}
+CameraStatus::~CameraStatus()
+{
+	sem_close(this->statusMutex);
+	sem_unlink("camStatus"); 
 }
 CameraStatus* CameraStatus::getInstance(void)
 {

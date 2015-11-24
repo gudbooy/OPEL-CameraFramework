@@ -18,17 +18,20 @@ void CameraProperty::printSetValue(void)
 				std::cout << "Field : " << this->field << std::endl;
 				
 }
-void CameraProperty::initProperty(property** prop)
+void CameraProperty::initProperty(property* prop)
 {
 	//semaphore lock
-  sem_wait(mutex);
-	(*prop)->width = this->width;
-	(*prop)->height = this->height;
-	(*prop)->buffer_size = this->buffer_size;
-	(*prop)->buffer_num = this->buffer_num;
-	(*prop)->n_buffer = this->n_buffer;
-  (*prop)->isPropertyChanged = true;
-	sem_post(mutex);
+//  sem_wait(mutex);
+//	(*prop) = (property*)malloc(sizeof(property));
+//	(prop)->width = this->width;
+//	(prop)->height = this->height;
+//	(prop)->buffer_size = this->buffer_size;
+//	(prop)->buffer_num = this->buffer_num;
+//	(prop)->n_buffer = this->n_buffer;
+ // (prop)->isPropertyChanged = true;
+	//(prop)->allowRunning = true;
+	//	(*prop)->camStatus = CameraStatus::getInstance();
+//	sem_post(mutex);
 	//semaphore unlock
 }
 bool CameraProperty::InitSharedPropertyToTarget(property* prop)
@@ -47,7 +50,15 @@ bool CameraProperty::InitSharedPropertyToTarget(property* prop)
 			fprintf(stderr, "[InitSharedPropertyToTarget] : Shmat Error\n");
 			return false;
 		}
-		shmPtr_for_property = (void*)prop;
+	//	shmPtr_for_property = (property*)prop;
+		prop = (property*)shmPtr_for_property;	
+	  prop->width = this->width;
+	  prop->height = this->height;
+	  prop->buffer_size = this->buffer_size;
+	  prop->buffer_num = this->buffer_num;
+	  prop->n_buffer = this->n_buffer;
+    prop->isPropertyChanged = true;
+		prop->allowRunning = true;
 	}
 	else
 	{
@@ -57,7 +68,18 @@ bool CameraProperty::InitSharedPropertyToTarget(property* prop)
 }
 bool CameraProperty::uInitSharedPropertyToTarget(property* prop)
 {
-  // uninit
+  if(-1 == shmdt(this->shmPtr_for_property))
+	{
+		fprintf(stderr, "[CameraProperty::uInitSharedPropertyToTarget] : shmdt Error\n");
+		return false;
+	}
+	if(-1 == shmctl(this->shmid_for_property, IPC_RMID, 0)) 
+	{
+	
+		fprintf(stderr, "[CameraProperty::uInitSharedPropertyToTarget] : shmctl Error\n");
+		return false;
+	}
+	// uninit
 	return true;
 }
 void CameraProperty::setBufferSize(int buffer_size)
@@ -101,7 +123,7 @@ CameraProperty::CameraProperty(bool isRec)
 				this->shmkey = OPENCV_SHM_KEY;
 				this->shmkey_for_property = OPENCV_SHM_KEY_FOR_PROPERTY;
 				this->shmPtr_for_property = NULL;
-				this->mutex = sem_open("openCVProp", O_CREAT, 0666, 1);
+				this->mutex = sem_open("openCVProp", O_CREAT, 0777, 1);
 				if(this->mutex == SEM_FAILED)
 				{
 					fprintf(stderr, "[CameraProperty::CameraProperty] : Sem_open Error\n");

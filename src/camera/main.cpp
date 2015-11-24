@@ -11,7 +11,7 @@
 
 #include "cam_core.h"
 #include "cam_status.h"
-
+#include "cam_property.h"
 #define errExit(msg) do {perror(msg); exit(EXIT_FAILURE);}while(0)
 #define NUM_OF_THREADS 2
 
@@ -21,8 +21,13 @@ static CameraProperty* openCV_camProp;
 static CameraProperty* rec_camProp;
 static OpenCVSupport* rec_cam;
 static OpenCVSupport* openCV_cam;
+
+//static property* recordingProperty;
+static property* openCVProperty;
+
 CameraStatus* camStatus;
 pthread_mutex_t mutex_lock;
+bool first;
 
 //CameraStatus* camStatus;
 
@@ -110,10 +115,15 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	{
 		std::cout << "Get[DBUS] : OpenCVStop\n";
 		//Stop the Thread for Recording Thread
- 		openCV_cam->setEos(false);
+		openCV_cam->setEos(false);
 		if(!openCV_cam->stop())
 		{
 			fprintf(stderr, "DEVICE STOP FAILED\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		if(-1 == pthread_detach(OPELCamThread[0]))
+		{
+			fprintf(stderr, "[DBUS_OPENCVSTOP] : pthread_detach Error\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
 		camStatus->setIsOpenCVRunning(false);
@@ -245,16 +255,26 @@ int main()
 	openCV_camProp = new CameraProperty(!isRec);
 	rec_camProp = new CameraProperty(isRec);
 
+
+//	openCV_camProp->initProperty(&openCVProperty);	
+	openCV_camProp->InitSharedPropertyToTarget(openCVProperty);	
+//	openCV_camProp->initProperty(openCVProperty);
+
 	rec_cam = new OpenCVSupport();
 	openCV_cam = new OpenCVSupport();
 
 	openCV_cam->setCameraProperty(openCV_camProp);
 	rec_cam->setCameraProperty(rec_camProp);
   pthread_mutex_init(&mutex_lock, NULL);
+	
 	camStatus = CameraStatus::getInstance();
+
+	//	openCVProperty->camStatus = camStatus;
+	 	
 	camStatus->getThrMutex(mutex_lock);
 	openCV_cam->setThrMutex(mutex_lock);
-
+	
+	first = true;
 	DBusConnection *conn;
 	DBusError err;
 	GMainLoop *loop;

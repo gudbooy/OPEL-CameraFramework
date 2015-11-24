@@ -55,9 +55,15 @@ bool OpenCVSupport::stop()
 bool OpenCVSupport::close_device()
 {
 				unsigned int i;
+				int fd = camProp->getfd();
 				if(!uinit_SharedMemorySpace(this->shmid, &shmPtr))
 				{
 								return false;
+				}
+				if(-1 == close(fd))
+				{
+						fprintf(stderr, "[OpenCVSupport::close_device] : close(fd) failed\n");
+						return false;
 				}
 				free(this->buffers);
 				return true;
@@ -203,13 +209,16 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 }
 bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 {
+			pthread_mutex_lock(&mutex);
+		  bool volatile_eos = this->eos;
+			pthread_mutex_unlock(&mutex);
 			unsigned last = 0;
 			struct timeval tv_last;
 			unsigned int* count = camProp->getCount();
 			int fd = camProp->getfd();
 //			printf("Request Count is : %d", *count);
 			unsigned int cnt=0;
-			while(((*count)-- > 0) && eos)
+			while(((*count)-- > 0) && volatile_eos)
 			{
 	//						printf("count : %d\n", (*count));
 							for(;;)
@@ -239,8 +248,11 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 
 											if(readFrame(camProp, buffers, cnt, last, tv_last))
 														break;	
-
 							}
+							pthread_mutex_lock(&mutex);
+							volatile_eos = this->eos;
+							pthread_mutex_unlock(&mutex);
+
 					//		pthread_mutex_lock(&mutex);
 					//		if(eos)
 

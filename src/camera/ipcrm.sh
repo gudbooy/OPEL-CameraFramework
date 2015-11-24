@@ -1,2 +1,3 @@
 #!/bin/bash
-ipcrm -M 1234
+ipcrm -M 5315
+ipcrm -M 4941

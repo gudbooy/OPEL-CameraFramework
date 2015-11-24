@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <sys/fcntl.h>
 #include <sys/mman.h>
-//#include <sys/sem.h>
+#include <sys/sem.h>
 #include <semaphore.h>
 
 #include <iostream>
@@ -19,7 +19,7 @@
 #include <libv4l1.h>
 #include <libv4l2.h>
 //#include "cam_core.h"
-
+#include "cam_status.h"
 #define DEFAULT_COUNT 100000
 
 #define OPENCV_DEFAULT_PIXFORMAT V4L2_PIX_FMT_RGB24 //RGB24
@@ -28,7 +28,7 @@
 #define OPENCV_SHM_KEY 5315 
 
 #define OPENCV_SHM_KEY_FOR_PROPERTY 4941
-//#define OPENCV_SEMAPHORE_FOR_PROPERTY 49411
+#define OPENCV_SEMAPHORE_FOR_PROPERTY 49411
 
 #define REC_DEFAULT_WIDTH 1920
 #define REC_DEFAULT_HEIGHT 1080
@@ -38,15 +38,19 @@
 
 //char SEM_NAME[] = "openCVProperty";
 
+
 typedef struct property
 {
 	int width;
 	int height;
 	int buffer_size; 
 	int buffer_num; 
-	int n_buffer;	
+	int n_buffer;		
 	bool isPropertyChanged;
+	bool allowRunning;
+	//	CameraStatus* camStatus;	
 }property;
+
 
 class CameraProperty
 {
@@ -81,7 +85,7 @@ class CameraProperty
 								void setBufferNum(int buffer_num);
 								int getBufferSize(void) { return this->buffer_size; }
 								int getBufferNum(void) { return this->buffer_num; } 
-							  void initProperty(property** prop);
+							  void initProperty(property* prop);
 								bool InitSharedPropertyToTarget(property* prop);
 								bool uInitSharedPropertyToTarget(property* prop);
 								bool initSemaphore(void);
@@ -124,8 +128,6 @@ class CameraProperty
 								struct timeval* timestamp;
 								sem_t* mutex;
 								//			  			struct stat* st;
-
-
 };
 
 
