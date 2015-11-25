@@ -12,7 +12,7 @@
 #include <sys/fcntl.h>
 #include <sys/mman.h>
 #include <sys/sem.h>
-#include <semaphore.h>
+//#include <semaphore.h>
 
 #include <iostream>
 #include <linux/videodev2.h>
@@ -38,6 +38,14 @@
 
 //char SEM_NAME[] = "openCVProperty";
 
+union semun
+{
+	int val;
+	struct semid_ds* buf;
+	unsigned short int *array;
+};
+static struct sembuf mutex_post = {0, -1, SEM_UNDO};
+static struct sembuf mutex_wait = {0, 1, SEM_UNDO};
 
 typedef struct property
 {
@@ -48,7 +56,9 @@ typedef struct property
 	int n_buffer;		
 	bool isPropertyChanged;
 	bool allowRunning;
-	//	CameraStatus* camStatus;	
+
+//	CameraStatus* camStatus;	
+
 }property;
 
 
@@ -91,7 +101,7 @@ class CameraProperty
 								bool initSemaphore(void);
 								//	struct stat getStat() { return this->st; }
 							  //void setStat(struct stat st) { this->st = st; }
-								
+								void setProperty(property* prop){ this->prop = prop; } 	
 
 				private:
 								char* processName;
@@ -126,8 +136,10 @@ class CameraProperty
 								enum v4l2_buf_type type;
 								struct v4l2_queryctrl* queryctrl;
 								struct timeval* timestamp;
-								sem_t* mutex;
+								property* prop;
+								//	sem_t* mutex;
 								//			  			struct stat* st;
+								int semid;
 };
 
 

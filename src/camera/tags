@@ -29,21 +29,22 @@ H_SVGA	cam_ctrl.h	10;"	d
 H_SXGA	cam_ctrl.h	16;"	d
 H_VGA	cam_ctrl.h	7;"	d
 H_XGA	cam_ctrl.h	13;"	d
-INDEX_OF_OPENCV_THR	main.cpp	18;"	d	file:
-INDEX_OF_REC_THR	main.cpp	19;"	d	file:
+INDEX_OF_OPENCV_THR	main.cpp	19;"	d	file:
+INDEX_OF_REC_THR	main.cpp	20;"	d	file:
 InitSharedPropertyToTarget	cam_property.cpp	/^bool CameraProperty::InitSharedPropertyToTarget(property* prop)$/;"	f	class:CameraProperty
 MAX_V4L2_BUFFERS	cam_core.h	47;"	d
-NUM_OF_THREADS	main.cpp	16;"	d	file:
+NUM_OF_THREADS	main.cpp	17;"	d	file:
 OPELCamThread	main.cpp	/^static pthread_t OPELCamThread[NUM_OF_THREADS]; $/;"	v	file:
 OPELCamera	cam_core.cpp	/^OPELCamera::OPELCamera()$/;"	f	class:OPELCamera
 OPELCamera	cam_core.h	/^class OPELCamera$/;"	c
 OPENCV_DEFAULT_PIXFORMAT	cam_property.h	25;"	d
 OPENCV_PROP_SHM	cam_status.h	19;"	d
+OPENCV_SEMAPHORE_FOR_PROPERTY	cam_property.h	31;"	d
 OPENCV_SHM_KEY	cam_property.h	28;"	d
 OPENCV_SHM_KEY_FOR_PROPERTY	cam_property.h	30;"	d
 OpenCVSupport	cam_core.h	/^class OpenCVSupport : public OPELCamera$/;"	c
 OptLast	cam_core.h	49;"	d
-REC	cam_request.h	/^enum kinds {openCV=0, REC, setProperty};$/;"	e	enum:kinds
+REC	cam_request.h	/^enum kinds {openCV=0, REC};$/;"	e	enum:kinds
 REC_DEFAULT_HEIGHT	cam_property.h	34;"	d
 REC_DEFAULT_PIXFORMAT	cam_property.h	35;"	d
 REC_DEFAULT_WIDTH	cam_property.h	33;"	d
@@ -94,10 +95,10 @@ cap	cam_core.h	/^	struct v4l2_capability cap;$/;"	m	struct:Cam_V4L2	typeref:stru
 cap	cam_property.h	/^								struct v4l2_capability* cap;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_capability
 capabilities	cam_cap_check.h	/^				unsigned capabilities;$/;"	m	class:CamV4l2CapCheck
 checkDeviceCapabilities	cam_cap_check.cpp	/^void CamV4l2CapCheck::checkDeviceCapabilities()$/;"	f	class:CamV4l2CapCheck
-close	cam_request.h	/^enum operations {init=0, start, stop, close};$/;"	e	enum:operations
 close_device	cam_core.cpp	/^bool Camera::close_device()$/;"	f	class:Camera
 close_device	cam_core.cpp	/^bool OpenCVSupport::close_device()$/;"	f	class:OpenCVSupport
 close_device	cam_record.cpp	/^bool Record::close_device()$/;"	f	class:Record
+close_device	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	e	enum:operations
 compr	cam_core.h	/^	struct v4l2_jpegcompression compr;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_jpegcompression
 compr	cam_core.h	/^	struct v4l2_jpegcompression compr;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_jpegcompression
 compr	cam_property.h	/^								struct v4l2_jpegcompression* compr;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_jpegcompression
@@ -122,7 +123,7 @@ deviceName	cam_core.h	/^	char* deviceName;$/;"	m	struct:Cam_V4L2
 deviceName	cam_core.h	/^const static char* deviceName = "\/dev\/video0";$/;"	v
 do_handle_cap	cam_record.cpp	/^static int do_handle_cap(CameraProperty* camProp, buffer* buffers)$/;"	f	file:
 eos	cam_core.h	/^			bool eos;$/;"	m	class:OpenCVSupport
-errExit	main.cpp	15;"	d	file:
+errExit	main.cpp	16;"	d	file:
 errExit	test.cpp	4;"	d	file:
 errno_exit	cam_core.cpp	/^static void errno_exit(const char *s)$/;"	f	file:
 fd	cam_core.h	/^	int fd;$/;"	m	class:Camera
@@ -167,10 +168,9 @@ getfd	cam_property.h	/^							  int getfd(void) { return this->fd; } $/;"	f	clas
 height	cam_core.h	/^	int width, height;$/;"	m	class:Camera
 height	cam_property.h	/^								int width, height;$/;"	m	class:CameraProperty
 height	cam_property.h	/^	int height;$/;"	m	struct:property
-height	cam_request.h	/^	int height;$/;"	m	struct:CameraRequest
 heigth	cam_core.h	/^	int width, heigth;$/;"	m	struct:Cam_V4L2
-init	cam_request.h	/^enum operations {init=0, start, stop, close};$/;"	e	enum:operations
-initProperty	cam_property.cpp	/^void CameraProperty::initProperty(property** prop)$/;"	f	class:CameraProperty
+init	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	e	enum:operations
+initProperty	cam_property.cpp	/^void CameraProperty::initProperty(property* prop)$/;"	f	class:CameraProperty
 init_SharedMemoryRegion	cam_core.cpp	/^bool Camera::init_SharedMemoryRegion(int req_count, int buffer_size)$/;"	f	class:Camera
 init_SharedMemorySpace	cam_core.cpp	/^static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmPtr, key_t shmkey)$/;"	f	file:
 init_device	cam_core.cpp	/^bool Camera::init_device()$/;"	f	class:Camera
@@ -190,7 +190,7 @@ isRecInitialized	cam_status.h	/^		bool isRecInitialized;$/;"	m	class:CameraStatu
 isRecRunning	cam_status.h	/^		bool isRecRunning;$/;"	m	class:CameraStatus
 is_openCVCamInit	main.cpp	/^static bool is_openCVCamInit;$/;"	v	file:
 kind	cam_request.h	/^	enum kinds kind;$/;"	m	struct:CameraRequest	typeref:enum:CameraRequest::kinds
-kinds	cam_request.h	/^enum kinds {openCV=0, REC, setProperty};$/;"	g
+kinds	cam_request.h	/^enum kinds {openCV=0, REC};$/;"	g
 length	cam_core.h	/^	size_t length;$/;"	m	struct:buffer
 libv4l2_init	cam_core.cpp	/^static bool libv4l2_init(CameraProperty* camProp)$/;"	f	file:
 libv4l2_open	cam_core.cpp	/^static bool libv4l2_open(CameraProperty* camProp)$/;"	f	file:
@@ -210,14 +210,15 @@ n_buffer	cam_property.h	/^								unsigned int n_buffer;$/;"	m	class:CameraPrope
 n_buffer	cam_property.h	/^	int n_buffer;		$/;"	m	struct:property
 n_buffers	cam_core.h	/^	unsigned int n_buffers;$/;"	m	class:Camera
 open	cam_core.cpp	/^bool OPELCamera::open()$/;"	f	class:OPELCamera
-openCV	cam_request.h	/^enum kinds {openCV=0, REC, setProperty};$/;"	e	enum:kinds
+openCV	cam_request.h	/^enum kinds {openCV=0, REC};$/;"	e	enum:kinds
 openCVCameraSupportThr	main.cpp	/^void* openCVCameraSupportThr(void* args)$/;"	f
+openCVHandler	main.cpp	/^bool openCVHandler(enum operations op)$/;"	f
 openCVProperty	main.cpp	/^static property* openCVProperty;$/;"	v	file:
 openCV_cam	main.cpp	/^static OpenCVSupport* openCV_cam;$/;"	v	file:
 openCV_camProp	main.cpp	/^static CameraProperty* openCV_camProp;$/;"	v	file:
 open_device	cam_core.cpp	/^bool Camera::open_device(void)$/;"	f	class:Camera
 operation	cam_request.h	/^	enum operations operation;$/;"	m	struct:CameraRequest	typeref:enum:CameraRequest::operations
-operations	cam_request.h	/^enum operations {init=0, start, stop, close};$/;"	g
+operations	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	g
 options	cam_core.h	/^	char options[OptLast];$/;"	m	struct:ctl_parameters
 output_path	cam_core.h	/^					 char* output_path;$/;"	m	class:Record
 params	cam_core.h	/^static struct ctl_parameters params;$/;"	v	typeref:struct:ctl_parameters
@@ -239,9 +240,11 @@ recCameraSupportThr	main.cpp	/^void* recCameraSupportThr(void* args)$/;"	f
 recMainLoop	cam_record.cpp	/^static bool recMainLoop(CameraProperty* camProp, buffer* buffers)$/;"	f	file:
 rec_cam	main.cpp	/^static OpenCVSupport* rec_cam;$/;"	v	file:
 rec_camProp	main.cpp	/^static CameraProperty* rec_camProp;$/;"	v	file:
+recordingHandler	main.cpp	/^bool recordingHandler(enum operations op)$/;"	f
 req	cam_core.h	/^	struct v4l2_requestbuffers req;$/;"	m	class:Camera	typeref:struct:Camera::v4l2_requestbuffers
 req	cam_core.h	/^	struct v4l2_requestbuffers req;$/;"	m	struct:Cam_V4L2	typeref:struct:Cam_V4L2::v4l2_requestbuffers
 req	cam_property.h	/^								struct v4l2_requestbuffers* req;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_requestbuffers
+reqQueue	main.cpp	/^std::queue<CameraRequest*> reqQueue;$/;"	v
 setBufferNum	cam_property.cpp	/^void CameraProperty::setBufferNum(int buffer_num)$/;"	f	class:CameraProperty
 setBufferSize	cam_property.cpp	/^void CameraProperty::setBufferSize(int buffer_size)$/;"	f	class:CameraProperty
 setCameraProperty	cam_cap_check.cpp	/^void CamV4l2CapCheck::setCameraProperty(CameraProperty* camProp)$/;"	f	class:CamV4l2CapCheck
@@ -253,7 +256,6 @@ setIsOpenCVRunning	cam_status.h	/^	 void setIsOpenCVRunning(bool isRunning) $/;"
 setIsRecInitialized	cam_status.h	/^	 void setIsRecInitialized(bool isInitialized) $/;"	f	class:CameraStatus
 setIsRecRunning	cam_status.h	/^	 void setIsRecRunning(bool isRunning) $/;"	f	class:CameraStatus
 setN_buffers	cam_property.h	/^								void setN_buffers(unsigned int n_buffer) {this->n_buffer = n_buffer; }$/;"	f	class:CameraProperty
-setProperty	cam_request.h	/^enum kinds {openCV=0, REC, setProperty};$/;"	e	enum:kinds
 setThrMutex	cam_core.h	/^	  void setThrMutex(pthread_mutex_t& mutex){ this->mutex = mutex; }$/;"	f	class:OpenCVSupport
 setfd	cam_property.h	/^								void setfd(int fd) { this->fd = fd; }		$/;"	f	class:CameraProperty
 shmPtr	cam_core.h	/^			void* shmPtr; $/;"	m	class:OpenCVSupport
@@ -270,12 +272,12 @@ shmkey_for_property	cam_property.h	/^								key_t shmkey_for_property;$/;"	m	cl
 start	cam_core.cpp	/^bool OpenCVSupport::start()$/;"	f	class:OpenCVSupport
 start	cam_core.h	/^	void *start;$/;"	m	struct:buffer
 start	cam_record.cpp	/^bool Record::start()$/;"	f	class:Record
-start	cam_request.h	/^enum operations {init=0, start, stop, close};$/;"	e	enum:operations
+start	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	e	enum:operations
 start_capturing	cam_core.cpp	/^int Camera::start_capturing()$/;"	f	class:Camera
 statusMutex	cam_status.h	/^		sem_t* statusMutex;    $/;"	m	class:CameraStatus
 stop	cam_core.cpp	/^bool OpenCVSupport::stop()$/;"	f	class:OpenCVSupport
 stop	cam_record.cpp	/^bool Record::stop()$/;"	f	class:Record
-stop	cam_request.h	/^enum operations {init=0, start, stop, close};$/;"	e	enum:operations
+stop	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	e	enum:operations
 stop_capturing	cam_core.cpp	/^int Camera::stop_capturing()$/;"	f	class:Camera
 terminate_decoding	cam_core.h	/^	bool terminate_decoding;$/;"	m	struct:ctl_parameters
 thr_id	main.cpp	/^int thr_id[2] = {0,};$/;"	v
@@ -296,7 +298,6 @@ width	cam_core.h	/^	int width, height;$/;"	m	class:Camera
 width	cam_core.h	/^	int width, heigth;$/;"	m	struct:Cam_V4L2
 width	cam_property.h	/^								int width, height;$/;"	m	class:CameraProperty
 width	cam_property.h	/^	int width;$/;"	m	struct:property
-width	cam_request.h	/^	int width;$/;"	m	struct:CameraRequest
 xioctl	cam_core.cpp	/^static int xioctl(int fh, int request, void *arg)$/;"	f	file:
 ~Camera	cam_core.cpp	/^Camera::~Camera()$/;"	f	class:Camera
 ~CameraProperty	cam_property.cpp	/^CameraProperty::~CameraProperty()$/;"	f	class:CameraProperty

@@ -17,7 +17,26 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #define OPENCV_PROP_SHM 1588
+#define SEM_KEY_FOR_STATUS 49441
+#define SHM_KEY_FOR_STATUS 4944
+#include "cam_property.h"
+/*union semun
+{
+	int val;
+	struct semid_ds* buf;
+	unsigned short int* array;
+};*/
+static struct sembuf status_post = {0, -1, SEM_UNDO};
+static struct sembuf status_wait = {0, 1, SEM_UNDO};
+typedef struct status
+{
+		bool isCCDRunning;
+		bool isOpenCVRunning;
+		bool isOpenCVInitialized;
+		bool isRecRunning;
+		bool isRecInitialized;
 
+}status;
 
 class CameraStatus
 {
@@ -28,33 +47,48 @@ class CameraStatus
 	 bool getIsOpenCVRunning() { return this->isOpenCVRunning; }
 	 void setIsOpenCVRunning(bool isRunning) 
 	 { 
-		 sem_wait(this->statusMutex);
+		 semop(semid, &status_wait, 1);
+		 //	 sem_wait(this->statusMutex);
 		 this->isOpenCVRunning = isRunning; 
-	 	 sem_post(this->statusMutex);
+		 statusObject->isOpenCVRunning = isRunning; 
+		 //	 	 sem_post(this->statusMutex);
+		 semop(semid, &status_post, 1);
 	 }
 	 bool getIsOpenCVInitialized() { return this->isOpenCVInitialized; }
 	 void setIsOpenCVInitialized(bool isInitialized) 
 	 { 
-		 sem_wait(this->statusMutex);
+		 semop(semid, &status_wait, 1);
+//		 sem_wait(this->statusMutex);
 		 this->isOpenCVInitialized = isInitialized; 
-	 	 sem_post(this->statusMutex);
+		 statusObject->isOpenCVInitialized = isInitialized; 
+		 //	 	 sem_post(this->statusMutex);
+		 semop(semid, &status_post, 1);
 	 }
 	
 	 bool getIsRecRunning() { return this->isRecRunning; }
 	 void setIsRecRunning(bool isRunning) 
 	 {
-		 sem_wait(this->statusMutex);
-		 this->isRecRunning = isRunning; 
-	 	 sem_post(this->statusMutex);
+		 semop(semid, &status_wait, 1);
+//		 sem_wait(this->statusMutex);
+		 this->isRecRunning = isRunning;
+		 statusObject->isRecRunning = isRunning; 
+//	 	 sem_post(this->statusMutex);
+		 semop(semid, &status_post, 1); 
 	 };
 	 bool getIsRecInitialized() { return this->isRecInitialized; }
 	 void setIsRecInitialized(bool isInitialized) 
-	 { 
-		 sem_wait(this->statusMutex);
-		 this->isRecInitialized 	= isInitialized; 
-	 	 sem_post(this->statusMutex);
+	 {
+		 semop(semid, &status_wait, 1);
+//		 sem_wait(this->statusMutex);
+		 this->isRecInitialized = isInitialized; 
+		 statusObject->isRecInitialized = isInitialized;
+	//	 	 sem_post(this->statusMutex);
+		 semop(semid, &status_post, 1);
 	 }
-	
+		bool initSemaphore(void); 	
+		int getSemid(void){ return this->semid; } 
+		bool InitSharedPropertyToTarget(status* st);
+		void setStatusObject(status* st){ this->statusObject = st; } 
 	private:
 	  static CameraStatus* camStats;
 		CameraStatus();
@@ -65,7 +99,12 @@ class CameraStatus
 		bool isRecInitialized;
 		pthread_mutex_t mutex;
 		sem_t* statusMutex;    
-//		const char* mutex_path = "camStatusMutex";
-};
+		int semid;
+		int shmid_for_status;
+		void* shmPtr_for_status;
+		status* statusObject;
+		//		const char* mutex_path = "camStatusMutex";
+}
+;
 
 #endif   /*_CAM_STATUS_H_*/

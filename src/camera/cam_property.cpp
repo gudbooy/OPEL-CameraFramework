@@ -85,18 +85,41 @@ bool CameraProperty::uInitSharedPropertyToTarget(property* prop)
 void CameraProperty::setBufferSize(int buffer_size)
 {
 	//semaphore lock
-	sem_wait(mutex);
+  //sem_wait(mutex);
+	semop(semid, &mutex_wait, 1);
 	this->buffer_size = buffer_size; 
-	sem_post(mutex);
+ 	prop->buffer_size = buffer_size;
+	semop(semid, &mutex_post, 1);
+	//sem_post(mutex);
 	//semaphore unlock
 }
 void CameraProperty::setBufferNum(int buffer_num)
 {
 	//semaphore lock
-	sem_wait(mutex);
+//	sem_wait(mutex);
+	semop(semid, &mutex_wait, 1);
 	this->buffer_num = buffer_num;
-	sem_post(mutex);
+	prop->buffer_num = buffer_num;
+	semop(semid, &mutex_post, 1);
+//	sem_post(mutex);
 	//semaphore unlock
+}
+bool CameraProperty::initSemaphore(void)
+{	
+	union semun sem_union;
+	semid = semget((key_t)OPENCV_SEMAPHORE_FOR_PROPERTY, 1, 0666 | IPC_CREAT);
+	if(-1 == semid)
+	{
+			fprintf(stderr, "[CameraProperty::initSemaphore] : Semaphore Initializaition Error\n");
+			return false;
+	}
+	sem_union.val = 1;
+	if(-1 == semctl(semid, 0, SETVAL, sem_union))
+	{
+		fprintf(stderr, "[CameraProperty::initSemaphore] : Semaphore Initialization Error\n");
+		return false;
+	}
+	return true;
 }
 CameraProperty::CameraProperty(bool isRec)
 {
@@ -123,13 +146,15 @@ CameraProperty::CameraProperty(bool isRec)
 				this->shmkey = OPENCV_SHM_KEY;
 				this->shmkey_for_property = OPENCV_SHM_KEY_FOR_PROPERTY;
 				this->shmPtr_for_property = NULL;
-				this->mutex = sem_open("openCVProp", O_CREAT, 0777, 1);
-				if(this->mutex == SEM_FAILED)
-				{
-					fprintf(stderr, "[CameraProperty::CameraProperty] : Sem_open Error\n");
-					sem_unlink("openCVProp");
-					this->mutex = NULL;
-				}
+
+
+				//		this->mutex = sem_open("openCVProp", O_CREAT, 0777, 1);
+		//		if(this->mutex == SEM_FAILED)
+		//		{
+		//			fprintf(stderr, "[CameraProperty::CameraProperty] : Sem_open Error\n");
+		//			sem_unlink("openCVProp");
+		//			this->mutex = NULL;
+		//		}
 
 	}
 	else
@@ -200,9 +225,9 @@ CameraProperty::~CameraProperty()
 				free(this->queryctrl); 
 				free(this->timestamp);
 				//free(this->st);
-				if(this->mutex != SEM_FAILED)
-				{
-					sem_close(this->mutex);
-					sem_unlink("openCVProp");
-				}
+			//	if(this->mutex != SEM_FAILED)
+			//	{
+			//		sem_close(this->mutex);
+			//		sem_unlink("openCVProp");
+			//	}
 }
