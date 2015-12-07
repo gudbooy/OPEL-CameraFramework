@@ -18,7 +18,7 @@
 class RecordingWorker : public Nan::AsyncWorker
 {
 	public:
-		RecordingWorker(Nan::Callback* callback, const char* file_path, int count) : AsyncWorker(callback), file_path(file_path), count(count), fd(0), width(0), height(0), buffer_size(0), buffer_index(0) {}
+		RecordingWorker(Nan::Callback* callback, const char* file_path, int count) : AsyncWorker(callback), file_path(file_path), count(count), fd(0), width(0), height(0), buffer_size(0), buffer_index(0), fout(NULL), shmPtr(NULL) {}
 		~RecordingWorker();
 
 		void Execute();
@@ -38,13 +38,17 @@ class RecordingWorker : public Nan::AsyncWorker
 		void setHeight(int height) { this->height = height; }
 		void setBufferSize(int buffer_size) { this->buffer_size = buffer_size; }
 		void setBufferIndex(int buffer_index) { this->buffer_index = buffer_index; } 
-		private:
+	  void setShmPtr(void* shmPtr) { this->shmPtr = shmPtr; }	
+		bool openFileCap(void);
+	private:
 			const char* file_path;
 			int count;
 			int fd;
 			int width, height; 
 			int buffer_size;
 			int buffer_index;
+			FILE *fout;
+			void* shmPtr;
 };
 
 
@@ -63,6 +67,7 @@ class OPELRecording : public Nan::ObjectWrap{
 		int getHeight() { return this->height; }
 		int getBufferSize() { return this->buffer_size; }
 		int getBufferIndex() { return this->buffer_index; }
+		void* getShmPtr() { return this->shmPtr; }
 	private:
 		explicit OPELRecording();
 		~OPELRecording();

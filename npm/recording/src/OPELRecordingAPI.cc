@@ -27,7 +27,6 @@ extern "C"{
 
 // addon.init(function(err, data){ data has width, height, buffer size});
 //
-
 NAN_METHOD(OPELRecording::recInit)
 {
 	OPELRecording *recObj = Nan::ObjectWrap::Unwrap<OPELRecording>(info.This());
@@ -49,7 +48,11 @@ NAN_METHOD(OPELRecording::recInit)
 		return;
 	}
 	recObj->sendDbusMsg("recInit");
+
+	//check property is changed 
 }
+// Recording Start API (Asynchronous)
+// addon.start("video_path", count, function(err, data){   });
 NAN_METHOD(OPELRecording::recStart)
 {	
 	int count;
@@ -83,11 +86,19 @@ NAN_METHOD(OPELRecording::recStart)
 	recWorker->setHeight(recObj->getHeight());
 	recWorker->setBufferSize(recObj->getBufferSize());
 	recWorker->setBufferIndex(recObj->getBufferIndex());
-	
+	recWorker->setShmPtr(recObj->getShmPtr());
+
 	Nan::AsyncQueueWorker(recWorker);
 	
+}
+NAN_METHOD(OPELRecording::recStop)
+{
+
 
 }
+NAN_METHOD(OPELRecording::recClose)
+{
 
+}
 
 
