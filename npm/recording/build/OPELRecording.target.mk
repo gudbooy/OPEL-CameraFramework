@@ -37,7 +37,8 @@ INCS_Debug := \
 	-I/home/pi/.node-gyp/0.12.6/src \
 	-I/home/pi/.node-gyp/0.12.6/deps/uv/include \
 	-I/home/pi/.node-gyp/0.12.6/deps/v8/include \
-	-I$(srcdir)/node_modules/nan
+	-I$(srcdir)/node_modules/nan \
+	-I$(srcdir)/src
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=OPELRecording' \
@@ -75,10 +76,10 @@ INCS_Release := \
 	-I/home/pi/.node-gyp/0.12.6/src \
 	-I/home/pi/.node-gyp/0.12.6/deps/uv/include \
 	-I/home/pi/.node-gyp/0.12.6/deps/v8/include \
-	-I$(srcdir)/node_modules/nan
+	-I$(srcdir)/node_modules/nan \
+	-I$(srcdir)/src
 
 OBJS := \
-	$(obj).target/$(TARGET)/src/OPELRecording.o \
 	$(obj).target/$(TARGET)/src/OPELRecordingAPI.o
 
 # Add to the list of files we specially track dependencies for.
@@ -114,8 +115,8 @@ LDFLAGS_Release := \
 	-rdynamic
 
 LIBS := \
-	-I/usr/include/dbus-1.0 \
-	-I/usr/lib/arm-linux-gnueabihf/dbus-1.0/include
+	-ldbus-1 \
+	-lglib-2.0
 
 $(obj).target/OPELRecording.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
 $(obj).target/OPELRecording.node: LIBS := $(LIBS)

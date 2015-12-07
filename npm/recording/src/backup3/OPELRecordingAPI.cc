@@ -1,7 +1,6 @@
 #include "OPELRecordingAPI.h"
 
 const char* dev_name = "/dev/video0";
-
 // addon.init(function(err, data){width, height, buffer size});
 NAN_METHOD(OPELRecording::recInit)
 {
@@ -16,29 +15,24 @@ NAN_METHOD(OPELRecording::recInit)
 	v8::Local<v8::Value> argv[argc] = { Nan::New(recObj->getWidth()), Nan::New(recObj->getHeight()), Nan::New(recObj->getBufferSize()) };
 	Nan::Callback callback(cb);
 	
-	if(!(recObj->initDbus()))
-	{
-		Nan::ThrowError("D-Bus Initialization Failed\n");
-		return;
-	}
 	if(!(recObj->openDevice()))
 	{
 		//error
 		Nan::ThrowError("Open FileDesc /dev/video0 Failed\n");
 		return;
 	}
-	recObj->sendDbusMsg("recInit");
-	
-/*	if(!(recObj->initSharedMemorySpace()))
+	if(!(recObj->initSharedMemorySpace()))
 	{
 		//error
-		Nan::ThrowError("Initialize Shared Memory Space Failed [Solution : Turning On OPEL Camera Ctrl Daemon]\n");
+		Nan::ThrowError("Initialize Shared Memory Space Failed\n");
 		return;
-	}*/
+	}
+//	recObj->sendDbusMsg("recInit");
   
 	//throw callback
 	callback.Call(argc, argv);		
 	//check property is changed 
+
 }
 // Recording Start API (Asynchronous)
 // addon.start("video_path", count, function(err, data){   });
@@ -64,13 +58,7 @@ NAN_METHOD(OPELRecording::recStart)
 	count = Nan::To<int>(info[1]).FromJust();
 	
 	OPELRecording *recObj = Nan::ObjectWrap::Unwrap<OPELRecording>(info.This());
-	
-	if(!(recObj->initSharedMemorySpace()))
-	{
-		//error
-		Nan::ThrowError("Initialize Shared Memory Space Failed [Solution : Turning On OPEL Camera Ctrl Daemon]\n");
-		return;
-	}
+
 
 	recObj->sendDbusMsg("recStart");
   Nan::Callback *callback = new Nan::Callback();
@@ -84,7 +72,7 @@ NAN_METHOD(OPELRecording::recStart)
 	recWorker->setShmPtr(recObj->getShmPtr());
 
 	Nan::AsyncQueueWorker(recWorker);
-
+	
 }
 NAN_METHOD(OPELRecording::recStop)
 {
@@ -96,6 +84,7 @@ NAN_METHOD(OPELRecording::recClose)
 
 }
 
+extern "C"{
 OPELRecording::OPELRecording()
 {
 	this->width = REC_WIDTH;
@@ -144,7 +133,7 @@ bool OPELRecording::initSharedMemorySpace()
 	if(shmPtr == (void*)-1)
 		return false;
 	return true;
-} 
+} }
 
 NAN_METHOD(OPELRecording::New)
 {
@@ -164,13 +153,8 @@ NAN_METHOD(OPELRecording::New)
 NAN_MODULE_INIT(OPELRecording::Init)
 {
 	v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-//	v8::Local<v8::FunctionTemplate> tpl1 = Nan::New<v8::FunctionTemplate>(New);
-//	tpl1->SetClassName(Nan::New("RecordingWorker").ToLocalChecked());
-	
 	tpl->SetClassName(Nan::New("OPELRecording").ToLocalChecked());
 	tpl->InstanceTemplate()->SetInternalFieldCount(1);
-	
-//	tpl1->InstanceTemplate()->SetInternalFieldCount(1);
 	
 	SetPrototypeMethod(tpl, "init", recInit);
 	SetPrototypeMethod(tpl, "start", recStart);
@@ -179,10 +163,7 @@ NAN_MODULE_INIT(OPELRecording::Init)
 
 	constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
 	Nan::Set(target, Nan::New("OPELRecording").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
-//	Nan::Set(target, Nan::New("RecordingWorker").ToLocalChecked(), Nan::GetFunction(tpl1).ToLocalChecked());
 }
-
-
 
 
 NODE_MODULE(OPELRecording, OPELRecording::Init)
