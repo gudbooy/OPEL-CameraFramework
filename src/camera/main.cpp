@@ -361,9 +361,14 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 			fprintf(stderr, "DEVICE STOP FAILED\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
-		camStatus->setIsRecRunning(false);
-
+		camStatus->setIsRecRunning(false);	
+		if(-1 == pthread_detach(OPELCamThread[INDEX_OF_REC_THR]))
+		{
+			fprintf(stderr, "Detatching the p_thread Failed\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
 		return DBUS_HANDLER_RESULT_HANDLED;
+	
 	}
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recClose"))
 	{	
