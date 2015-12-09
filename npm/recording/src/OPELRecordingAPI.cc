@@ -29,13 +29,6 @@ NAN_METHOD(OPELRecording::recInit)
 	}
 	recObj->sendDbusMsg("recInit");
 	
-/*	if(!(recObj->initSharedMemorySpace()))
-	{
-		//error
-		Nan::ThrowError("Initialize Shared Memory Space Failed [Solution : Turning On OPEL Camera Ctrl Daemon]\n");
-		return;
-	}*/
-  
 	//throw callback
 	callback.Call(argc, argv);		
 	//check property is changed 
@@ -48,41 +41,66 @@ NAN_METHOD(OPELRecording::recStart)
 	const char* file_path;
 	if(!info[0]->IsString())
 	{
-		Nan::ThrowTypeError("Put Recording File Path");
+		Nan::ThrowTypeError("First parameter should be callback function");
 		return;
 	}
 	if(!info[1]->IsNumber())
 	{
-		Nan::ThrowTypeError("Put Recording Count");
+		Nan::ThrowTypeError("Second parameter should be callback function");
 		return;
+	}
+	if(!info[2]->IsFunction())
+	{
+		Nan::ThrowTypeError("Third parameter should be callback function\n");
 	}
 //std::string file_path = Nan::To<std::string>(info[0]).FromJust();
 	v8::String::Utf8Value param1(info[0]->ToString());
 	std::string path = std::string(*param1);
-	file_path = path.c_str();
+	file_path = path.c_str();	
 	
 	count = Nan::To<int>(info[1]).FromJust();
 	
 	OPELRecording *recObj = Nan::ObjectWrap::Unwrap<OPELRecording>(info.This());
 	
-	if(!(recObj->initSharedMemorySpace()))
+	/*if(!(recObj->initSharedMemorySpace()))
 	{
 		//error
 		Nan::ThrowError("Initialize Shared Memory Space Failed [Solution : Turning On OPEL Camera Ctrl Daemon]\n");
 		return;
-	}
+	}*/
 
 	recObj->sendDbusMsg("recStart");
   Nan::Callback *callback = new Nan::Callback();
 	RecordingWorker* recWorker = new RecordingWorker(callback, file_path, count);	
+	if(recWorker == NULL)
+	{
+		Nan::ThrowError("recWorker Error\n");
+		return;
+	}
 	
 	recWorker->setFd(recObj->getFd());
 	recWorker->setWidth(recObj->getWidth());
 	recWorker->setHeight(recObj->getHeight());
 	recWorker->setBufferSize(recObj->getBufferSize());
 	recWorker->setBufferIndex(recObj->getBufferIndex());
-	recWorker->setShmPtr(recObj->getShmPtr());
-
+	//recWorker->setShmPtr(recObj->getShmPtr());
+	fprintf(stderr, "1212121212121212\n");
+	if(!(recWorker->openFileCap()))
+	{
+	//	recWorker->closeFileCap();
+		Nan::ThrowError("Open File Cap Error\n");
+		return ;
+	}
+	fprintf(stderr, "1414141414141411414141414\n");
+	if(!(recWorker->initSHM()))
+	{
+		Nan::ThrowError("init Shared Memory Error\n");
+		return ;
+	}
+	fprintf(stderr, "131313131313131\n");
+	fprintf(stderr, "recObj->getWidth() : %d\n", recObj->getWidth());
+	fprintf(stderr, "recObj->getHeight() : %d\n", recObj->getHeight());
+	fprintf(stderr, "recObj->getBufferSize() : %d\n", recObj->getBufferSize());
 	Nan::AsyncQueueWorker(recWorker);
 
 }

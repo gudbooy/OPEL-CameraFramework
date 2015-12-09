@@ -25,6 +25,9 @@ static OpenCVSupport* openCV_cam;
 
 //static property* recordingProperty;
 static property* openCVProperty;
+static property* recProperty;
+
+
 static status* st;
 
 CameraStatus* camStatus;
@@ -37,6 +40,7 @@ int sem_status_id;
 //CameraStatus* camStatus;
 
 static bool is_openCVCamInit;
+static bool is_recInit;
 
 static pthread_t OPELCamThread[NUM_OF_THREADS]; 
 int thr_id[2] = {0,};
@@ -64,143 +68,10 @@ void* openCVCameraSupportThr(void* args)
 		return (void*)1;
 }
 
-bool openCVHandler(enum operations op)
-{
-	switch(op)
-	{
-		case init:
-			std::cout << "Get[DBUS] : OpenCVInit\n";
-			fflush(stdout);
-			if(camStatus->getIsRecRunning() || camStatus->getIsRecInitialized())
-			{
-				fprintf(stderr, "OpenCVHandler : Recording Process is already running\n");
-				return false;
-			}
-			openCV_camProp->printSetValue();
-			if(!openCV_cam->open())
-			{
-				fprintf(stderr, "OpenCVHandler : [openCV::open] Failed\n");
-				return false;
-			}
-			if(!openCV_cam->init_device())
-			{
-				fprintf(stderr, "OpenCVHandler : [OpenCV::init_device] failed\n");
-				return false;
-			}
-			camStatus->setIsOpenCVInitialized(true);
-			break;
-		case start:
-			std::cout << "Get[DBUS] : OpenCVStart\n";
-			fflush(stdout);
-			if(camStatus->getIsOpenCVInitialized()){
-				openCV_cam->setEos(true);
-				thr_id[INDEX_OF_OPENCV_THR] = pthread_create(&OPELCamThread[INDEX_OF_OPENCV_THR], NULL, openCVCameraSupportThr, (void*)0);
-			if(thr_id < 0)
-			{
-				fprintf(stderr, "openCVHandler : Create OPENCV Thread Failed\n");
-				return false;
-			}
-			camStatus->setIsOpenCVRunning(true);
-			}
-			else
-			{
-				fprintf(stderr, "openCVHandler : OpenCV is not initialized yet\n");
-				return false;
-			}
-			break;
-		case stop:
-			std::cout << "Get[DBUS] : OpenCVStop\n";
-			fflush(stdout);
-			openCV_cam->setEos(false);
-			if(!openCV_cam->stop())
-			{
-				fprintf(stderr, "DEVICE STOP FAILED\n"); 
-				return false;
-			}
-			if(-1 == pthread_detach(OPELCamThread[0]))
-			{
-				fprintf(stderr, " openCVHandler : pthread_detach Error\n");
-				
-				return false;
-			}
-			
-			
-			break;
-		case close_device:
-			
-		
-			break;
-
-		default:
-			fprintf(stderr, "OpenCVHandler : Default Error\n");
-			return false;
-	}
-	return true;
-}
-bool recordingHandler(enum operations op)
-{
-	return true;
-}
 static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message, void *user_data)
 {
-	DBusMessageIter args;
-	CameraRequest* newRequest = (CameraRequest*)malloc(sizeof(newRequest));
-	pid_t pid;
-	enum kinds kind;
-	enum operations operation;
-	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "request"))
-	{
-		
-		//getting Data Set;
-		dbus_message_iter_get_basic(&args, &pid);
-		newRequest->pid = (pid_t)pid;
-		dbus_message_iter_next(&args);	
-		dbus_message_iter_get_basic(&args, &kind);
-		newRequest->kind = (enum kinds)kind;
-		dbus_message_iter_next(&args);
-		dbus_message_iter_get_basic(&args, &operation);
-		newRequest->operation = (enum operations)operation;
-		dbus_message_iter_next(&args);
-		
-		switch(newRequest->kind)
-		{
-			case openCV:
-				if(!openCVHandler(newRequest->operation))
-					return DBUS_HANDLER_RESULT_HANDLED;
-				break;
-			
-			case REC:
-				if(!recordingHandler(newRequest->operation))
-					return DBUS_HANDLER_RESULT_HANDLED;
-				break;
-			
-			default:
-				fprintf(stderr, "DBUS_MESSAGE_IS_SIGNAL : Kind Error\n");
-				return DBUS_HANDLER_RESULT_HANDLED;
-	
-		}
-			
-		return DBUS_HANDLER_RESULT_HANDLED;	
-	}
-	
-	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "setProperty"))
-	{
-	
-
-		return DBUS_HANDLER_RESULT_HANDLED;	
-	}
-	
-	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "getProperty"))
-	{
-		
-
-		return DBUS_HANDLER_RESULT_HANDLED;	
-	}
-		
-		
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "OpenCVInit"))
-	{
-		
+	{	
 //		is_openCVCamInit = false;
 		std::cout << "Get[DBUS] : OpenCVInit\n";
 		//Recording Thread Can be preempted by OpenCV 
@@ -298,15 +169,20 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recInit"))
-	{	
+	{
 		std::cout << "Get[DBUS] : recInit\n";
-		rec_camProp->printSetValue();
-    //if OpenCV Service is running then stop the service
+		//if Recording is already running or Recording is initialized 
+		if(camStatus->getIsRecRunning() || camStatus->getIsRecInitialized())
+			return DBUS_HANDLER_RESULT_HANDLED;
+		else
+			rec_camProp->printSetValue();
+		
+		//if OpenCV Service is running then stop the service
 		if(camStatus->getIsOpenCVRunning() || camStatus->getIsOpenCVInitialized())
 		{
 				if(!openCV_cam->stop())
 				{
-						fprintf(stderr, "STOP FAILED\n");
+					fprintf(stderr, "STOP FAILED\n");
 				}
 				if(!openCV_cam->close_device())
 				{
@@ -321,6 +197,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 			fprintf(stderr, "DEVICE INIT FAILED\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
+		
 		if(!rec_cam->init_device())
 		{
 			fprintf(stderr, "DEVICE INIT FAILED\n");
@@ -334,7 +211,13 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recStart"))
 	{	
 		std::cout << "Get[DBUS] : recStart\n";
-	  rec_cam->setEos(true);
+	  //set eos as true
+		rec_cam->setEos(true);
+		//if camstatus is already running ?
+		if(camStatus->getIsRecRunning())
+			return DBUS_HANDLER_RESULT_HANDLED;
+
+		//Create Thread()
 		if(camStatus->getIsRecInitialized()){
 		thr_id[INDEX_OF_REC_THR] = pthread_create(&OPELCamThread[INDEX_OF_REC_THR], NULL, recCameraSupportThr, (void*)0);
 		if(thr_id[INDEX_OF_REC_THR] < 0)
@@ -351,6 +234,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		}
 	  return DBUS_HANDLER_RESULT_HANDLED;	
 	}
+
 
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recStop"))
 	{	
@@ -401,7 +285,10 @@ int main()
 {
 	bool isRec = true;		
 	st = (status*)malloc(sizeof(status));
+	
 	openCVProperty = (property*)malloc(sizeof(property));
+	recProperty = (property*)malloc(sizeof(property));
+	
 	pthread_mutex_t mutex_lock;
 	openCV_camProp = new CameraProperty(!isRec);
 	rec_camProp = new CameraProperty(isRec);
@@ -411,6 +298,9 @@ int main()
 //	openCV_camProp->initProperty(&openCVProperty);	
 	openCV_camProp->InitSharedPropertyToTarget(openCVProperty);	
   openCV_camProp->setProperty(openCVProperty);	
+	
+	rec_camProp->InitSharedPropertyToTarget(recProperty);
+	rec_camProp->setProperty(recProperty);
 	//	openCV_camProp->initProperty(openCVProperty);
 	
 	openCV_camProp->initSemaphore();

@@ -22,6 +22,7 @@ extern "C"{
 	#include <fcntl.h>
 	#include <errno.h>
 	#include <sys/stat.h>
+	#include <videodev2.h>
 }
 #include <v8.h>
 #include <node.h>
@@ -33,7 +34,7 @@ extern "C"{
 #define DATA_INDEX 1
 #define REC_WIDTH 1920
 #define REC_HEIGHT 1080
-#define REC_BUFFER_SIZE 1
+#define REC_BUFFER_SIZE 4147200
 #define REC_BUFFER_INDEX 4
 
 
@@ -45,11 +46,12 @@ class RecordingWorker : public Nan::AsyncWorker
 
 		void Execute()
 		{
-			if(openFileCap()){
+		  //if(openFileCap())
 				while(count-- > 0)
 				{
 					for(;;)
 					{
+						fprintf(stderr, "count : %d\n", count);
 						fd_set fds;
 						struct timeval tv;
 						int r; 
@@ -61,25 +63,31 @@ class RecordingWorker : public Nan::AsyncWorker
 						if(-1 == r)
 						{
 							if(EINTR == errno)
-								continue;
+								return ;
 						}
 						if(0 == r)
 						{
 							break;
 						}
 						if(readFrame())
+							
 							break;
 					}
 				}
-			}
+			fprintf(stderr, "Close");
+	//send dbus to stop the video	
 			fclose(fout);
 		}
 		bool readFrame()
 		{
+			for(;;){
+			struct v4l2_buffer buf;
+			
+			memset(&buf, 0, sizeof(buf));
 			unsigned sz; 
 			unsigned offset;
 			offset = (buffer_index-1)*buffer_size;
-			sz = fwrite((char*)shmPtr+offset, 1, buffer_size, fout);	
+			sz = fwrite((char*)(shmPtr+offset), 1, buffer_size, fout);	
 			if(sz != (unsigned)buffer_size)
 			{
 				return false;
@@ -102,12 +110,32 @@ class RecordingWorker : public Nan::AsyncWorker
 		void setBufferSize(int buffer_size) { this->buffer_size = buffer_size; }
 		void setBufferIndex(int buffer_index) { this->buffer_index = buffer_index; } 
 	  void setShmPtr(void* shmPtr) { this->shmPtr = shmPtr; }	
-		bool openFileCap(void)
+		bool initSHM(void)
 		{
-			fout = fopen(file_path, "w+");	
-			if(!fout)
+			shmid = shmget((key_t)REC_SHM_KEY, 0, 0);
+			if(shmid == -1)
+				return false;
+			shmPtr = shmat(shmid, (void*)0, 0666|IPC_CREAT);
+			if(shmPtr == (void*)-1)
 				return false;
 			return true;
+		}
+		bool openFileCap(void)
+		{	
+			char cwdd[1024];
+			fout = fopen(file_path, "w+");	
+			
+			if(!fout){
+				fprintf(stderr, "cwd:%s\n", getcwd(cwdd, 1024));
+				fprintf(stderr, "error:%d,%s\n", errno, strerror(errno));
+				return false;
+			}
+			return true;
+		}
+		void closeFileCap(void)
+		{
+			if(fout)
+				fclose(fout);
 		}
 	private:
 			const char* file_path;
@@ -116,7 +144,8 @@ class RecordingWorker : public Nan::AsyncWorker
 			int width, height; 
 			int buffer_size;
 			int buffer_index;
-			FILE *fout;
+			FILE* fout;
+			int shmid; 
 			void* shmPtr;
 };
 
