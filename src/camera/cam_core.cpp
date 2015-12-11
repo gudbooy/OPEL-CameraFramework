@@ -1,14 +1,49 @@
 #include "cam_core.h"
-
+#include <stdio.h>
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr);
 static bool uinit_SharedMemorySpace(int shmid);
+char SEM_NAME[] = "vik";
 
 Camera* Camera::cam = NULL;
+
+bool OpenCVSupport::init_Semaphore()
+{
+	mx = sem_open(SEM_NAME, O_CREAT, 0666, 1);
+	if(mx == SEM_FAILED)
+	{
+
+		fprintf(stderr, "[INIT_SEMAPHORE] : FAILED\n");
+		sem_unlink(SEM_NAME);
+		return false;
+	}
+	
+	/*	union semun sem_union;
+	semid = semget(semKey, 1, 0666 | IPC_CREAT);
+	if(-1 == semid)
+	{
+		fprintf(stderr, "[INIT_SEMAPHORE] : FAILED\n");
+		return false;
+	}
+	sem_union.val = 1;
+	if(-1 == semctl(semid, 0, SETVAL, sem_union))
+	{
+		fprintf(stderr, "[init_Semaphore] : Semaphore Initialization Failed\n");
+		return false;
+	}*/
+	return true;
+}
+
+bool OpenCVSupport::uinit_Semaphore()
+{
+	sem_close(mx);
+	sem_unlink(SEM_NAME);
+	return true;
+}
 
 
 OPELCamera::OPELCamera()
 {
-			//		this->camProp = CameraProperty::getInstance();
+				//		this->camProp = CameraProperty::getInstance();
 				//	unsigned int* cnt = camProp->getCount();
 				//	printf("count : %d\n ", *cnt);
 }
@@ -57,9 +92,9 @@ bool OpenCVSupport::close_device()
 				unsigned int i;
 				int fd = camProp->getfd();
 				if(!uinit_SharedMemorySpace(this->shmid, &shmPtr))
-				{
 								return false;
-				}
+				if(!uinit_Semaphore())
+								return false;
 				if(-1 == close(fd))
 				{
 						fprintf(stderr, "[OpenCVSupport::close_device] : close(fd) failed\n");
@@ -76,7 +111,7 @@ static bool uinit_SharedMemorySpace(int shmid, void** shmPtr)
 								return false;
 				}
 
-			/*	if(-1 == shmctl(shmid, IPC_RMID, 0))
+				/*	if(-1 == shmctl(shmid, IPC_RMID, 0))
 				{
 								fprintf(stderr, "UnInit Shared Memory Space Failed\n");
 								return false;
@@ -123,7 +158,9 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 				}
 				for(i=0; i< req->count; i++)
 				{
-								buffers[i].length = buffer_size;
+						//		printf("buffer_size : %d\n", buffer_size);
+						//		(*buffers[i].length) = buffer_size;
+								/* MINI */
 								buffers[i].start = shmPtr+i*buffer_size;
 								if(!buffers[i].start)
 								{
@@ -131,29 +168,57 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 												return false;
 								}
 				}
+				int offset = req->count*buffer_size;
+				for(i=0; i< req->count; i++)
+				{
+					buffers[i].length = (int*)(shmPtr+offset)+(i*sizeof(int));
+					if(!buffers[i].length)
+					{
+						fprintf(stderr, "Link to SharedMemorySpace failed\n"); 
+						return false;
+					}
+					*buffers[i].length = buffer_size;
+				}
+				if(!init_Semaphore())
+					return false;
 
 				return true;
-			
-
 }
-static void processImg(const void* p, int size)
+static void processImg(const void* p, const int* size)
 {
-			if(p != NULL)
-							fwrite(p, size, 1, stdout);
-			//else
-				//			fprintf(stderr, "Buffer is NULL\n");
-	//		fflush(stderr); 
-	//		fprintf(stderr, ".");
-	//		fflush(stdout);
+
+	unsigned sz; 
+//	printf("buf.bytesused : %d\n", size);
+	FILE *fp = fopen("/home/pi/camData/cam.mjpg", "ab");
+	sz = fwrite((char*)p, sizeof(char), *size, fp);
+//	printf("sz : %d, length : %d", sz, *size);
+	if(sz != *size)
+	{
+		fprintf(stderr, "failed!!!!!\n");
+	}
+	fflush(fp);
+	fclose(fp);
+//		if(p != NULL)
+//						fwrite(p, size, 1, stdout);
+//			else
+//						fprintf(stderr, "Buffer is NULL\n");
+//			fflush(stderr); 
+//			fprintf(stderr, ".");
+//		fflush(stdout);
 }
-static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last)
+static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last, int semid, void* shmPtr, sem_t* mx)
 {
 		char ch = '<';
 		struct v4l2_buffer* buf = camProp->getBuffer();
 		int fd = camProp->getfd();
 		int n_buffers = camProp->getN_buffers();
+		int size = camProp->getBufferSize();
+		int offset = size*(n_buffers-1);
+		int offset_size = size*n_buffers;
 		unsigned int i;
 		unsigned int* count = camProp->getCount();
+		void* ptr = shmPtr+offset;
+//		int* ptr_size = (int*)shmPtr+offset_size;
 		CLEAR(*buf);
 		buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf->memory = V4L2_MEMORY_USERPTR;
@@ -170,12 +235,26 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 											return false;
 						}
 		}
-		for(i=0; i < n_buffers; ++i)
-		{
-				if(buf->m.userptr == (unsigned long)buffers[i].start && buf->length == buffers[i].length)
-								break;
-				assert(i < n_buffers);
-		//		processImg(buffers[0].start, buffers[0].length);
+		for(i=0; i <n_buffers; ++i)
+//			if(/*buf->m.userptr == (unsigned long)buffers[i].start &&*/ buf->length >= (*buffers[i].length))
+					break;
+			
+//				assert(i < n_buffers); 
+				
+				
+				//semop(semid, &status_wait, 1);
+				sem_wait(mx);
+		//		*ptr_size = buf->bytesused;
+				*buffers[0].length = buf->bytesused;
+				printf("length : %d\n", *buffers[0].length);
+				memset((char*)ptr, 0x0, size);
+				memcpy((char*)ptr, (char*)buf->m.userptr, *buffers[0].length);		
+				
+				sem_post(mx);			
+//				semop(semid, &status_post, 1);
+
+//				processImg((void*)ptr, buffers[0].length);
+
 				if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
 				{
 								fprintf(stderr, "VIDIOC_QBUF\n"); 
@@ -183,10 +262,9 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 
 				}
 		//		printf("palying\n");
-				break;
-		}
-		fprintf(stderr, "%c", ch);
-		fflush(stderr);
+	
+//		fprintf(stderr, "%c", ch);
+//		fflush(stderr);
 
 		if(cnt == 0)
 		{
@@ -200,7 +278,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 								unsigned fps = (100*(cnt - last)) / (res.tv_sec * 100 + res.tv_usec / 10000);
 								last = cnt; 
 								tv_last = tv_cur;
-								fprintf(stderr, " %d fps\n", fps);
+		//						fprintf(stderr, " %d fps\n", fps);
 						}
 		}
 		cnt++;
@@ -229,7 +307,7 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 											FD_ZERO(&fds);
 											FD_SET(fd, &fds);
 											tv.tv_sec = 2;
-											tv.tv_usec = 2;
+											tv.tv_usec = 0;
 											r = select(fd+1, &fds, NULL, NULL, &tv);
 											if(-1 == r){
 															if(EINTR == errno)
@@ -246,12 +324,12 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 														
 											}
 
-											if(readFrame(camProp, buffers, cnt, last, tv_last))
+											if(readFrame(camProp, buffers, cnt, last, tv_last, this->semid, this->shmPtr, this->mx))
 														break;	
 							}
 							pthread_mutex_lock(&mutex);
 							volatile_eos = this->eos;
-							pthread_mutex_unlock(&mutex);
+					  	pthread_mutex_unlock(&mutex);
 
 					//		pthread_mutex_lock(&mutex);
 					//		if(eos)
@@ -266,15 +344,19 @@ bool OpenCVSupport::start()
 				int fd = camProp->getfd();
 				unsigned int n_buffer = camProp->getN_buffers();
 				struct v4l2_buffer* buf = camProp->getBuffer();
-				enum v4l2_buf_type type = camProp->getType();
+				enum v4l2_buf_type type = camProp->getType();	
 				for(i=0; i< n_buffer; i++)
 				{
 								CLEAR(*buf);
 								buf->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 								buf->memory = V4L2_MEMORY_USERPTR;
 								buf->index = i;
+								sem_wait(this->mx);
+								//	semop(semid, &status_wait, 1);
 								buf->m.userptr = (unsigned long)buffers[i].start;
-								buf->length = buffers[i].length;
+								buf->length = *buffers[i].length;
+								sem_post(this->mx);
+								//								semop(semid, &status_post, 1);
 							//	printf("buf->length : %d", buf->length);
 						//		fflush(stdout);
 								if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
@@ -283,6 +365,7 @@ bool OpenCVSupport::start()
 												return false;
 								}
 				}
+				
 				type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 				if(-1 == xioctl(fd, VIDIOC_STREAMON, &type))
 				{
@@ -502,8 +585,9 @@ bool Camera::init_SharedMemoryRegion(int req_count, int buffer_size)
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmPtr, key_t shmkey)
 {
 				printf("buffer_len = %d, buffer_num = %d\n", buffer_size, req_count);
-					
-				shmid = shmget((key_t)shmkey, buffer_size*req_count, 0666|IPC_CREAT);
+				
+				shmid = shmget((key_t)shmkey, (buffer_size*req_count)+(sizeof(int)*req_count), 0666|IPC_CREAT);
+				printf("shmkey : %d\n", shmkey);
 				if(shmid == -1)
 				{
 								perror("shmget failed : ");
@@ -568,9 +652,14 @@ bool Camera::init_userp(unsigned int buffer_size)
 				}
 				for(i = 0; i < n_buffers; ++i)
 				{
-								buffers[i].length = buffer_size;
-								buffers[i].start = shmPtr+i*buffer_size;
+								//buffers[i].length = buffer_size;
+							//	buffers[i].start = shmPtr+i*buffer_size;
 								
+				}
+				int offset = buffer_size*n_buffers;
+				for(i=0; i< n_buffers; ++i)
+				{
+						
 				}
 		return true;
 }
@@ -655,7 +744,7 @@ bool Camera::init_device()
 				
 	return true;
 }
-void process_image(const void *p, int size)
+void process_image(const void *p, int* size)
 {
 		//		fwrite(p, size, 1, stdout);
 		//		fflush(stderr);
@@ -683,10 +772,10 @@ bool Camera::read_frame(void)
 		}
 		for(i=0; i<n_buffers; ++i)
 		{
-						if(buf.m.userptr == (unsigned long)buffers[i].start && buf.length == buffers[i].length)
+					//	if(buf.m.userptr == (unsigned long)buffers[i].start && buf.length == buffers[i].length)
 										break;
 						assert(i < n_buffers);
-						process_image(buffers[0].start, buffers[0].length);
+						//process_image(buffers[0].start, buffers[0].length);
 
 										if(-1 == xioctl(fd, VIDIOC_QBUF, &buf))
 										{
@@ -738,7 +827,7 @@ int Camera::start_capturing()
 					buf.memory = V4L2_MEMORY_USERPTR;
 					buf.index = i;
 					buf.m.userptr = (unsigned long)buffers[i].start;
-					buf.length = buffers[i].length;
+					//buf.length = buffers[i].length;
 					if(-1 == xioctl(fd, VIDIOC_QBUF, &buf))
 					{
 									fprintf(stderr, "VIDIOC_QBUF\n");

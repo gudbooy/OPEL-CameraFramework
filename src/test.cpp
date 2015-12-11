@@ -5,7 +5,7 @@
 static void send_init(DBusConnection *connection)  
 {
 	DBusMessage *message;
-	message = dbus_message_new_signal ("/org/opel/camera/daemon", "org.opel.camera.daemon", "OpenCVInit");   // On이라는 signal을 해당 주소에 emit해라
+	message = dbus_message_new_signal ("/org/opel/camera/daemon", "org.opel.camera.daemon", "recInit");   // On이라는 signal을 해당 주소에 emit해라
 
 	/* Send the signal */
 	dbus_connection_send (connection, message, NULL);    //이 부분에서 데이터를 전송함
@@ -14,7 +14,7 @@ static void send_init(DBusConnection *connection)
 static void send_start(DBusConnection *connection)
 {
 	DBusMessage *message;
-	message = dbus_message_new_signal ("/org/opel/camera/daemon", "org.opel.camera.daemon", "OpenCVStart");   // On이라는 signal을 해당 주소에 emit해라
+	message = dbus_message_new_signal ("/org/opel/camera/daemon", "org.opel.camera.daemon", "recStart");   // On이라는 signal을 해당 주소에 emit해라
 
 	/* Send the signal */
 	dbus_connection_send (connection, message, NULL);    //이 부분에서 데이터를 전송함
@@ -23,7 +23,7 @@ static void send_start(DBusConnection *connection)
 static void send_stop(DBusConnection *connection)
 {
 	DBusMessage *message;
-	message = dbus_message_new_signal ("/org/opel/camera/daemon", "org.opel.camera.daemon", "OpenCVStop");   // On이라는 signal을 해당 주소에 emit해라
+	message = dbus_message_new_signal ("/org/opel/camera/daemon", "org.opel.camera.daemon", "recStop");   // On이라는 signal을 해당 주소에 emit해라
 
 	/* Send the signal */
 	dbus_connection_send (connection, message, NULL);    //이 부분에서 데이터를 전송함

@@ -19,7 +19,7 @@
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
-
+#include <semaphore.h>
 
 #include <asm/types.h>
 
@@ -48,6 +48,7 @@
 
 #define OptLast 256
 
+#define SEM_FOR_PAYLOAD_SIZE 9948
 
 static int xioctl(int fh, int request, void* arg);
 static void errno_exit(const char *s);
@@ -60,7 +61,8 @@ const static char* deviceName = "/dev/video0";
 
 typedef struct buffer{
 	void *start;
-	size_t length;
+	/* MINI */
+	int* length;
 }buffer;
 
 struct ctl_parameters{
@@ -76,59 +78,17 @@ struct ctl_parameters{
 
 static struct ctl_parameters params;
 
-typedef struct Cam_V4L2
-{
-	char* deviceName;
-	int deviceHandle;
-	int bufferIndex; 
-	int width, heigth;
-	int mode; 
-	
-	void* shm_buffer;
-	
-	struct v4l2_capability cap;
-	struct v4l2_input inp;
-	struct v4l2_format form;
-	struct v4l2_crop crop;
-	struct v4l2_cropcap cropcap;
-	struct v4l2_requestbuffers req;
-	struct v4l2_jpegcompression compr;
-	struct v4l2_control control;
-	enum v4l2_buf_type type;
-	struct v4l2_queryctrl queryctrl;
 
-	struct timeval timestamp;
-}Cam_V4L2;
-/*class CamProperty
-{
-				public:
-					CamProperty();
-					CamProperty(int, int, int, enum v4l2_field);
-					~CamProperty();
-					void setWidth(int width){ this->width = width; }
-					void setHeight(int height) {this->height = height; }
-					void setPixelformat(int pixelformat) {this->pixelformat = pixelformat;}
-					void setFieldformat(enum v4l2_field field) {this->field = field;}
-					int getWidth(void) {return this->width;}
-					int getHeight(void) {return this->height;}
-					int getPixelformat(void) {return this->pixelformat;}
-					enum v4l2_field getField(void) {return this->field;}
-				private:
-					int width;
-					int height;
-					int pixelformat;
-					enum v4l2_field field;
-};*/
 static bool libv4l2_open(CameraProperty* camProp);
 static bool libv4l2_init(CameraProperty* camProp);
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr, key_t shmkey);
 static bool uinit_SharedMemorySpace(int shmid, void** shmPtr);
-//static bool mainLoop(CameraProperty* camProp, buffer* buffers);
 static bool recMainLoop(CameraProperty* camProp, buffer* buffers);
-static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last);
+static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last, int semid, void* shmPtr);
 static void processImg(const void* p , int size);
 static int do_handle_cap(CameraProperty* camProp, buffer* buffers);
-//static bool libv4l2_userPointer(unsigned int buffer_size, CameraProperty* camProp, void* buffers);
+//static bool init_Semaphore(key_t semKey, int& semid);
+//static bool uinit_Semaphore(int& semid);
 class OPELCamera
 {
 				public:
@@ -142,9 +102,11 @@ class OPELCamera
 								virtual bool stop() = 0;
 								virtual bool close_device() = 0;
 								void deleteCameraProperty();		
+								bool init_Semaphore();
+								bool uinit_Semaphore();
 				protected:
 								virtual bool init_userPointer(unsigned int) = 0;
-							
+				//		    sem_t* mutex;	
 								CameraProperty* camProp;			
 																		
 };
@@ -174,16 +136,20 @@ class OpenCVSupport : public OPELCamera
 		void setEos(bool eos);
 	  void setThrMutex(pthread_mutex_t& mutex){ this->mutex = mutex; }
 		//virtual bool init_userPointer(unsigned int);
- 
+	
+		bool init_Semaphore();
+		bool uinit_Semaphore();
 	private:
 	 	  bool mainLoop(CameraProperty* camProp, buffer* buffers);
 		  virtual bool init_userPointer(unsigned int);
 			buffer* buffers;
+			int semid;
 			int shmid;
-			void* shmPtr; 
+			void* shmPtr;
 			struct shmid_ds shm_info;
 			bool eos;
 			pthread_mutex_t mutex;
+			sem_t* mx;
 };
 class Camera
 {

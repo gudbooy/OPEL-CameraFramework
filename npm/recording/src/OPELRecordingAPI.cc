@@ -28,13 +28,14 @@ NAN_METHOD(OPELRecording::recInit)
 		return;
 	}
 	recObj->sendDbusMsg("recInit");
-	
+	//recObj->sendDbusMsg("recStart");
 	//throw callback
 	callback.Call(argc, argv);		
 	//check property is changed 
 }
 // Recording Start API (Asynchronous)
 // addon.start("video_path", count, function(err, data){   });
+
 NAN_METHOD(OPELRecording::recStart)
 {	
 	int count;
@@ -52,8 +53,8 @@ NAN_METHOD(OPELRecording::recStart)
 	if(!info[2]->IsFunction())
 	{
 		Nan::ThrowTypeError("Third parameter should be callback function\n");
+		return;
 	}
-//std::string file_path = Nan::To<std::string>(info[0]).FromJust();
 	v8::String::Utf8Value param1(info[0]->ToString());
 	std::string path = std::string(*param1);
 	file_path = path.c_str();	
@@ -61,16 +62,18 @@ NAN_METHOD(OPELRecording::recStart)
 	count = Nan::To<int>(info[1]).FromJust();
 	
 	OPELRecording *recObj = Nan::ObjectWrap::Unwrap<OPELRecording>(info.This());
-	
-	/*if(!(recObj->initSharedMemorySpace()))
+	//recObj->sendDbusMsg("recStart");
+
+	if(!(recObj->initSharedMemorySpace()))
 	{
 		//error
 		Nan::ThrowError("Initialize Shared Memory Space Failed [Solution : Turning On OPEL Camera Ctrl Daemon]\n");
 		return;
-	}*/
+	}
 
 	recObj->sendDbusMsg("recStart");
-  Nan::Callback *callback = new Nan::Callback();
+  
+	Nan::Callback *callback = new Nan::Callback(info[2].As<v8::Function>());
 	RecordingWorker* recWorker = new RecordingWorker(callback, file_path, count);	
 	if(recWorker == NULL)
 	{
@@ -83,35 +86,39 @@ NAN_METHOD(OPELRecording::recStart)
 	recWorker->setHeight(recObj->getHeight());
 	recWorker->setBufferSize(recObj->getBufferSize());
 	recWorker->setBufferIndex(recObj->getBufferIndex());
-	//recWorker->setShmPtr(recObj->getShmPtr());
-	fprintf(stderr, "1212121212121212\n");
+	recWorker->setShmPtr(recObj->getShmPtr());
+
 	if(!(recWorker->openFileCap()))
 	{
-	//	recWorker->closeFileCap();
+		recWorker->closeFileCap();
 		Nan::ThrowError("Open File Cap Error\n");
 		return ;
 	}
-	fprintf(stderr, "1414141414141411414141414\n");
-	if(!(recWorker->initSHM()))
+	if(!(recWorker->initSEM()))
 	{
-		Nan::ThrowError("init Shared Memory Error\n");
+		Nan::ThrowError("init Semaphore Error\n");
 		return ;
 	}
-	fprintf(stderr, "131313131313131\n");
-	fprintf(stderr, "recObj->getWidth() : %d\n", recObj->getWidth());
-	fprintf(stderr, "recObj->getHeight() : %d\n", recObj->getHeight());
-	fprintf(stderr, "recObj->getBufferSize() : %d\n", recObj->getBufferSize());
+	
+//	fprintf(stderr, "recObj->getWidth() : %d\n", recObj->getWidth());
+//	fprintf(stderr, "recObj->getHeight() : %d\n", recObj->getHeight());
+//	fprintf(stderr, "recObj->getBufferSize() : %d\n", recObj->getBufferSize());
+//	recObj->sendDbusMsg("recStart");
 	Nan::AsyncQueueWorker(recWorker);
-
 }
 NAN_METHOD(OPELRecording::recStop)
 {
-
+		//만약 워커 쓰레드가 작동하고 있다면 ? 
+		//eos를 통해 강제 정지 후 리턴하도록 함
+		//워커 쓰레드가 작동하지 않는다면? 그냥 디버스로 recStop끝내라라는 메세지만 센딩
+		
 
 }
 NAN_METHOD(OPELRecording::recClose)
 {
-
+	 //워커 쓰레드를 제거
+	 // 일단은 dbus로 close를 보내보자
+	 // 그리고 dbus 닫고 sharedmemory 닫고 semaphore 제거하고 Done
 }
 
 OPELRecording::OPELRecording()

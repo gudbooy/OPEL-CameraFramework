@@ -1,7 +1,7 @@
 #ifndef _OPEL_RECORDING_H_
 #define _OPEL_RECORDING_H_
-
 extern "C"{
+	#include <semaphore.h>
 	#include <stdio.h>
   #include <string.h>
   #include <stdlib.h>
@@ -22,7 +22,6 @@ extern "C"{
 	#include <fcntl.h>
 	#include <errno.h>
 	#include <sys/stat.h>
-	#include <videodev2.h>
 }
 #include <v8.h>
 #include <node.h>
@@ -36,12 +35,23 @@ extern "C"{
 #define REC_HEIGHT 1080
 #define REC_BUFFER_SIZE 4147200
 #define REC_BUFFER_INDEX 4
-
-
+#define SEM_FOR_PAYLOAD_SIZE 9948
+char SEM_NAME[] = "vik";
+static bool eos;
+union semun
+{
+	int val;
+	struct semid_ds* buf;
+	unsigned short int *array;
+};
+static struct sembuf status_post = {0, -1, SEM_UNDO};
+static struct sembuf status_wait = {0, 1, SEM_UNDO};
 class RecordingWorker : public Nan::AsyncWorker
 {
 	public:
-		RecordingWorker(Nan::Callback* callback, const char* file_path, int count) : AsyncWorker(callback), file_path(file_path), count(count), fd(0), width(0), height(0), buffer_size(0), buffer_index(0), fout(NULL), shmPtr(NULL) {}
+
+		RecordingWorker(Nan::Callback* callback, const char* file_path, int count) : Nan::AsyncWorker(callback), file_path(file_path), count(count), fd(0), width(0), height(0), buffer_size(0), buffer_index(0), fout(NULL), shmPtr(NULL) {}
+
 		~RecordingWorker() {}
 
 		void Execute()
@@ -51,7 +61,6 @@ class RecordingWorker : public Nan::AsyncWorker
 				{
 					for(;;)
 					{
-						fprintf(stderr, "count : %d\n", count);
 						fd_set fds;
 						struct timeval tv;
 						int r; 
@@ -69,30 +78,40 @@ class RecordingWorker : public Nan::AsyncWorker
 						{
 							break;
 						}
-						if(readFrame())
-							
+						if(readFrame())		
 							break;
 					}
+				
 				}
-			fprintf(stderr, "Close");
-	//send dbus to stop the video	
-			fclose(fout);
+			fflush(fout);
+				closeFileCap();
+				printf("close\n");
 		}
+		
 		bool readFrame()
 		{
-			for(;;){
-			struct v4l2_buffer buf;
-			
-			memset(&buf, 0, sizeof(buf));
-			unsigned sz; 
-			unsigned offset;
-			offset = (buffer_index-1)*buffer_size;
-			sz = fwrite((char*)(shmPtr+offset), 1, buffer_size, fout);	
-			if(sz != (unsigned)buffer_size)
-			{
-				return false;
-			}
-			return true;
+				int* length;
+				int len;
+				unsigned sz;
+				unsigned offset;
+				unsigned offset_size;
+				offset = (buffer_index-1)*buffer_size;
+				offset_size = buffer_index*buffer_size;
+				//				FILE* fp = fopen(file_path, "ab");
+				//semop(semid, &status_wait, 1);
+				
+				sem_wait(mutex);
+				length = (int*)(shmPtr+offset_size);
+				fprintf(stderr, "length[1] : %d\n", *length);
+				sz = fwrite((char*)shmPtr+offset, sizeof(char), *length, fout);	
+				if(sz != *length)
+				{
+					fprintf(stderr, "%u != %d\n", sz, *length);
+				}
+				sem_post(mutex);
+				
+				//semop(semid, &status_post, 1);
+				return true;
 		}
 		void HandleOKCallback()
 		{
@@ -100,31 +119,59 @@ class RecordingWorker : public Nan::AsyncWorker
 			v8::Local<v8::Value>  argv[]  = {
 				Nan::Null(), Nan::New<v8::Number> (1) 
 			};
-
 			callback->Call(2, argv);
 		}	
-		
+		void HandleErrorCallback()
+		{
+			Nan::HandleScope scope;
+			v8::Local<v8::Value> argv[] = {
+				Nan::Null(), Nan::New<v8::Number>(1)
+			};
+			callback->Call(2, argv);
+		}
 		void setFd(int fd) { this->fd = fd; } 
 		void setWidth(int width) { this->width = width; }
 		void setHeight(int height) { this->height = height; }
 		void setBufferSize(int buffer_size) { this->buffer_size = buffer_size; }
 		void setBufferIndex(int buffer_index) { this->buffer_index = buffer_index; } 
 	  void setShmPtr(void* shmPtr) { this->shmPtr = shmPtr; }	
+		bool initSEM(void)
+		{
+			mutex = sem_open(SEM_NAME, 0, 0666, 0); 
+			if(mutex == SEM_FAILED)
+			{
+				sem_unlink(SEM_NAME);
+				return false;
+			}
+			
+	/*		union semun sem_union;
+			semid = semget((key_t)SEM_FOR_PAYLOAD_SIZE, 0, 0);
+			if(-1 == semid)
+				return false;
+			sem_union.val = 1;
+			if(-1 == semctl(semid, 0, SETVAL, sem_union))
+				return false;*/
+
+			
+			return true;
+
+		}
 		bool initSHM(void)
 		{
 			shmid = shmget((key_t)REC_SHM_KEY, 0, 0);
 			if(shmid == -1)
 				return false;
 			shmPtr = shmat(shmid, (void*)0, 0666|IPC_CREAT);
-			if(shmPtr == (void*)-1)
+			if(shmPtr == (void*)-1){
 				return false;
+			}
 			return true;
 		}
 		bool openFileCap(void)
 		{	
 			char cwdd[1024];
-			fout = fopen(file_path, "w+");	
-			
+		fout = fopen(file_path, "w+");	
+			//return true;	
 			if(!fout){
 				fprintf(stderr, "cwd:%s\n", getcwd(cwdd, 1024));
 				fprintf(stderr, "error:%d,%s\n", errno, strerror(errno));
@@ -145,8 +192,10 @@ class RecordingWorker : public Nan::AsyncWorker
 			int buffer_size;
 			int buffer_index;
 			FILE* fout;
+			int semid;
 			int shmid; 
 			void* shmPtr;
+			sem_t *mutex;
 };
 
 class OPELRecording : public Nan::ObjectWrap{
@@ -174,8 +223,7 @@ class OPELRecording : public Nan::ObjectWrap{
 		static NAN_METHOD(recInit);
 		static NAN_METHOD(recStart);
 		static NAN_METHOD(recStop);
-		static NAN_METHOD(recClose);
-		
+		static NAN_METHOD(recClose);	
 		//	static Nan::Persistent<v8::Function> constructor;	
 		static inline Nan::Persistent<v8::Function>& constructor()
 		{

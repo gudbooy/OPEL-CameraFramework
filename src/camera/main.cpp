@@ -214,18 +214,21 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	  //set eos as true
 		rec_cam->setEos(true);
 		//if camstatus is already running ?
+		
 		if(camStatus->getIsRecRunning())
 			return DBUS_HANDLER_RESULT_HANDLED;
 
 		//Create Thread()
-		if(camStatus->getIsRecInitialized()){
-		thr_id[INDEX_OF_REC_THR] = pthread_create(&OPELCamThread[INDEX_OF_REC_THR], NULL, recCameraSupportThr, (void*)0);
-		if(thr_id[INDEX_OF_REC_THR] < 0)
-		{
-			fprintf(stderr, "CREATE THREAD FAILED\n");
-			return DBUS_HANDLER_RESULT_HANDLED;
-		}
-		camStatus->setIsRecRunning(true);
+	if(camStatus->getIsRecInitialized()){
+			thr_id[INDEX_OF_REC_THR] = pthread_create(&OPELCamThread[INDEX_OF_REC_THR], NULL, recCameraSupportThr, (void*)0);
+			
+			if(thr_id[INDEX_OF_REC_THR] < 0)
+			{
+				fprintf(stderr, "CREATE THREAD FAILED\n");
+				return DBUS_HANDLER_RESULT_HANDLED;
+			}		
+		
+			camStatus->setIsRecRunning(true);
 		}
 		else
 		{
@@ -234,7 +237,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		}
 	  return DBUS_HANDLER_RESULT_HANDLED;	
 	}
-
+	
 
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recStop"))
 	{	
@@ -290,7 +293,9 @@ int main()
 	recProperty = (property*)malloc(sizeof(property));
 	
 	pthread_mutex_t mutex_lock;
+	//RGB24 Recording
 	openCV_camProp = new CameraProperty(!isRec);
+	//H264 format Recording
 	rec_camProp = new CameraProperty(isRec);
 
 

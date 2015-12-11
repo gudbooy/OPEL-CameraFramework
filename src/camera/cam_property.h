@@ -20,7 +20,7 @@
 #include <libv4l2.h>
 //#include "cam_core.h"
 #include "cam_status.h"
-#define DEFAULT_COUNT 100000
+#define DEFAULT_COUNT 100000000
 
 #define OPENCV_DEFAULT_PIXFORMAT V4L2_PIX_FMT_RGB24 //RGB24
 #define DEFAULT_WIDTH 640 
@@ -33,8 +33,10 @@
 #define REC_DEFAULT_WIDTH 1920
 #define REC_DEFAULT_HEIGHT 1080
 #define REC_DEFAULT_PIXFORMAT V4L2_PIX_FMT_H264 // h.264
+#define REC_SHM_KEY_SIZE 9448
 #define REC_SHM_KEY 9447
 #define REC_SHM_KEY_FOR_PROPERTY 9988
+
 
 //char SEM_NAME[] = "openCVProperty";
 
