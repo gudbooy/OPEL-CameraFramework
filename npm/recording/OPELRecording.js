@@ -20,18 +20,19 @@ recObj.start("/home/pi/camData/some.mjpg", 300, function(error, data){
 		console.log('done!!!!!\n');		
 		});
 
-/*recObj.start(path+'['+d+'].jpeg', 1, function(err, data){
+
+recObj.start(path+'['+d+'].jpeg', 1, function(err, data){
 		console.log(path+'['+d+'].jpeg saved');
 		}); 
-*/
-/*
+
+
 var repeat = setInterval(function(){
 	count++;
 			recObj.start(path+'['+d+']['+count+'].jpeg', 1, function(err, data){
 			console.log(path+'['+d+']['+count+'].jpeg saved');
 		}); 
 }, 3000);
-*/
-/*for(;;)
-{//	console.log("hihi");
-}*/
+
+//for(;;)
+//{//	console.log("hihi");
+//}

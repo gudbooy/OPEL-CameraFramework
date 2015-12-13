@@ -173,7 +173,7 @@ CameraProperty::CameraProperty(bool isRec)
 				this->queryctrl = (struct v4l2_queryctrl*)malloc(sizeof(struct v4l2_queryctrl));
 				this->timestamp = (struct timeval*)malloc(sizeof(struct timeval));
 				*(this->count) = DEFAULT_COUNT;
-				this->field = V4L2_FIELD_INTERLACED;
+				this->field = V4L2_FIELD_ANY;
 				this->width = REC_DEFAULT_WIDTH;
 				this->height = REC_DEFAULT_HEIGHT;
 				this->pixelformat = V4L2_PIX_FMT_MJPEG;
