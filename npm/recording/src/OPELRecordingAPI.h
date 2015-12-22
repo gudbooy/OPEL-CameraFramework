@@ -211,6 +211,7 @@ class OPELRecording : public Nan::ObjectWrap{
 		bool openDevice();
 
 		bool initSharedMemorySpace();
+		bool uInitSharedMemorySpace();
 		int getFd() { return this->fd; } 
 		int getWidth() { return this->width; }
 		int getHeight() { return this->height; }

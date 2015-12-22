@@ -202,7 +202,12 @@ bool OPELRecording::initSharedMemorySpace()
 		return false;
 	return true;
 } 
-
+bool OPELRecording::uInitSharedMemorySpace()
+{
+	if(shmdt(shmPtr) == -1)
+		return false;
+	return true;
+}
 NAN_METHOD(OPELRecording::New)
 {
 	//Nan::NanScope();

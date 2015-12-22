@@ -58,7 +58,6 @@ void* recCameraSupportThr(void* args)
 		return NULL;
 	}
 	camStatus->setIsRecRunning(false);
-//	printf("Done!!!\n");
 	rec_cam->setEos(false);
 	if(!rec_cam->stop())
 	{
