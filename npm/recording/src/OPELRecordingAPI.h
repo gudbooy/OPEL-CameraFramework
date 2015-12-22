@@ -37,15 +37,13 @@ extern "C"{
 #define REC_BUFFER_INDEX 4
 #define SEM_FOR_PAYLOAD_SIZE 9948
 char SEM_NAME[] = "vik";
-static bool eos;
 union semun
 {
 	int val;
 	struct semid_ds* buf;
 	unsigned short int *array;
 };
-static struct sembuf status_post = {0, -1, SEM_UNDO};
-static struct sembuf status_wait = {0, 1, SEM_UNDO};
+static bool eos;
 class RecordingWorker : public Nan::AsyncWorker
 {
 	public:
@@ -56,8 +54,7 @@ class RecordingWorker : public Nan::AsyncWorker
 
 		void Execute()
 		{
-		  //if(openFileCap())
-				while(count-- > 0)
+				while((count-- > 0) && eos)
 				{
 					for(;;)
 					{
@@ -84,9 +81,10 @@ class RecordingWorker : public Nan::AsyncWorker
 					}
 				
 				}
-			fflush(fout);
+				fflush(fout);
 				closeFileCap();
-				printf("close\n");
+		//		printf("close\n");
+		
 		}
 		
 		bool readFrame()
@@ -114,7 +112,7 @@ class RecordingWorker : public Nan::AsyncWorker
 				if(*check)
 				{
 
-					fprintf(stderr, "length : %d\n", *length);
+//					fprintf(stderr, "length : %d\n", *length);
 					sz = fwrite((char*)buffer, sizeof(char), *length, fout);	
 					if(sz != *length)
 					{
@@ -122,8 +120,8 @@ class RecordingWorker : public Nan::AsyncWorker
 					}
 				}
 				else{
-					printf("skip!!!\n");
-					usleep(100);
+//					printf("skip!!!\n");
+					usleep(10);/* MINI */
 				}
 				sem_post(mutex);
 				usleep(10);
@@ -176,12 +174,8 @@ class RecordingWorker : public Nan::AsyncWorker
 		}
 		bool openFileCap(void)
 		{	
-			char cwdd[1024];
-		fout = fopen(file_path, "w+");	
-			//return true;	
+			fout = fopen(file_path, "w+");	
 			if(!fout){
-				fprintf(stderr, "cwd:%s\n", getcwd(cwdd, 1024));
-				fprintf(stderr, "error:%d,%s\n", errno, strerror(errno));
 				return false;
 			}
 			return true;
@@ -211,6 +205,7 @@ class OPELRecording : public Nan::ObjectWrap{
 	public:
 		static NAN_MODULE_INIT(Init);
   	void sendDbusMsg(const char* msg); 
+		bool sendDbusMsgCnt(const char* msg, int count);
 		bool initDbus();
 		//void init(const Nan::FunctionCallbackInfo<v8::value>& info);
 		bool openDevice();
@@ -222,6 +217,7 @@ class OPELRecording : public Nan::ObjectWrap{
 		int getBufferSize() { return this->buffer_size; }
 		int getBufferIndex() { return this->buffer_index; }
 		void* getShmPtr() { return this->shmPtr; }
+
 	private:
 		explicit OPELRecording();
 		~OPELRecording();

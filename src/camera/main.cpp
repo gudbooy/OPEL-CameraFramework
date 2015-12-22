@@ -18,12 +18,15 @@
 
 #define INDEX_OF_OPENCV_THR 0
 #define INDEX_OF_REC_THR 1
+
+
+static int NumOfClient;
+
 static CameraProperty* openCV_camProp;
 static CameraProperty* rec_camProp;
 static OpenCVSupport* rec_cam;
 static OpenCVSupport* openCV_cam;
 
-//static property* recordingProperty;
 static property* openCVProperty;
 static property* recProperty;
 
@@ -35,9 +38,7 @@ pthread_mutex_t mutex_lock;
 
 
 bool first;
-
 int sem_status_id;
-//CameraStatus* camStatus;
 
 static bool is_openCVCamInit;
 static bool is_recInit;
@@ -56,6 +57,14 @@ void* recCameraSupportThr(void* args)
 		fprintf(stderr, "START FIALED\n");
 		return NULL;
 	}
+	camStatus->setIsRecRunning(false);
+//	printf("Done!!!\n");
+	rec_cam->setEos(false);
+	if(!rec_cam->stop())
+	{
+		fprintf(stderr, "START FAILED\n");
+		return NULL;
+	}
 	return (void*)1;
 }
 void* openCVCameraSupportThr(void* args)
@@ -68,8 +77,22 @@ void* openCVCameraSupportThr(void* args)
 		return (void*)1;
 }
 
+void setCount(unsigned curr)
+{
+	//lock
+	pthread_mutex_lock(&mutex_lock);
+	unsigned* prev = rec_camProp->getCount();
+	if((2*curr) > *prev){
+		*prev= 2*curr;
+	}
+	pthread_mutex_unlock(&mutex_lock);
+	//unlock
+}
+
 static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message, void *user_data)
 {
+	
+	DBusMessageIter args;
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "OpenCVInit"))
 	{	
 //		is_openCVCamInit = false;
@@ -173,7 +196,10 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		std::cout << "Get[DBUS] : recInit\n";
 		//if Recording is already running or Recording is initialized 
 		if(camStatus->getIsRecRunning() || camStatus->getIsRecInitialized())
+		{
+			printf("already Initialized\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
+		}
 		else
 			rec_camProp->printSetValue();
 		
@@ -209,15 +235,29 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	}
 
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recStart"))
-	{	
+	{
+		unsigned currCount = 0;
 		std::cout << "Get[DBUS] : recStart\n";
-	  //set eos as true
+	  
+		//여기서 count값을 받아서 count값을 초기화 시킨다. 
+		dbus_message_iter_init(message, &args);
+	do{
+			dbus_message_iter_get_basic(&args, &currCount);
+			printf("count : %d\n", currCount);
+		}while(dbus_message_iter_next(&args));
+		
+		
+		setCount(currCount);		
+		
+		//set eos as true
 		rec_cam->setEos(true);
 		//if camstatus is already running ?
 		
-		if(camStatus->getIsRecRunning())
+		if(camStatus->getIsRecRunning()){
+			printf("Recording Already Running\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
-
+		
+		}
 		//Create Thread()
 	if(camStatus->getIsRecInitialized()){
 			thr_id[INDEX_OF_REC_THR] = pthread_create(&OPELCamThread[INDEX_OF_REC_THR], NULL, recCameraSupportThr, (void*)0);
@@ -226,8 +266,12 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 			{
 				fprintf(stderr, "CREATE THREAD FAILED\n");
 				return DBUS_HANDLER_RESULT_HANDLED;
-			}		
-		
+			}			
+			if(-1 == pthread_detach(OPELCamThread[INDEX_OF_REC_THR]))
+			{
+				fprintf(stderr, "Detatching the p_thread Failed\n");
+				return DBUS_HANDLER_RESULT_HANDLED;
+			}
 			camStatus->setIsRecRunning(true);
 		}
 		else
@@ -284,15 +328,18 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
+
 int main()
 {
+	NumOfClient=0;
 	bool isRec = true;		
 	st = (status*)malloc(sizeof(status));
-	
+
 	openCVProperty = (property*)malloc(sizeof(property));
 	recProperty = (property*)malloc(sizeof(property));
+
+//	pthread_mutex_t mutex_lock;
 	
-	pthread_mutex_t mutex_lock;
 	//RGB24 Recording
 	openCV_camProp = new CameraProperty(!isRec);
 	//H264 format Recording
@@ -325,6 +372,8 @@ int main()
 	camStatus->getThrMutex(mutex_lock);
 	openCV_cam->setThrMutex(mutex_lock);
 	
+
+
 	first = true;
 	DBusConnection *conn;
 	DBusError err;

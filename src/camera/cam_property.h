@@ -91,7 +91,7 @@ class CameraProperty
 								unsigned int getPixelformat() { return this->pixelformat; }
 								enum v4l2_field getField() { return this->field; }
 							  unsigned int* getCount() { return this->count; }
-								void setCount(unsigned long long count) { *(this->count) = count; }
+								void setCount(unsigned int count) { *(this->count) = count; }
 								void printSetValue(void);
 							  void setBufferSize(int buffer_size);
 								void setBufferNum(int buffer_num);

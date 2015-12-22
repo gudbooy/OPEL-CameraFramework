@@ -269,18 +269,23 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 }
 bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 {
+			unsigned int* count = camProp->getCount();
+			unsigned int volatile_count;
+			unsigned int cnt=0;
+			
 			pthread_mutex_lock(&mutex);
 		  bool volatile_eos = this->eos;
+			volatile_count = *count;
 			pthread_mutex_unlock(&mutex);
+			
 			unsigned last = 0;
 			struct timeval tv_last;
-			unsigned int* count = camProp->getCount();
 			int fd = camProp->getfd();
-//			printf("Request Count is : %d", *count);
-			unsigned int cnt=0;
-			while(volatile_eos)
+
+			
+			while((volatile_count > 0) && volatile_eos)
 			{
-	//						printf("count : %d\n", (*count));
+							printf("cnt : %d\n", volatile_count);
 							for(;;)
 							{
 											fd_set fds;
@@ -303,19 +308,21 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 											}
 											if(FD_ISSET(fd, &fds))
 											{
-														
+														/* Do Nathing */							
 											}
 
 											if(readFrame(camProp, buffers, cnt, last, tv_last, this->semid, this->shmPtr, this->mx))
 														break;	
 							}
+
 							pthread_mutex_lock(&mutex);
 							volatile_eos = this->eos;
+							if(*count > 0)
+								volatile_count=(*count)--;
+							else
+								volatile_count = (*count);
+							
 					  	pthread_mutex_unlock(&mutex);
-
-					//		pthread_mutex_lock(&mutex);
-					//		if(eos)
-
 			}
 		  
 			return true;
