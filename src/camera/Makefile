@@ -13,4 +13,4 @@ cam_status.o: cam_status.cpp cam_status.h
 cam_cap_check.o: cam_cap_check.cpp
 	g++ -g -c cam_cap_check.cpp
 clean:
-	rm -f test *.o *.gch
+	rm -f test *.o *.gch *.swp

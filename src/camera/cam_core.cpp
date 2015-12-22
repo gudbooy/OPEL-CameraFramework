@@ -161,7 +161,8 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 						//		printf("buffer_size : %d\n", buffer_size);
 						//		(*buffers[i].length) = buffer_size;
 								/* MINI */
-								buffers[i].start = shmPtr+i*buffer_size;
+								buffers[i].start = (void*)malloc(buffer_size);
+									//shmPtr+i*buffer_size;
 								if(!buffers[i].start)
 								{
 												fprintf(stderr, "Link to SharedMemorySpace failed\n");
@@ -171,7 +172,8 @@ bool OpenCVSupport::init_userPointer(unsigned int buffer_size)
 				int offset = req->count*buffer_size;
 				for(i=0; i< req->count; i++)
 				{
-					buffers[i].length = (int*)(shmPtr+offset)+(i*sizeof(int));
+					buffers[i].length = (int*)malloc(sizeof(int));
+						// (int*)(shmPtr+offset)+(i*sizeof(int));
 					if(!buffers[i].length)
 					{
 						fprintf(stderr, "Link to SharedMemorySpace failed\n"); 
@@ -238,29 +240,25 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 				
 				sem_wait(mx);
 					*check = 0;
-					printf("check : %d\n", *check);				
 				sem_post(mx);
-
-				//semop(semid, &status_wait, 1);
-				//*buffers[0].length = buf->bytesused;
-					sem_wait(mx);
+				usleep(1000);	
+				sem_wait(mx);
 					*length = buf->bytesused;
-					printf("length : %d\n", *length);
-//					memset((char*)ptr, 0x0, size);
+					printf("length11 : %d\n", *length);
 					memcpy((char*)ptr, (char*)buf->m.userptr, *length);		
 					*check = 1;
-					printf("check : %d\n", (int)(*check));
-					sem_post(mx);			
-	
+				sem_post(mx);			
+					
 //				processImg((void*)ptr, length);
+					if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
+					{
+						fprintf(stderr, "VIDIOC_QBUF\n"); 
+						return false;
 
-				if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
-				{
-								fprintf(stderr, "VIDIOC_QBUF\n"); 
-								return false;
-
-				}
-		//		printf("palying\n");
+					}
+		//		*length = buf->bytesused;
+		//		printf("length22 : %d\n", *length);
+				//		printf("palying\n");
 	
 //		fprintf(stderr, "%c", ch);
 //		fflush(stderr);
@@ -352,9 +350,9 @@ bool OpenCVSupport::start()
 								buf->index = i;
 								buf->m.userptr = (unsigned long)buffers[i].start;
 								buf->length = *buffers[i].length;
-//								sem_wait(this->mx);										
+								sem_wait(this->mx);										
 						*buffers[1].length = 0;
-	//							sem_post(this->mx);
+								sem_post(this->mx);
 								if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
 								{
 												fprintf(stderr, "VIDIOC_QBUF\n");
