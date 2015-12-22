@@ -15,11 +15,16 @@ recObj.init(function(width, height, buffer_size){
 //		console.log('buffer_size : ', buffer_size);
 		});
 
-recObj.start("/home/pi/camData/some1.mjpg", 300, function(error, data){
+recObj.start("/home/pi/camData/some.mjpg", 300, function(error, data){
 		console.log('data : ', data);			
 		console.log('done!!!!!\n');		
 		});
 
+
+recObj.start("/home/pi/camData/some2.mjpg", 200, function(error, data){
+		console.log('data : ', data);			
+		console.log('done!!!!!\n');		
+		});
 /*
 recObj.start(path+'['+d+'].jpeg', 1, function(err, data){
 		console.log(path+'['+d+'].jpeg saved');

@@ -110,26 +110,22 @@ class RecordingWorker : public Nan::AsyncWorker
 				int* length = (int*)_length;
 
 					
-				printf("check[1] : %d\n", *check);
 				sem_wait(mutex);
-				printf("check[2] : %d\n", *check);
 				if(*check)
 				{
 
-					printf("check[3] : %d\n", *check);
 					fprintf(stderr, "length : %d\n", *length);
 					sz = fwrite((char*)buffer, sizeof(char), *length, fout);	
-					fflush(fout);
 					if(sz != *length)
 					{
 							fprintf(stderr, "ERROR Occurred\n");
 					}
-					printf("check[4] : %d\n", *check);
 				}
-
-				printf("check[5] : %d\n", *check);
+				else{
+					printf("skip!!!\n");
+					usleep(100);
+				}
 				sem_post(mutex);
-				printf("check[6] : %d\n", *check);
 				usleep(10);
 				return true;
 		}

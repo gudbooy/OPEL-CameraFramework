@@ -308,7 +308,7 @@ ifeq ($(strip $(foreach prefix,$(NO_LOAD),\
 endif
 
 quiet_cmd_regen_makefile = ACTION Regenerating $@
-cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/pi/OPEL/npm/recording/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/home/pi/.node-gyp/0.12.6/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/pi/.node-gyp/0.12.6" "-Dnode_gyp_dir=/usr/local/lib/node_modules/node-gyp" "-Dnode_lib_file=node.lib" "-Dmodule_root_dir=/home/pi/OPEL/npm/recording" binding.gyp
+cmd_regen_makefile = cd $(srcdir); /usr/local/lib/node_modules/node-gyp/gyp/gyp_main.py -fmake --ignore-environment "--toplevel-dir=." -I/home/pi/OPEL-CameraFramework/npm/recording/build/config.gypi -I/usr/local/lib/node_modules/node-gyp/addon.gypi -I/home/pi/.node-gyp/0.12.6/common.gypi "--depth=." "-Goutput_dir=." "--generator-output=build" "-Dlibrary=shared_library" "-Dvisibility=default" "-Dnode_root_dir=/home/pi/.node-gyp/0.12.6" "-Dnode_gyp_dir=/usr/local/lib/node_modules/node-gyp" "-Dnode_lib_file=node.lib" "-Dmodule_root_dir=/home/pi/OPEL-CameraFramework/npm/recording" binding.gyp
 Makefile: $(srcdir)/../../../.node-gyp/0.12.6/common.gypi $(srcdir)/build/config.gypi $(srcdir)/binding.gyp $(srcdir)/../../../../../usr/local/lib/node_modules/node-gyp/addon.gypi
 	$(call do_cmd,regen_makefile)
 
