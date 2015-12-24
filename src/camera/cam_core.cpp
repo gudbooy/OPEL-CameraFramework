@@ -85,6 +85,11 @@ bool OpenCVSupport::close_device()
 						fprintf(stderr, "[OpenCVSupport::close_device] : close(fd) failed\n");
 						return false;
 				}
+		/*		for(int j=0; j<4; j++)
+				{
+					free(buffers[j].start);
+					free(buffers[j].length);
+				}*/
 				free(this->buffers);
 				return true;
 }
@@ -229,7 +234,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 				usleep(1000);	
 				sem_wait(mx);
 					*length = buf->bytesused;
-					printf("length11 : %d\n", *length);
+				//	printf("length11 : %d\n", *length);
 					memcpy((char*)ptr, (char*)buf->m.userptr, *length);		
 					*check = 1;
 				sem_post(mx);			
@@ -285,7 +290,7 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 			
 			while((volatile_count > 0) && volatile_eos)
 			{
-							printf("cnt : %d\n", volatile_count);
+			//				printf("cnt : %d\n", volatile_count);
 							for(;;)
 							{
 											fd_set fds;

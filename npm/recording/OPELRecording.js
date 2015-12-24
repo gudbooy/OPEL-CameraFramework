@@ -15,22 +15,24 @@ recObj.init(function(width, height, buffer_size){
 		console.log('buffer_size : ', buffer_size);
 		});
 
-recObj.start("/home/pi/camData/some3.mjpg", 300, function(error, data){
-		console.log('data : ', data);			
-		console.log('done!!!!!\n');		
+
+
+recObj.start("/home/pi/camData/some.mjpg", 300, function(error, data){
+		if(data == 1)
+			console.log('/home/pi/camData/some.mjpg Saved\n');		
 		});
 
 
 recObj.start("/home/pi/camData/some4.mjpg", 200, function(error, data){
-		console.log('data : ', data);			
-		console.log('done!!!!!\n');		
+		if(data == 1)
+			console.log('/home/pi/camData/some4.mjpg Saved\n');
 		});
-/*
+
 recObj.start(path+'['+d+'].jpeg', 1, function(err, data){
 		console.log(path+'['+d+'].jpeg saved');
 		}); 
 
-*/
+
 var repeat = setInterval(function(){
 	count++;
 			recObj.start(path+'['+d+']['+count+'].jpeg', 1, function(err, data){
@@ -38,6 +40,3 @@ var repeat = setInterval(function(){
 		}); 
 }, 3000);
 
-//for(;;)
-//{//	console.log("hihi");
-//}

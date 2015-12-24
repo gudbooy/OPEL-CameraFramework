@@ -112,12 +112,12 @@ class RecordingWorker : public Nan::AsyncWorker
 				if(*check)
 				{
 
-//					fprintf(stderr, "length : %d\n", *length);
+			//		fprintf(stderr, "length : %d\n", *length);
 					sz = fwrite((char*)buffer, sizeof(char), *length, fout);	
-					if(sz != *length)
-					{
-							fprintf(stderr, "ERROR Occurred\n");
-					}
+				//	if(sz != *length)
+				//	{
+				//			fprintf(stderr, "ERROR Occurred\n");
+				//	}
 				}
 				else{
 //					printf("skip!!!\n");
