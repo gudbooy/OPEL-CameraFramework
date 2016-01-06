@@ -62,15 +62,23 @@ void OpenCVSupport::setEos(bool eos)
 }
 bool OpenCVSupport::stop()
 {
-				int fd = this->camProp->getfd();
-				enum v4l2_buf_type  type;	
-				type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-				if(-1 == xioctl(fd, VIDIOC_STREAMOFF, &type))
-				{
-						fprintf(stderr, "VIDIOC_STREAMOFF");
-						return false;
-				}
-				return true;
+
+	int size = camProp->getBufferSize();
+	int fd = this->camProp->getfd();
+	enum v4l2_buf_type  type;	
+	type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	if(-1 == xioctl(fd, VIDIOC_STREAMOFF, &type))
+	{
+		fprintf(stderr, "VIDIOC_STREAMOFF");
+		return false;
+	}
+	//MINI
+/*	for(int i=0; i<4; i++)
+	{
+		memset(buffers[i].start, 0x0, size);
+		memset(buffers[i].length, 0x0, sizeof(int));
+	}*/
+	return true;
 }
 bool OpenCVSupport::close_device()
 {
@@ -80,28 +88,32 @@ bool OpenCVSupport::close_device()
 								return false;
 				if(!uinit_Semaphore())
 								return false;
+				//MINI	
 				if(-1 == close(fd))
 				{
 						fprintf(stderr, "[OpenCVSupport::close_device] : close(fd) failed\n");
 						return false;
 				}
-		/*		for(int j=0; j<4; j++)
+				//MINI
+				for(int j=0; j<4; j++)
 				{
 					free(buffers[j].start);
 					free(buffers[j].length);
-				}*/
+				}
 				free(this->buffers);
 				return true;
 }
 static bool uinit_SharedMemorySpace(int shmid, void** shmPtr)
 {
-				if(-1 == shmdt(*shmPtr))
+	//MINI
+		/*		if(-1 == shmdt(*shmPtr))
 				{
 								fprintf(stderr, "Detach Shared Memory Space Failed\n");
 								return false;
 				}
-
-				/*	if(-1 == shmctl(shmid, IPC_RMID, 0))
+				
+				//MINI
+				if(-1 == shmctl(shmid, IPC_RMID, 0))
 				{
 								fprintf(stderr, "UnInit Shared Memory Space Failed\n");
 								return false;
@@ -231,15 +243,17 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 				sem_wait(mx);
 					*check = 0;
 				sem_post(mx);
-				usleep(1000);	
+	//			usleep(100);	
+		
 				sem_wait(mx);
 					*length = buf->bytesused;
-				//	printf("length11 : %d\n", *length);
+					printf("length : %d\n", *length);
 					memcpy((char*)ptr, (char*)buf->m.userptr, *length);		
 					*check = 1;
 				sem_post(mx);			
-					
-//				processImg((void*)ptr, length);
+				usleep(100);
+
+//					processImg((void*)ptr, length);
 					if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
 					{
 						fprintf(stderr, "VIDIOC_QBUF\n"); 
@@ -274,6 +288,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 }
 bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 {
+			
 			unsigned int* count = camProp->getCount();
 			unsigned int volatile_count;
 			unsigned int cnt=0;
@@ -286,7 +301,13 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 			unsigned last = 0;
 			struct timeval tv_last;
 			int fd = camProp->getfd();
-
+			
+			int n_buffers = camProp->getN_buffers();
+			int size = camProp->getBufferSize();
+			int offset = size*(n_buffers-1);
+			int offset_size = size*n_buffers;
+			void* _check =(void*)shmPtr+offset_size+sizeof(int);
+			int* check = (int*)_check;
 			
 			while((volatile_count > 0) && volatile_eos)
 			{
@@ -326,10 +347,13 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 								volatile_count=(*count)--;
 							else
 								volatile_count = (*count);
-							
 					  	pthread_mutex_unlock(&mutex);
+			
 			}
-		  
+			sem_wait(this->mx);
+			*check = 0;
+			sem_post(this->mx);
+			
 			return true;
 }
 bool OpenCVSupport::start()

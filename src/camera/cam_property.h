@@ -16,8 +16,8 @@
 
 #include <iostream>
 #include <linux/videodev2.h>
-#include <libv4l1.h>
-#include <libv4l2.h>
+//#include <libv4l1.h>
+//#include <libv4l2.h>
 //#include "cam_core.h"
 #include "cam_status.h"
 #define DEFAULT_COUNT 100000000

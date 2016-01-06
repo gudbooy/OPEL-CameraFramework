@@ -7,4 +7,4 @@ NAN_MODULE_INIT(InitAll) {
 	Nan::Set(target, Nan::New<v8::String>("faceDetection").ToLocalChecked(), Nan::GetFunction(Nan::New<v8::FunctionTemplate>(FaceDetection)).ToLocalChecked());
 }
 
-NODE_MODULE(addon, InitAll)
+NODE_MODULE(OPELFaceDetection, InitAll)

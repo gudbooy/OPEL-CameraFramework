@@ -4,7 +4,7 @@
       "target_name": "OPELFaceDetection",
       "sources": ["src/addon.cc", "src/OPELFaceDetection.cc", "src/OPELFaceDetection.h"],
       "include_dirs": [
-        "<!(node -e \"require('nan')\")", "src"
+        "<!(node -e \"require('nan')\")", "src", "/usr/local/include"
       ],
 			"cflags" : ["-Wno-unused-variable"],
 			"cflags!" : ["-fno-exceptions"],

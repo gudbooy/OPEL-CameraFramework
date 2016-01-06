@@ -37,15 +37,13 @@ extern "C"{
 #define REC_BUFFER_INDEX 4
 #define SEM_FOR_PAYLOAD_SIZE 9948
 char SEM_NAME[] = "vik";
-static bool eos;
 union semun
 {
 	int val;
 	struct semid_ds* buf;
 	unsigned short int *array;
 };
-static struct sembuf status_post = {0, -1, SEM_UNDO};
-static struct sembuf status_wait = {0, 1, SEM_UNDO};
+static bool eos;
 class RecordingWorker : public Nan::AsyncWorker
 {
 	public:
@@ -56,8 +54,8 @@ class RecordingWorker : public Nan::AsyncWorker
 
 		void Execute()
 		{
-		  //if(openFileCap())
-				while(count-- > 0)
+				pid_t pid;
+				while((count-- > 0) && eos)
 				{
 					for(;;)
 					{
@@ -66,7 +64,7 @@ class RecordingWorker : public Nan::AsyncWorker
 						int r; 
 						FD_ZERO(&fds);
 						FD_SET(fd, &fds);
-						tv.tv_sec = 2;
+						tv.tv_sec = 10;
 						tv.tv_usec = 0;
 						r = select(fd+1, &fds, NULL, NULL, &tv);
 						if(-1 == r)
@@ -84,9 +82,25 @@ class RecordingWorker : public Nan::AsyncWorker
 					}
 				
 				}
-			fflush(fout);
+				fflush(fout);
 				closeFileCap();
-				printf("close\n");
+				usleep(100);
+				//FFmpeg Muxing Start
+				pid = fork();
+				switch(pid)
+				{
+					case -1:
+						printf("Create FFmpeg Process");
+						break;
+					case 0:
+						execl("/bin/ls", "ls", "-l", (char*)0);
+						printf("exec failed\n");
+						break;
+					default:
+						wait((int*) 0);
+						printf("ls completed\n");
+						break;
+				}
 		}
 		
 		bool readFrame()
@@ -113,8 +127,7 @@ class RecordingWorker : public Nan::AsyncWorker
 				sem_wait(mutex);
 				if(*check)
 				{
-
-					fprintf(stderr, "length : %d\n", *length);
+						fprintf(stderr, "length : %d\n", *length);
 					sz = fwrite((char*)buffer, sizeof(char), *length, fout);	
 					if(sz != *length)
 					{
@@ -123,10 +136,13 @@ class RecordingWorker : public Nan::AsyncWorker
 				}
 				else{
 					printf("skip!!!\n");
-					usleep(100);
+					if(count == 0)
+					{
+						this->count = 1;
+					}
 				}
 				sem_post(mutex);
-				usleep(10);
+				usleep(100);
 				return true;
 		}
 		void HandleOKCallback()
@@ -176,12 +192,9 @@ class RecordingWorker : public Nan::AsyncWorker
 		}
 		bool openFileCap(void)
 		{	
-			char cwdd[1024];
-		fout = fopen(file_path, "w+");	
-			//return true;	
+			fout = fopen(file_path, "w+");	
+			fprintf(stderr, "file_path!!!!!! : %s\n", file_path);
 			if(!fout){
-				fprintf(stderr, "cwd:%s\n", getcwd(cwdd, 1024));
-				fprintf(stderr, "error:%d,%s\n", errno, strerror(errno));
 				return false;
 			}
 			return true;
@@ -211,17 +224,20 @@ class OPELRecording : public Nan::ObjectWrap{
 	public:
 		static NAN_MODULE_INIT(Init);
   	void sendDbusMsg(const char* msg); 
+		bool sendDbusMsgCnt(const char* msg, int count);
 		bool initDbus();
 		//void init(const Nan::FunctionCallbackInfo<v8::value>& info);
 		bool openDevice();
 
 		bool initSharedMemorySpace();
+		bool uInitSharedMemorySpace();
 		int getFd() { return this->fd; } 
 		int getWidth() { return this->width; }
 		int getHeight() { return this->height; }
 		int getBufferSize() { return this->buffer_size; }
 		int getBufferIndex() { return this->buffer_index; }
 		void* getShmPtr() { return this->shmPtr; }
+
 	private:
 		explicit OPELRecording();
 		~OPELRecording();

@@ -42,7 +42,8 @@ INCS_Debug := \
 	-I/home/pi/.node-gyp/0.12.6/deps/uv/include \
 	-I/home/pi/.node-gyp/0.12.6/deps/v8/include \
 	-I$(srcdir)/node_modules/nan \
-	-I$(srcdir)/src
+	-I$(srcdir)/src \
+	-I/usr/local/include
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=OPELFaceDetection' \
@@ -85,7 +86,8 @@ INCS_Release := \
 	-I/home/pi/.node-gyp/0.12.6/deps/uv/include \
 	-I/home/pi/.node-gyp/0.12.6/deps/v8/include \
 	-I$(srcdir)/node_modules/nan \
-	-I$(srcdir)/src
+	-I$(srcdir)/src \
+	-I/usr/local/include
 
 OBJS := \
 	$(obj).target/$(TARGET)/src/addon.o \

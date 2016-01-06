@@ -19,11 +19,15 @@
 #define INDEX_OF_OPENCV_THR 0
 #define INDEX_OF_REC_THR 1
 
-
-static int NumOfClient;
-
+inline static DBusHandlerResult returnMSG(const char* errMsg)
+{
+	fprintf(stderr, errMsg);
+	return DBUS_HANDLER_RESULT_HANDLED;
+}
+/*Global Property*/
 static CameraProperty* openCV_camProp;
 static CameraProperty* rec_camProp;
+
 static OpenCVSupport* rec_cam;
 static OpenCVSupport* openCV_cam;
 
@@ -46,9 +50,6 @@ static bool is_recInit;
 static pthread_t OPELCamThread[NUM_OF_THREADS]; 
 int thr_id[2] = {0,};
 
-	
-std::queue<CameraRequest*> reqQueue;
-
 
 void* recCameraSupportThr(void* args)
 {
@@ -64,11 +65,9 @@ void* recCameraSupportThr(void* args)
 		fprintf(stderr, "STOP FAILED\n");
 		return NULL;
 	}
-	printf("recording Done\n");
+	printf("recording Done!!!\n");
 	return (void*)1;
 }
-
-
 void* openCVCameraSupportThr(void* args)
 {
 		if(!openCV_cam->start())
@@ -82,8 +81,8 @@ void* openCVCameraSupportThr(void* args)
 		{
 			fprintf(stderr, "STOP FAILED\n");
 			return NULL;
-		}
-		printf("opencv Done\n");
+	  }	
+		printf("opencv Done!!!\n");
 		return (void*)1;
 }
 
@@ -94,7 +93,7 @@ void setCount(unsigned curr)
 	unsigned* prev = rec_camProp->getCount();
 	if((2*curr) > *prev){
 		if(curr == 1)
-			*prev= 10*curr;
+			*prev= 100*curr;
 		else
 			*prev = 2*curr;
 	}
@@ -112,7 +111,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	{	
 		std::cout << "Get[DBUS] : OpenCVInit\n";
 		
-		if(camStatus->getIsRecRunning())
+		if(camStatus->getIsRecRunning()) //Recording Process is Running
 		{
 			fprintf(stderr, "Recording Process is Running\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
@@ -185,12 +184,10 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 
 		if(camStatus->getIsOpenCVRunning() || camStatus->getIsOpenCVInitialized())
 		{
-				
+				fprintf(stderr, "Turning Off the OpenCV\n");	
 				openCV_cam->setEos(false);
+				usleep(100000);
 				
-				usleep(10000);
-				
-				printf("stop and close opencv \n");
 				if(!openCV_cam->close_device())
 				{
 					fprintf(stderr, "CLOSE DEVICE FAILED\n");
@@ -202,7 +199,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		//if Recording is already running or Recording is initialized 
 		if(camStatus->getIsRecRunning() || camStatus->getIsRecInitialized())
 		{
-			printf("already Initialized\n");
+			printf("Already Recording Initialized\n");
 			return DBUS_HANDLER_RESULT_HANDLED;
 		}
 		else
@@ -210,7 +207,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 			rec_camProp->printSetValue();
 			if(!rec_cam->open())
 			{
-				fprintf(stderr, "DEVICE INIT FAILED\n");
+				fprintf(stderr, "DEVICE OPEN FAILED\n");
 				return DBUS_HANDLER_RESULT_HANDLED;
 			}
 			if(!rec_cam->init_device())
@@ -235,7 +232,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 			dbus_message_iter_get_basic(&args, &currCount);
 		}while(dbus_message_iter_next(&args));
 		setCount(currCount);		
-		//rec_cam->setEos(true);
+		rec_cam->setEos(true);
 		
 		if(camStatus->getIsRecRunning()){
 			printf("Recording Already Running\n");
@@ -269,9 +266,14 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-int main()
+
+
+
+
+
+/*MAIN*/
+int main(int argc, char** argv)
 {
-	NumOfClient=0;
 	bool isRec = true;		
 	st = (status*)malloc(sizeof(status));
 
@@ -307,7 +309,7 @@ int main()
  	camStatus->initSemaphore();
 	camStatus->getThrMutex(mutex_lock);
 	openCV_cam->setThrMutex(mutex_lock);
-	
+
 	first = true;
 	DBusConnection *conn;
 	DBusError err;

@@ -1,16 +1,12 @@
-#include "OPELFaceDetection.h"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/objdetect.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/videoio.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/core/utility.hpp"
+#include <OPELFaceDetection.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/videoio.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/core/utility.hpp>
 
-
-
-//#include <cv.h>
-//#include <highgui.h> 
 #include <iostream>
 #include <v8.h>
 #include <node.h>
@@ -20,7 +16,7 @@
 using namespace std;
 using namespace cv;
 
-string face_cascade = "./haarcascade_frontalface_alt.xml";
+string face_cascade = "/home/pi/OPEL-CameraFramework/npm/facedetection/haarcascade_frontalface_alt.xml";
 
 class OPELFaceDetection : public Nan::AsyncWorker
 {

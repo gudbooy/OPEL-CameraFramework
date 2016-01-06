@@ -54,6 +54,7 @@ class RecordingWorker : public Nan::AsyncWorker
 
 		void Execute()
 		{
+				pid_t pid;
 				while((count-- > 0) && eos)
 				{
 					for(;;)
@@ -63,7 +64,7 @@ class RecordingWorker : public Nan::AsyncWorker
 						int r; 
 						FD_ZERO(&fds);
 						FD_SET(fd, &fds);
-						tv.tv_sec = 2;
+						tv.tv_sec = 10;
 						tv.tv_usec = 0;
 						r = select(fd+1, &fds, NULL, NULL, &tv);
 						if(-1 == r)
@@ -76,18 +77,17 @@ class RecordingWorker : public Nan::AsyncWorker
 						{
 							break;
 						}
-					if(readFrame())
+					if(writeFrame())
 							break;
 					}
 				
 				}
 				fflush(fout);
 				closeFileCap();
-		//		printf("close\n");
-		
+				//FFmpeg Muxing Start
 		}
 		
-		bool readFrame()
+		bool writeFrame()
 		{
 				
 				unsigned sz;
@@ -111,20 +111,26 @@ class RecordingWorker : public Nan::AsyncWorker
 				sem_wait(mutex);
 				if(*check)
 				{
-
-			//		fprintf(stderr, "length : %d\n", *length);
+						fprintf(stderr, "length : %d\n", *length);
 					sz = fwrite((char*)buffer, sizeof(char), *length, fout);	
-				//	if(sz != *length)
-				//	{
-				//			fprintf(stderr, "ERROR Occurred\n");
-				//	}
+					if(sz != *length)
+					{
+							fprintf(stderr, "ERROR Occurred\n");
+					}
 				}
 				else{
-//					printf("skip!!!\n");
-					usleep(10);/* MINI */
+					printf("skip!!!\n");
+					if(count == 0)
+					{
+						this->count = 1;
+					}
+				/*	else
+					{
+						this->count++;
+					}*/
 				}
 				sem_post(mutex);
-				usleep(10);
+				usleep(100);
 				return true;
 		}
 		void HandleOKCallback()
@@ -175,6 +181,7 @@ class RecordingWorker : public Nan::AsyncWorker
 		bool openFileCap(void)
 		{	
 			fout = fopen(file_path, "w+");	
+			fprintf(stderr, "file_path!!!!!! : %s\n", file_path);
 			if(!fout){
 				return false;
 			}

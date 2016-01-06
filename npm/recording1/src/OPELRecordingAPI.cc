@@ -61,7 +61,7 @@ NAN_METHOD(OPELRecording::recStart)
 	count = Nan::To<int>(info[1]).FromJust();
 	
 	OPELRecording *recObj = Nan::ObjectWrap::Unwrap<OPELRecording>(info.This());
-	recObj->sendDbusMsg("recStart");
+	recObj->sendDbusMsgCnt("recStart", count);
 
 	for(;;){
 		if((recObj->initSharedMemorySpace()))
@@ -97,7 +97,7 @@ NAN_METHOD(OPELRecording::recStart)
 		Nan::ThrowError("init Semaphore Error\n");
 		return ;
 	}
-	
+	eos = true;
 //	fprintf(stderr, "recObj->getWidth() : %d\n", recObj->getWidth());
 //	fprintf(stderr, "recObj->getHeight() : %d\n", recObj->getHeight());
 //	fprintf(stderr, "recObj->getBufferSize() : %d\n", recObj->getBufferSize());
@@ -106,6 +106,14 @@ NAN_METHOD(OPELRecording::recStart)
 }
 NAN_METHOD(OPELRecording::recStop)
 {
+/*	OPELRecording *recObj = Nan::ObjectWrap::Unwrap<OPELRecording>(info.This());
+	if(eos){
+		eos = false;
+		recObj->sendDbusMsg("recStop");
+	}
+	else
+		recObj->sendDbusMsg("recStop");
+	*/	
 		//만약 워커 쓰레드가 작동하고 있다면 ? 
 		//eos를 통해 강제 정지 후 리턴하도록 함
 		//워커 쓰레드가 작동하지 않는다면? 그냥 디버스로 recStop끝내라라는 메세지만 센딩
@@ -114,7 +122,18 @@ NAN_METHOD(OPELRecording::recStop)
 }
 NAN_METHOD(OPELRecording::recClose)
 {
-	 //워커 쓰레드를 제거
+	/*OPELRecording *recObj = Nan::ObjectWrap::Unwrap<OPELRecording>(info.This());
+	if(eos){
+		eos = false;
+		recObj->sendDbusMsg("recStop");
+		recObj->sendDbusMsg("recClose");
+	}
+	else
+		recObj->sendDbusMsg("recClose");
+	*/
+
+	
+	//워커 쓰레드를 제거
 	 // 일단은 dbus로 close를 보내보자
 	 // 그리고 dbus 닫고 sharedmemory 닫고 semaphore 제거하고 Done
 }
@@ -137,7 +156,22 @@ void OPELRecording::sendDbusMsg(const char* msg)
 	dbus_connection_send(conn, message, NULL);
 	dbus_message_unref(message);
 }
-
+bool OPELRecording::sendDbusMsgCnt(const char* msg, int count)
+{
+	DBusMessageIter args;
+	dbus_int32_t cnt = (dbus_int32_t)count;
+	DBusMessage* message;
+	message = dbus_message_new_signal("/org/opel/camera/daemon", "org.opel.camera.daemon", msg);
+	dbus_message_iter_init_append(message, &args);
+	if(!dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &cnt))
+	{
+		fprintf(stderr, "[OPELRecording::sendDbusMsgCnt] : dbus append args error\n");
+		return false;
+	}
+	dbus_connection_send(conn, message, NULL);
+	dbus_message_unref(message);
+	return true;
+}
 bool OPELRecording::initDbus()
 {
   dbus_error_init(&err);
@@ -168,7 +202,12 @@ bool OPELRecording::initSharedMemorySpace()
 		return false;
 	return true;
 } 
-
+bool OPELRecording::uInitSharedMemorySpace()
+{
+	if(shmdt(shmPtr) == -1)
+		return false;
+	return true;
+}
 NAN_METHOD(OPELRecording::New)
 {
 	//Nan::NanScope();
