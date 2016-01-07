@@ -25,4 +25,15 @@ int main()
 	}
 	sem_close(mutex);
 	sem_unlink(SEM_NAME);
+	mutex = sem_open("CCDSTATUS", O_CREAT, 0666, 1);
+	if(mutex == SEM_FAILED)
+	{
+		perror("unable to create Semaphore");
+		sem_unlink("CCDSTATUS");
+		exit(-1);
+	}
+	sem_close(mutex);
+	sem_unlink("CCDSTATUS");
+	return 0;
+
 }

@@ -1,4 +1,4 @@
-cscope 15 $HOME/OPEL-CameraFramework/src/camera               0000295864
+cscope 15 $HOME/OPEL-CameraFramework/src/camera               0000295949
 	@cam_cap_check.cpp
 
 1 
@@ -395,7 +395,7 @@ size
 	`gëBuf„rSize
 ();
 
-79 
+67 
 fd
  = 
 this
@@ -405,19 +405,19 @@ this
 	`gëfd
 ();
 
-80 
+68 
 v4l2_buf_ty≥
  
 ty≥
 ;
 
-81 
+69 
 ty≥
  = 
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-82 if(-1 =
+70 if(-1 =
 	`xio˘l
 (
 fd
@@ -427,41 +427,25 @@ VIDIOC_STREAMOFF
 ty≥
 ))
 
-84 
+72 
 	`Ârötf
 (
 °dîr
 , "VIDIOC_STREAMOFF");
 
-85  
+73  
 Ál£
 ;
 
-88 
-i
-=0; i<4; i++)
-
-90 
-	`mem£t
-(
-buf„rs
-[
-i
-].
-°¨t
-, 0x0, 
-size
-);
-
-92  
+81  
 åue
 ;
 
-93 
+82 
 	}
 }
 
-94 
+83 
 boﬁ
  
 	gO≥nCVSuµ‹t
@@ -469,11 +453,11 @@ boﬁ
 	$˛o£_devi˚
 ()
 
-96 
+85 
 i
 ;
 
-97 
+86 
 fd
  = 
 ˇmPr›
@@ -481,7 +465,7 @@ fd
 	`gëfd
 ();
 
-98 if(!
+87 if(!
 	`uöô_Sh¨edMem‹yS∑˚
 (
 this
@@ -491,39 +475,39 @@ shmid
 shmPå
 ))
 
-99  
+88  
 Ál£
 ;
 
-100 if(!
+89 if(!
 	`uöô_Sem≠h‹e
 ())
 
-101  
+90  
 Ál£
 ;
 
-102 if(-1 =
+92 if(-1 =
 	`˛o£
 (
 fd
 ))
 
-104 
+94 
 	`Ârötf
 (
 °dîr
 , "[OpenCVSupport::close_device] : close(fd) failed\n");
 
-105  
+95  
 Ál£
 ;
 
-108 
+98 
 j
 =0; j<4; j++)
 
-110 
+100 
 	`‰ì
 (
 buf„rs
@@ -533,7 +517,7 @@ j
 °¨t
 );
 
-111 
+101 
 	`‰ì
 (
 buf„rs
@@ -543,7 +527,7 @@ j
 Àngth
 );
 
-113 
+103 
 	`‰ì
 (
 this
@@ -551,15 +535,15 @@ this
 buf„rs
 );
 
-114  
+104  
 åue
 ;
 
-115 
+105 
 	}
 }
 
-116 
+106 
 boﬁ
  
 	$uöô_Sh¨edMem‹yS∑˚
@@ -569,15 +553,15 @@ shmid
 shmPå
 )
 
-131  
+121  
 åue
 ;
 
-132 
+122 
 	}
 }
 
-133 
+123 
 boﬁ
  
 	gO≥nCVSuµ‹t
@@ -587,11 +571,11 @@ boﬁ
 buf„r_size
 )
 
-136 
+126 
 i
 ;
 
-137 
+127 
 fd
  = 
 ˇmPr›
@@ -599,7 +583,7 @@ fd
 	`gëfd
 ();
 
-138 
+128 
 v4l2_ªque°buf„rs
 * 
 ªq
@@ -609,19 +593,19 @@ v4l2_ªque°buf„rs
 	`gëReque°buf„rs
 ();
 
-139 
+129 
 	`CLEAR
 (*(
 ªq
 ));
 
-140 
+130 
 ªq
 ->
 cou¡
  = 4;
 
-141 
+131 
 ˇmPr›
 ->
 	`£tN_buf„rs
@@ -631,7 +615,7 @@ cou¡
 cou¡
 );
 
-142 
+132 
 ªq
 ->
 ty≥
@@ -639,7 +623,7 @@ ty≥
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-143 
+133 
 ªq
 ->
 mem‹y
@@ -647,7 +631,7 @@ mem‹y
 V4L2_MEMORY_USERPTR
 ;
 
-145 if(-1 =
+135 if(-1 =
 	`xio˘l
 (
 fd
@@ -657,13 +641,13 @@ VIDIOC_REQBUFS
 ªq
 ))
 
-147 if(
+137 if(
 EINVAL
  =
 î∫o
 )
 
-149 
+139 
 	`Ârötf
 (
 °dîr
@@ -671,21 +655,21 @@ EINVAL
 devi˚Name
 );
 
-150  
+140  
 Ál£
 ;
 
-154 
+144 
 	`Ârötf
 (
 °dîr
 , "VIDIOC_REQBUFS");
 
-155  
+145  
 Ál£
 ;
 
-159 
+149 
 buf„rs
  = (
 buf„r
@@ -693,21 +677,21 @@ buf„r
 	`ˇŒoc
 (4, (*buffers));
 
-160 if(!
+150 if(!
 buf„rs
 ){
 
-161 
+151 
 	`Ârötf
 (
 °dîr
 , "Out of Memory\n");
 
-162  
+152  
 Ál£
 ;
 
-164 
+154 
 ˇmPr›
 ->
 	`£tBuf„rSize
@@ -715,7 +699,7 @@ buf„rs
 buf„r_size
 );
 
-165 
+155 
 ˇmPr›
 ->
 	`£tBuf„rNum
@@ -725,7 +709,7 @@ buf„r_size
 cou¡
 );
 
-166 if(!
+156 if(!
 	`öô_Sh¨edMem‹yS∑˚
 (
 ªq
@@ -743,17 +727,17 @@ shmPå
 	`gëShmKey
 ()))
 
-168 
+158 
 	`Ârötf
 (
 °dîr
 , "Shared Memory Space Initialization Failed\n");
 
-169  
+159  
 Ál£
 ;
 
-171 
+161 
 i
 =0; i< 
 ªq
@@ -761,7 +745,7 @@ i
 cou¡
 ; i++)
 
-176 
+166 
 buf„rs
 [
 i
@@ -773,7 +757,7 @@ i
 buf„r_size
 );
 
-178 if(!
+168 if(!
 buf„rs
 [
 i
@@ -781,17 +765,17 @@ i
 °¨t
 )
 
-180 
+170 
 	`Ârötf
 (
 °dîr
 , "LinkÅo SharedMemorySpace failed\n");
 
-181  
+171  
 Ál£
 ;
 
-184 
+174 
 off£t
  = 
 ªq
@@ -801,7 +785,7 @@ cou¡
 buf„r_size
 ;
 
-185 
+175 
 i
 =0; i< 
 ªq
@@ -809,7 +793,7 @@ i
 cou¡
 ; i++)
 
-187 
+177 
 buf„rs
 [
 i
@@ -819,7 +803,7 @@ i
 	`mÆloc
 (());
 
-189 if(!
+179 if(!
 buf„rs
 [
 i
@@ -827,17 +811,17 @@ i
 Àngth
 )
 
-191 
+181 
 	`Ârötf
 (
 °dîr
 , "LinkÅo SharedMemorySpace failed\n");
 
-192  
+182  
 Ál£
 ;
 
-194 *
+184 *
 buf„rs
 [
 i
@@ -847,23 +831,23 @@ i
 buf„r_size
 ;
 
-196 if(!
+186 if(!
 	`öô_Sem≠h‹e
 ())
 
-197  
+187  
 Ál£
 ;
 
-199  
+189  
 åue
 ;
 
-200 
+190 
 	}
 }
 
-201 
+191 
 	$¥o˚ssImg
 (* 
 p
@@ -871,11 +855,11 @@ p
 size
 )
 
-204 
+194 
 sz
 ;
 
-205 
+195 
 FILE
  *
 Â
@@ -883,7 +867,7 @@ FILE
 	`f›í
 ("/home/pi/camData/cam.mjpg", "ab");
 
-206 
+196 
 sz
  = 
 	`fwrôe
@@ -895,35 +879,35 @@ size
 Â
 );
 
-208 if(
+198 if(
 sz
  !*
 size
 )
 
-210 
+200 
 	`Ârötf
 (
 °dîr
 , "failed!!!!!\n");
 
-212 
+202 
 	`fÊush
 (
 Â
 );
 
-213 
+203 
 	`f˛o£
 (
 Â
 );
 
-214 
+204 
 	}
 }
 
-215 
+205 
 boﬁ
  
 	$ªadFøme
@@ -953,11 +937,11 @@ shmPå
 mx
 )
 
-217 
+207 
 ch
  = '<';
 
-218 
+208 
 v4l2_buf„r
 * 
 buf
@@ -967,7 +951,7 @@ buf
 	`gëBuf„r
 ();
 
-219 
+209 
 fd
  = 
 ˇmPr›
@@ -975,7 +959,7 @@ fd
 	`gëfd
 ();
 
-220 
+210 
 n_buf„rs
  = 
 ˇmPr›
@@ -983,7 +967,7 @@ n_buf„rs
 	`gëN_buf„rs
 ();
 
-221 
+211 
 size
  = 
 ˇmPr›
@@ -991,7 +975,7 @@ size
 	`gëBuf„rSize
 ();
 
-222 
+212 
 off£t
  = 
 size
@@ -999,7 +983,7 @@ size
 n_buf„rs
 -1);
 
-223 
+213 
 off£t_size
  = 
 size
@@ -1007,11 +991,11 @@ size
 n_buf„rs
 ;
 
-224 
+214 
 i
 ;
 
-225 * 
+215 * 
 cou¡
  = 
 ˇmPr›
@@ -1019,7 +1003,7 @@ cou¡
 	`gëCou¡
 ();
 
-226 * 
+216 * 
 ±r
  = 
 shmPå
@@ -1027,7 +1011,7 @@ shmPå
 off£t
 ;
 
-227 * 
+217 * 
 _check
  =(*)
 shmPå
@@ -1035,7 +1019,7 @@ shmPå
 off£t_size
 +();
 
-228 * 
+218 * 
 _Àngth
  = (*)
 shmPå
@@ -1043,25 +1027,25 @@ shmPå
 off£t_size
 ;
 
-229 * 
+219 * 
 Àngth
  = (*)
 _Àngth
 ;
 
-230 * 
+220 * 
 check
  = (*)
 _check
 ;
 
-231 
+221 
 	`CLEAR
 (*
 buf
 );
 
-232 
+222 
 buf
 ->
 ty≥
@@ -1069,7 +1053,7 @@ ty≥
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-233 
+223 
 buf
 ->
 mem‹y
@@ -1077,7 +1061,7 @@ mem‹y
 V4L2_MEMORY_USERPTR
 ;
 
-234 if(-1 =
+224 if(-1 =
 	`xio˘l
 (
 fd
@@ -1087,39 +1071,39 @@ VIDIOC_DQBUF
 buf
 ))
 
-236 
+226 
 î∫o
 ){
 
-237 
+227 
 EAGAIN
 :
 
-238  
+228  
 Ál£
 ;
 
-240 
+230 
 EIO
 :
 
-243 
+233 
 	`Ârötf
 (
 °dîr
 , "VIDIOC_DQBUF\n");
 
-244  
+234  
 Ál£
 ;
 
-247 
+237 
 i
 =0; i <
 n_buf„rs
 ; ++i)
 
-248 if(
+238 if(
 buf
 ->
 m
@@ -1135,7 +1119,7 @@ i
 Àngth
  >= (*buffers[i].length))
 
-251 
+241 
 	`as£π
 (
 i
@@ -1143,29 +1127,29 @@ i
 n_buf„rs
 );
 
-253 
+243 
 	`£m_waô
 (
 mx
 );
 
-254 *
+244 *
 check
  = 0;
 
-255 
+245 
 	`£m_po°
 (
 mx
 );
 
-258 
+248 
 	`£m_waô
 (
 mx
 );
 
-259 *
+249 *
 Àngth
  = 
 buf
@@ -1173,13 +1157,13 @@ buf
 byãsu£d
 ;
 
-260 
+250 
 	`¥ötf
 ("Àngth : %d\n", *
 Àngth
 );
 
-261 
+251 
 	`mem˝y
 ((*)
 ±r
@@ -1193,21 +1177,21 @@ u£Ωå
 Àngth
 );
 
-262 *
+252 *
 check
  = 1;
 
-263 
+253 
 	`£m_po°
 (
 mx
 );
 
-264 
+254 
 	`u¶ìp
 (100);
 
-267 if(-1 =
+257 if(-1 =
 	`xio˘l
 (
 fd
@@ -1217,21 +1201,21 @@ VIDIOC_QBUF
 buf
 ))
 
-269 
+259 
 	`Ârötf
 (
 °dîr
 , "VIDIOC_QBUF\n");
 
-270  
+260  
 Ál£
 ;
 
-280 if(
+270 if(
 ˙t
  == 0)
 
-282 
+272 
 	`gëtimeofday
 (&
 tv_œ°
@@ -1239,7 +1223,7 @@ tv_œ°
 NULL
 );
 
-285 
+275 
 timevÆ
  
 tv_cur
@@ -1247,7 +1231,7 @@ tv_cur
 ªs
 ;
 
-286 
+276 
 	`gëtimeofday
 (&
 tv_cur
@@ -1255,7 +1239,7 @@ tv_cur
 NULL
 );
 
-287 
+277 
 	`timîsub
 (&
 tv_cur
@@ -1265,13 +1249,13 @@ tv_œ°
 ªs
 );
 
-288 if(
+278 if(
 ªs
 .
 tv_£c
 ){
 
-289 
+279 
 Âs
  = (100*(
 ˙t
@@ -1285,31 +1269,31 @@ tv_£c
 tv_u£c
  / 10000);
 
-290 
+280 
 œ°
  = 
 ˙t
 ;
 
-291 
+281 
 tv_œ°
  = 
 tv_cur
 ;
 
-295 
+285 
 ˙t
 ++;
 
-297  
+287  
 åue
 ;
 
-298 
+288 
 	}
 }
 
-299 
+289 
 boﬁ
  
 	gO≥nCVSuµ‹t
@@ -1325,7 +1309,7 @@ buf„r
 buf„rs
 )
 
-302 * 
+292 * 
 cou¡
  = 
 ˇmPr›
@@ -1333,21 +1317,21 @@ cou¡
 	`gëCou¡
 ();
 
-303 
+293 
 vﬁ©ûe_cou¡
 ;
 
-304 
+294 
 ˙t
 =0;
 
-306 
+296 
 	`±hªad_muãx_lock
 (&
 muãx
 );
 
-307 
+297 
 boﬁ
  
 vﬁ©ûe_eos
@@ -1357,29 +1341,29 @@ this
 eos
 ;
 
-308 
+298 
 vﬁ©ûe_cou¡
  = *
 cou¡
 ;
 
-309 
+299 
 	`±hªad_muãx_u∆ock
 (&
 muãx
 );
 
-311 
+301 
 œ°
  = 0;
 
-312 
+302 
 timevÆ
  
 tv_œ°
 ;
 
-313 
+303 
 fd
  = 
 ˇmPr›
@@ -1387,7 +1371,7 @@ fd
 	`gëfd
 ();
 
-315 
+305 
 n_buf„rs
  = 
 ˇmPr›
@@ -1395,7 +1379,7 @@ n_buf„rs
 	`gëN_buf„rs
 ();
 
-316 
+306 
 size
  = 
 ˇmPr›
@@ -1403,7 +1387,7 @@ size
 	`gëBuf„rSize
 ();
 
-317 
+307 
 off£t
  = 
 size
@@ -1411,7 +1395,7 @@ size
 n_buf„rs
 -1);
 
-318 
+308 
 off£t_size
  = 
 size
@@ -1419,7 +1403,7 @@ size
 n_buf„rs
 ;
 
-319 * 
+309 * 
 _check
  =(*)
 shmPå
@@ -1427,41 +1411,41 @@ shmPå
 off£t_size
 +();
 
-320 * 
+310 * 
 check
  = (*)
 _check
 ;
 
-322 (
+312 (
 vﬁ©ûe_cou¡
  > 0Ë&& 
 vﬁ©ûe_eos
 )
 
-327 
+317 
 fd_£t
  
 fds
 ;
 
-328 
+318 
 timevÆ
  
 tv
 ;
 
-329 
+319 
 r
 ;
 
-330 
+320 
 	`FD_ZERO
 (&
 fds
 );
 
-331 
+321 
 	`FD_SET
 (
 fd
@@ -1469,19 +1453,19 @@ fd
 fds
 );
 
-332 
+322 
 tv
 .
 tv_£c
  = 2;
 
-333 
+323 
 tv
 .
 tv_u£c
  = 0;
 
-334 
+324 
 r
  = 
 	`£À˘
@@ -1495,41 +1479,41 @@ NULL
 tv
 );
 
-335 if(-1 =
+325 if(-1 =
 r
 ){
 
-336 if(
+326 if(
 EINTR
  =
 î∫o
 )
 
-338 
+328 
 	`Ârötf
 (
 °dîr
 , "Select Error\n");
 
-339  
+329  
 Ál£
 ;
 
-341 if(0 =
+331 if(0 =
 r
 ){
 
-342 
+332 
 	`Ârötf
 (
 °dîr
 , "Select Timeout\n");
 
-343  
+333  
 Ál£
 ;
 
-345 if(
+335 if(
 	`FD_ISSET
 (
 fd
@@ -1537,7 +1521,7 @@ fd
 fds
 ))
 
-350 if(
+340 if(
 	`ªadFøme
 (
 ˇmPr›
@@ -1559,13 +1543,13 @@ shmPå
 mx
 ))
 
-354 
+344 
 	`±hªad_muãx_lock
 (&
 muãx
 );
 
-355 
+345 
 vﬁ©ûe_eos
  = 
 this
@@ -1573,29 +1557,29 @@ this
 eos
 ;
 
-356 if(*
+346 if(*
 cou¡
  > 0)
 
-357 
+347 
 vﬁ©ûe_cou¡
 =(*
 cou¡
 )--;
 
-359 
+349 
 vﬁ©ûe_cou¡
  = (*
 cou¡
 );
 
-360 
+350 
 	`±hªad_muãx_u∆ock
 (&
 muãx
 );
 
-363 
+353 
 	`£m_waô
 (
 this
@@ -1603,11 +1587,11 @@ this
 mx
 );
 
-364 *
+354 *
 check
  = 0;
 
-365 
+355 
 	`£m_po°
 (
 this
@@ -1615,15 +1599,15 @@ this
 mx
 );
 
-367  
+357  
 åue
 ;
 
-368 
+358 
 	}
 }
 
-369 
+359 
 boﬁ
  
 	gO≥nCVSuµ‹t
@@ -1631,11 +1615,11 @@ boﬁ
 	$°¨t
 ()
 
-371 
+361 
 i
 ;
 
-372 
+362 
 fd
  = 
 ˇmPr›
@@ -1643,7 +1627,7 @@ fd
 	`gëfd
 ();
 
-373 
+363 
 n_buf„r
  = 
 ˇmPr›
@@ -1651,7 +1635,7 @@ n_buf„r
 	`gëN_buf„rs
 ();
 
-374 
+364 
 v4l2_buf„r
 * 
 buf
@@ -1661,7 +1645,7 @@ buf
 	`gëBuf„r
 ();
 
-375 
+365 
 v4l2_buf_ty≥
  
 ty≥
@@ -1671,19 +1655,19 @@ ty≥
 	`gëTy≥
 ();
 
-376 
+366 
 i
 =0; i< 
 n_buf„r
 ; i++)
 
-378 
+368 
 	`CLEAR
 (*
 buf
 );
 
-379 
+369 
 buf
 ->
 ty≥
@@ -1691,7 +1675,7 @@ ty≥
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-380 
+370 
 buf
 ->
 mem‹y
@@ -1699,7 +1683,7 @@ mem‹y
 V4L2_MEMORY_USERPTR
 ;
 
-381 
+371 
 buf
 ->
 ödex
@@ -1707,7 +1691,7 @@ buf
 i
 ;
 
-382 
+372 
 buf
 ->
 m
@@ -1721,7 +1705,7 @@ i
 °¨t
 ;
 
-383 
+373 
 buf
 ->
 Àngth
@@ -1731,7 +1715,7 @@ buf„rs
 i
 ].length;
 
-384 
+374 
 	`£m_waô
 (
 this
@@ -1739,13 +1723,13 @@ this
 mx
 );
 
-385 *
+375 *
 buf„rs
 [1].
 Àngth
  = 0;
 
-386 
+376 
 	`£m_po°
 (
 this
@@ -1753,7 +1737,7 @@ this
 mx
 );
 
-387 if(-1 =
+377 if(-1 =
 	`xio˘l
 (
 fd
@@ -1763,23 +1747,23 @@ VIDIOC_QBUF
 buf
 ))
 
-389 
+379 
 	`Ârötf
 (
 °dîr
 , "VIDIOC_QBUF\n");
 
-390  
+380  
 Ál£
 ;
 
-394 
+384 
 ty≥
  = 
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-395 if(-1 =
+385 if(-1 =
 	`xio˘l
 (
 fd
@@ -1789,17 +1773,17 @@ VIDIOC_STREAMON
 ty≥
 ))
 
-397 
+387 
 	`Ârötf
 (
 °dîr
 , "VIDIOC_STREAMON\n");
 
-398  
+388  
 Ál£
 ;
 
-400 if(!
+390 if(!
 	`maöLo›
 (
 this
@@ -1809,25 +1793,25 @@ this
 buf„rs
 ))
 
-402 
+392 
 	`Ârötf
 (
 °dîr
 , "Main_Loop\n");
 
-403  
+393  
 Ál£
 ;
 
-406  
+396  
 åue
 ;
 
-407 
+397 
 	}
 }
 
-408 
+398 
 boﬁ
  
 	gO≥nCVSuµ‹t
@@ -1835,11 +1819,11 @@ boﬁ
 	$öô_devi˚
 ()
 
-410 
+400 
 mö
 ;
 
-411 
+401 
 fd
  = 
 ˇmPr›
@@ -1847,7 +1831,7 @@ fd
 	`gëfd
 ();
 
-412 
+402 
 v4l2_ˇ∑bûôy
 * 
 ˇp
@@ -1857,7 +1841,7 @@ v4l2_ˇ∑bûôy
 	`gëC≠abûôy
 ();
 
-413 
+403 
 v4l2_¸›ˇp
 * 
 ¸›ˇp
@@ -1867,7 +1851,7 @@ v4l2_¸›ˇp
 	`gëCr›ˇp
 ();
 
-414 
+404 
 v4l2_¸›
 * 
 ¸›
@@ -1877,7 +1861,7 @@ v4l2_¸›
 	`gëCr›
 ();
 
-415 
+405 
 v4l2_f‹m©
 * 
 fmt
@@ -1887,7 +1871,7 @@ fmt
 	`gëF‹m©
 ();
 
-416 if(-1 =
+406 if(-1 =
 	`xio˘l
 (
 fd
@@ -1897,13 +1881,13 @@ VIDIOC_QUERYCAP
 ˇp
 ))
 
-418 if(
+408 if(
 EINVAL
  =
 î∫o
 )
 
-420 
+410 
 	`Ârötf
 (
 °dîr
@@ -1911,19 +1895,19 @@ EINVAL
 devi˚Name
 );
 
-421  
+411  
 Ál£
 ;
 
-425 
+415 
 	`î∫o_exô
 ("VIDIOC_QUERYCAP");
 
-426  
+416  
 Ál£
 ;
 
-429 if(!(
+419 if(!(
 ˇp
 ->
 ˇ∑bûôõs
@@ -1931,7 +1915,7 @@ devi˚Name
 V4L2_CAP_VIDEO_CAPTURE
 ))
 
-431 
+421 
 	`Ârötf
 (
 °dîr
@@ -1939,11 +1923,11 @@ V4L2_CAP_VIDEO_CAPTURE
 devi˚Name
 );
 
-432  
+422  
 Ál£
 ;
 
-434 if(!(
+424 if(!(
 ˇp
 ->
 ˇ∑bûôõs
@@ -1951,7 +1935,7 @@ devi˚Name
 V4L2_CAP_STREAMING
 ))
 
-436 
+426 
 	`Ârötf
 (
 °dîr
@@ -1959,17 +1943,17 @@ V4L2_CAP_STREAMING
 devi˚Name
 );
 
-437  
+427  
 Ál£
 ;
 
-439 
+429 
 	`CLEAR
 (*
 ¸›ˇp
 );
 
-440 
+430 
 ¸›ˇp
 ->
 ty≥
@@ -1977,7 +1961,7 @@ ty≥
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-441 if(0 =
+431 if(0 =
 	`xio˘l
 (
 fd
@@ -1987,7 +1971,7 @@ VIDIOC_CROPCAP
 ¸›ˇp
 ))
 
-443 
+433 
 ¸›
 ->
 ty≥
@@ -1995,7 +1979,7 @@ ty≥
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-444 
+434 
 ¸›
 ->
 c
@@ -2005,7 +1989,7 @@ c
 de‰e˘
 ;
 
-445 if(-1 =
+435 if(-1 =
 	`xio˘l
 (
 fd
@@ -2015,33 +1999,33 @@ VIDIOC_S_CROP
 ¸›
 ))
 
-447 
+437 
 î∫o
 )
 
-449 
+439 
 EINVAL
 :
 
-450 
+440 
 	`Ârötf
 (
 °dîr
 , "Cropping Not Supported\n");
 
-453 
+443 
 	`Ârötf
 (
 °dîr
 , "Errors Ignored\n");
 
-462 
+452 
 	`CLEAR
 (*
 fmt
 );
 
-463 
+453 
 fmt
 ->
 ty≥
@@ -2049,7 +2033,7 @@ ty≥
 V4L2_BUF_TYPE_VIDEO_CAPTURE
 ;
 
-464 
+454 
 fmt
 ->fmt.
 pix
@@ -2061,7 +2045,7 @@ width
 	`gëWidth
 ();
 
-465 
+455 
 fmt
 ->fmt.
 pix
@@ -2073,7 +2057,7 @@ height
 	`gëHeight
 ();
 
-466 
+456 
 fmt
 ->fmt.
 pix
@@ -2085,7 +2069,7 @@ pixñf‹m©
 	`gëPixñf‹m©
 ();
 
-467 
+457 
 fmt
 ->fmt.
 pix
@@ -2097,7 +2081,7 @@ fõld
 	`gëFõld
 ();
 
-468 if(-1 =
+458 if(-1 =
 	`xio˘l
 (
 fd
@@ -2107,17 +2091,17 @@ VIDIOC_S_FMT
 fmt
 ))
 
-470 
+460 
 	`Ârötf
 (
 °dîr
 , "VIDIOC_S_FMT Error\n");
 
-471  
+461  
 Ál£
 ;
 
-474 
+464 
 mö
  = 
 fmt
@@ -2127,7 +2111,7 @@ pix
 width
  * 2;
 
-475 if(
+465 if(
 fmt
 ->fmt.
 pix
@@ -2137,7 +2121,7 @@ byã•îlöe
 mö
 )
 
-476 
+466 
 fmt
 ->fmt.
 pix
@@ -2147,7 +2131,7 @@ byã•îlöe
 mö
 ;
 
-477 
+467 
 mö
  = 
 fmt
@@ -2159,7 +2143,7 @@ byã•îlöe
 height
 ;
 
-478 if(
+468 if(
 fmt
 ->fmt.
 pix
@@ -2169,7 +2153,7 @@ sizeimage
 mö
 )
 
-479 
+469 
 fmt
 ->fmt.
 pix
@@ -2179,7 +2163,7 @@ sizeimage
 mö
 ;
 
-481 if(!
+471 if(!
 	`öô_u£rPoöãr
 (
 fmt
@@ -2189,25 +2173,25 @@ pix
 sizeimage
 ))
 
-483 
+473 
 	`Ârötf
 (
 °dîr
 , "initialize userÖointer failed\n");
 
-484  
+474  
 Ál£
 ;
 
-486  
+476  
 åue
 ;
 
-489 
+479 
 	}
 }
 
-490 
+480 
 boﬁ
  
 	$libv4l2_›í
@@ -2217,17 +2201,17 @@ CamîaPr›îty
 ˇmPr›
 )
 
-492 
+482 
 fd
 ;
 
-493 
+483 
 °©
  
 °
 ;
 
-494 if(-1 =
+484 if(-1 =
 	`°©
 (
 devi˚Name
@@ -2235,7 +2219,7 @@ devi˚Name
 °
 ))
 
-496 
+486 
 	`Ârötf
 (
 °dîr
@@ -2247,11 +2231,11 @@ devi˚Name
 	`°ªº‹
 (errno));
 
-497  
+487  
 Ál£
 ;
 
-499 if(!
+489 if(!
 	`S_ISCHR
 (
 °
@@ -2259,7 +2243,7 @@ devi˚Name
 °_mode
 ))
 
-501 
+491 
 	`Ârötf
 (
 °dîr
@@ -2267,11 +2251,11 @@ devi˚Name
 devi˚Name
 );
 
-502  
+492  
 Ál£
 ;
 
-504 
+494 
 fd
  = 
 	`›í
@@ -2283,11 +2267,11 @@ O_RDWR
 O_NONBLOCK
 , 0);
 
-505 if(-1 =
+495 if(-1 =
 fd
 )
 
-507 
+497 
 	`Ârötf
 (
 °dîr
@@ -2299,11 +2283,11 @@ devi˚Name
 	`°ªº‹
 (errno));
 
-508  
+498  
 Ál£
 ;
 
-511 
+501 
 ˇmPr›
 ->
 	`£tfd
@@ -2311,15 +2295,15 @@ devi˚Name
 fd
 );
 
-512  
+502  
 åue
 ;
 
-513 
+503 
 	}
 }
 
-514 
+504 
 boﬁ
  
 	$libv4l2_öô
@@ -2329,21 +2313,21 @@ CamîaPr›îty
 ˇmPr›
 )
 
-516  
+506  
 åue
 ;
 
-517 
+507 
 	}
 }
 
-521 
+511 
 	$î∫o_exô
 (c⁄° *
 s
 )
 
-523 
+513 
 	`Ârötf
 (
 °dîr
@@ -2355,17 +2339,17 @@ s
 	`°ªº‹
 (errno));
 
-524 
+514 
 	`exô
 (
 EXIT_FAILURE
 );
 
-525 
+515 
 	}
 }
 
-527 
+517 
 	$xio˘l
 (
 fh
@@ -2375,11 +2359,11 @@ fh
 ¨g
 )
 
-529 
+519 
 r
 ;
 
-531 
+521 
 r
  = 
 	`io˘l
@@ -2391,7 +2375,7 @@ fh
 ¨g
 );
 
-532 }-1 =
+522 }-1 =
 r
  && 
 EINTR
@@ -2399,11 +2383,11 @@ EINTR
 î∫o
 );
 
-533 
+523 
 	}
 }
 
-534 
+524 
 boﬁ
  
 	$öô_Sh¨edMem‹yS∑˚
@@ -2421,7 +2405,7 @@ key_t
 shmkey
 )
 
-536 
+526 
 	`¥ötf
 ("buf„r_À¿%d, buf„r_num = %d\n", 
 buf„r_size
@@ -2429,7 +2413,7 @@ buf„r_size
 ªq_cou¡
 );
 
-538 
+528 
 shmid
  = 
 	`shmgë
@@ -2445,25 +2429,25 @@ buf„r_size
 IPC_CREAT
 );
 
-539 
+529 
 	`¥ötf
 ("shmkey : %d\n", 
 shmkey
 );
 
-540 if(
+530 if(
 shmid
  == -1)
 
-542 
+532 
 	`≥º‹
 ("shmget failed : ");
 
-543  
+533  
 Ál£
 ;
 
-545 *
+535 *
 shmPå
  = 
 	`shm©
@@ -2473,31 +2457,31 @@ shmid
 NULL
 , 0);
 
-547 if(*
+537 if(*
 shmPå
  == (*)-1)
 
-549 
+539 
 	`≥º‹
 ("shmget failed : ");
 
-550  
+540  
 Ál£
 ;
 
-552 
+542 
 	`¥ötf
 ("Shared Memory Region Initialization Success\n");
 
-553  
+543  
 åue
 ;
 
-554 
+544 
 	}
 }
 
-555 
+545 
 boﬁ
  
 	$unöô_Sh¨edMem‹yS∑˚
@@ -2505,7 +2489,7 @@ boﬁ
 shmid
 )
 
-557 if(-1 =
+547 if(-1 =
 	`shm˘l
 (
 shmid
@@ -2513,21 +2497,21 @@ shmid
 IPC_RMID
 , 0))
 
-559 
+549 
 	`Ârötf
 (
 °dîr
 , "FailedÅoÑemove shared dataÑegion\n");
 
-560  
+550  
 Ál£
 ;
 
-562  
+552  
 åue
 ;
 
-563 
+553 
 	}
 }
 
@@ -6809,87 +6793,109 @@ EXIT_FAILURE
 
 	)
 
-23 
-	gNumOfClõ¡
+22 
+ölöe
+ 
+DBusH™dÀrResu…
+ 
+	$ªtu∫MSG
+(c⁄° * 
+îrMsg
+)
+
+24 
+	`Ârötf
+(
+°dîr
+, 
+îrMsg
+);
+
+25  
+DBUS_HANDLER_RESULT_HANDLED
 ;
 
-25 
+26 
+	}
+}
+
+28 
 CamîaPr›îty
 * 
 	g›íCV_ˇmPr›
 ;
 
-26 
+29 
 CamîaPr›îty
 * 
 	gªc_ˇmPr›
 ;
 
-27 
+31 
 O≥nCVSuµ‹t
 * 
 	gªc_ˇm
 ;
 
-28 
+32 
 O≥nCVSuµ‹t
 * 
 	g›íCV_ˇm
 ;
 
-30 
+34 
 ¥›îty
 * 
 	g›íCVPr›îty
 ;
 
-31 
+35 
 ¥›îty
 * 
 	gªcPr›îty
 ;
 
-34 
+38 
 °©us
 * 
 	g°
 ;
 
-36 
+40 
 CamîaSètus
 * 
 	gˇmSètus
 ;
 
-37 
+41 
 ±hªad_muãx_t
  
 	gmuãx_lock
 ;
 
-40 
+44 
 boﬁ
  
 	gfú°
 ;
 
-41 
+45 
 	g£m_°©us_id
 ;
 
-43 
+47 
 boﬁ
  
 	gis_›íCVCamInô
 ;
 
-44 
+48 
 boﬁ
  
 	gis_ªcInô
 ;
 
-46 
+50 
 ±hªad_t
  
 	gOPELCamThªad
@@ -6897,43 +6903,33 @@ boﬁ
 NUM_OF_THREADS
 ];
 
-47 
+51 
 	gthr_id
 [2] = {0,};
 
-50 
-	g°d
-::
-queue
-<
-CamîaReque°
-*> 
-ªqQueue
-;
-
-53 * 
+54 * 
 	$ªcCamîaSuµ‹tThr
 (* 
 ¨gs
 )
 
-55 if(!
+56 if(!
 ªc_ˇm
 ->
 	`°¨t
 ())
 
-57 
+58 
 	`Ârötf
 (
 °dîr
 , "START FIALED\n");
 
-58  
+59  
 NULL
 ;
 
-60 
+61 
 ˇmSètus
 ->
 	`£tIsRecRu¬ög
@@ -6941,7 +6937,7 @@ NULL
 Ál£
 );
 
-61 
+62 
 ªc_ˇm
 ->
 	`£tEos
@@ -6949,53 +6945,53 @@ NULL
 Ál£
 );
 
-62 if(!
+63 if(!
 ªc_ˇm
 ->
 	`°›
 ())
 
-64 
+65 
 	`Ârötf
 (
 °dîr
 , "STOP FAILED\n");
 
-65  
+66  
 NULL
 ;
 
-67 
+68 
 	`¥ötf
-("recording Done\n");
+("recording Done!!!\n");
 
-69 
+70 
 	}
 }
 
-72 * 
+71 * 
 	$›íCVCamîaSuµ‹tThr
 (* 
 ¨gs
 )
 
-74 if(!
+73 if(!
 ›íCV_ˇm
 ->
 	`°¨t
 ())
 
-76 
+75 
 	`Ârötf
 (
 °dîr
 , "START FAIL\n");
 
-77  
+76  
 NULL
 ;
 
-79 
+78 
 ˇmSètus
 ->
 	`£tIsO≥nCVRu¬ög
@@ -7003,27 +6999,51 @@ NULL
 Ál£
 );
 
-86 
+79 
+›íCV_ˇm
+->
+	`£tEos
+(
+Ál£
+);
+
+80 if(!
+›íCV_ˇm
+->
+	`°›
+())
+
+82 
+	`Ârötf
+(
+°dîr
+, "STOP FAILED\n");
+
+83  
+NULL
+;
+
+85 
 	`¥ötf
 ("opencv Done!!!\n");
 
-88 
+87 
 	}
 }
 
-90 
+89 
 	$£tCou¡
 (
 cuº
 )
 
-93 
+92 
 	`±hªad_muãx_lock
 (&
 muãx_lock
 );
 
-94 * 
+93 * 
 ¥ev
  = 
 ªc_ˇmPr›
@@ -7031,39 +7051,39 @@ muãx_lock
 	`gëCou¡
 ();
 
-95 if((2*
+94 if((2*
 cuº
 Ë> *
 ¥ev
 ){
 
-96 if(
+95 if(
 cuº
  == 1)
 
-97 *
+96 *
 ¥ev
 100*
 cuº
 ;
 
-99 *
+98 *
 ¥ev
  = 2*
 cuº
 ;
 
-101 
+100 
 	`±hªad_muãx_u∆ock
 (&
 muãx_lock
 );
 
-103 
+102 
 	}
 }
 
-105 
+104 
 DBusH™dÀrResu…
  
 	$dbus_fûãr
@@ -7079,69 +7099,69 @@ mesßge
 u£r_d©a
 )
 
-108 
+107 
 DBusMesßgeIãr
  
 ¨gs
 ;
 
-111 if(
+110 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "OpenCVInit"))
 
-113 
+112 
 °d
 ::
 cout
  << "Get[DBUS] : OpenCVInit\n";
 
-115 if(
+114 if(
 ˇmSètus
 ->
 	`gëIsRecRu¬ög
 ())
 
-117 
+116 
 	`Ârötf
 (
 °dîr
 , "Recording Process is Running\n");
 
-118  
+117  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-120 if(
+119 if(
 ˇmSètus
 ->
 	`gëIsRecInôülized
 ())
 
-122 
+121 
 	`Ârötf
 (
 °dîr
 , "Recording Process is Not RunningÅhen start openCV Service\n");
 
-123 if(!
+122 if(!
 ªc_ˇm
 ->
 	`˛o£_devi˚
 ())
 
-125 
+124 
 	`Ârötf
 (
 °dîr
 , "recording device_close callÉrror\n");
 
-126  
+125  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-128 
+127 
 ˇmSètus
 ->
 	`£tIsRecInôülized
@@ -7149,7 +7169,7 @@ DBUS_HANDLER_RESULT_HANDLED
 Ál£
 );
 
-131 if(
+130 if(
 ˇmSètus
 ->
 	`gëIsO≥nCVInôülized
@@ -7157,55 +7177,55 @@ DBUS_HANDLER_RESULT_HANDLED
 	`gëIsO≥nCVRu¬ög
 ())
 
-133 
+132 
 	`Ârötf
 (
 °dîr
 , "[OpenCVInit] : OpenCV Already Working or Initialized\n");
 
-134  
+133  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-137 
+136 
 ›íCV_ˇmPr›
 ->
 	`¥ötSëVÆue
 ();
 
-138 if(!
+137 if(!
 ›íCV_ˇm
 ->
 	`›í
 ())
 
-140 
+139 
 	`Ârötf
 (
 °dîr
 , "DEVICE OPEN FAILED\n");
 
-141  
+140  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-143 if(!
+142 if(!
 ›íCV_ˇm
 ->
 	`öô_devi˚
 ())
 
-145 
+144 
 	`Ârötf
 (
 °dîr
 , "DEVICE INIT FAILED\n");
 
-146  
+145  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-148 
+147 
 ˇmSètus
 ->
 	`£tIsO≥nCVInôülized
@@ -7213,23 +7233,23 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-150  
+149  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-153 if(
+152 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "OpenCVStart"))
 
-155 
+154 
 °d
 ::
 cout
  << "Get[DBUS] : OpenCVStart\n";
 
-157 if(
+156 if(
 ˇmSètus
 ->
 	`gëIsO≥nCVInôülized
@@ -7237,7 +7257,7 @@ cout
 	`gëIsO≥nCVRu¬ög
 ()))
 
-159 
+158 
 ›íCV_ˇm
 ->
 	`£tEos
@@ -7245,7 +7265,7 @@ cout
 åue
 );
 
-161 
+160 
 thr_id
 [
 INDEX_OF_OPENCV_THR
@@ -7259,37 +7279,37 @@ NULL
 ›íCVCamîaSuµ‹tThr
 , (*)0);
 
-162 if(
+161 if(
 thr_id
  < 0)
 
-164 
+163 
 	`Ârötf
 (
 °dîr
 , "Create Thread Failed\n");
 
-165  
+164  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-168 if(-1 =
+167 if(-1 =
 	`±hªad_dëach
 (
 OPELCamThªad
 [0]))
 
-170 
+169 
 	`Ârötf
 (
 °dîr
 , "[DBUS_OPENCVSTOP] :Öthread_detach Error\n");
 
-171  
+170  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-173 
+172 
 ˇmSètus
 ->
 	`£tIsO≥nCVRu¬ög
@@ -7297,27 +7317,27 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-177  
+176  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-179  
+178  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-182 if(
+181 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "recInit"))
 
-184 
+183 
 °d
 ::
 cout
  << "Get[DBUS] :ÑecInit\n";
 
-186 if(
+185 if(
 ˇmSètus
 ->
 	`gëIsO≥nCVRu¬ög
@@ -7325,7 +7345,13 @@ cout
 	`gëIsO≥nCVInôülized
 ())
 
-189 
+187 
+	`Ârötf
+(
+°dîr
+, "Turning OffÅhe OpenCV\n");
+
+188 
 ›íCV_ˇm
 ->
 	`£tEos
@@ -7333,43 +7359,27 @@ cout
 Ál£
 );
 
-191 
+189 
 	`u¶ìp
-(1000000);
+(100000);
 
-193 if(!
-›íCV_ˇm
-->
-	`°›
-())
-
-195 
-	`Ârötf
-(
-°dîr
-, "openCV_Cam stop()");
-
-196  
-DBUS_HANDLER_RESULT_HANDLED
-;
-
-198 if(!
+191 if(!
 ›íCV_ˇm
 ->
 	`˛o£_devi˚
 ())
 
-200 
+193 
 	`Ârötf
 (
 °dîr
 , "CLOSE DEVICE FAILED\n");
 
-201  
+194  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-203 
+196 
 ˇmSètus
 ->
 	`£tIsO≥nCVRu¬ög
@@ -7377,7 +7387,7 @@ DBUS_HANDLER_RESULT_HANDLED
 Ál£
 );
 
-204 
+197 
 ˇmSètus
 ->
 	`£tIsO≥nCVInôülized
@@ -7385,7 +7395,7 @@ DBUS_HANDLER_RESULT_HANDLED
 Ál£
 );
 
-207 if(
+200 if(
 ˇmSètus
 ->
 	`gëIsRecRu¬ög
@@ -7393,53 +7403,53 @@ DBUS_HANDLER_RESULT_HANDLED
 	`gëIsRecInôülized
 ())
 
-209 
+202 
 	`¥ötf
-("already Initialized\n");
+("Already Recording Initialized\n");
 
-210  
+203  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-214 
+207 
 ªc_ˇmPr›
 ->
 	`¥ötSëVÆue
 ();
 
-215 if(!
+208 if(!
 ªc_ˇm
 ->
 	`›í
 ())
 
-217 
+210 
 	`Ârötf
 (
 °dîr
-, "DEVICE INIT FAILED\n");
+, "DEVICE OPEN FAILED\n");
 
-218  
+211  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-220 if(!
+213 if(!
 ªc_ˇm
 ->
 	`öô_devi˚
 ())
 
-222 
+215 
 	`Ârötf
 (
 °dîr
 , "DEVICE INIT FAILED\n");
 
-223  
+216  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-225 
+218 
 ˇmSètus
 ->
 	`£tIsRecInôülized
@@ -7447,31 +7457,31 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-226  
+219  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-228  
+221  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-231 if(
+224 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "recStart"))
 
-233 
+226 
 cuºCou¡
  = 0;
 
-234 
+227 
 °d
 ::
 cout
  << "Get[DBUS] :ÑecStart\n";
 
-237 
+230 
 	`dbus_mesßge_ôî_öô
 (
 mesßge
@@ -7479,7 +7489,7 @@ mesßge
 ¨gs
 );
 
-239 
+232 
 	`dbus_mesßge_ôî_gë_basic
 (&
 ¨gs
@@ -7487,39 +7497,19 @@ mesßge
 cuºCou¡
 );
 
-240 }
+233 }
 	`dbus_mesßge_ôî_√xt
 (&
 ¨gs
 ));
 
-241 
+234 
 	`£tCou¡
 (
 cuºCou¡
 );
 
-244 if(
-ˇmSètus
-->
-	`gëIsRecRu¬ög
-()){
-
-245 
-	`¥ötf
-("Recording Already Running\n");
-
-246  
-DBUS_HANDLER_RESULT_HANDLED
-;
-
-250 if(
-ˇmSètus
-->
-	`gëIsRecInôülized
-()){
-
-251 
+235 
 ªc_ˇm
 ->
 	`£tEos
@@ -7527,7 +7517,35 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-252 
+237 if(
+ˇmSètus
+->
+	`gëIsRecRu¬ög
+()){
+
+238 
+	`¥ötf
+("Recording Already Running\n");
+
+239  
+DBUS_HANDLER_RESULT_HANDLED
+;
+
+243 if(
+ˇmSètus
+->
+	`gëIsRecInôülized
+()){
+
+244 
+ªc_ˇm
+->
+	`£tEos
+(
+åue
+);
+
+245 
 thr_id
 [
 INDEX_OF_REC_THR
@@ -7541,23 +7559,23 @@ NULL
 ªcCamîaSuµ‹tThr
 , (*)0);
 
-254 if(
+247 if(
 thr_id
 [
 INDEX_OF_REC_THR
 ] < 0)
 
-256 
+249 
 	`Ârötf
 (
 °dîr
 , "CREATE THREAD FAILED\n");
 
-257  
+250  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-259 if(-1 =
+252 if(-1 =
 	`±hªad_dëach
 (
 OPELCamThªad
@@ -7565,17 +7583,17 @@ OPELCamThªad
 INDEX_OF_REC_THR
 ]))
 
-261 
+254 
 	`Ârötf
 (
 °dîr
 , "DetatchingÅheÖ_thread Failed\n");
 
-262  
+255  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-264 
+257 
 ˇmSètus
 ->
 	`£tIsRecRu¬ög
@@ -7583,37 +7601,37 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-268 
+261 
 	`Ârötf
 (
 °dîr
 , "CAMERA PROPERTY NOT INITIALIZED YET\n");
 
-269  
+262  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-271  
+264  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-273  
+266  
 DBUS_HANDLER_RESULT_NOT_YET_HANDLED
 ;
 
-274 
+267 
 	}
 }
 
-276 
+275 
 	$maö
-()
+(
+¨gc
+, ** 
+¨gv
+)
 
-278 
-NumOfClõ¡
-=0;
-
-279 
+277 
 boﬁ
  
 isRec
@@ -7621,7 +7639,7 @@ isRec
 åue
 ;
 
-280 
+278 
 °
  = (
 °©us
@@ -7629,7 +7647,7 @@ isRec
 	`mÆloc
 ((status));
 
-282 
+280 
 ›íCVPr›îty
  = (
 ¥›îty
@@ -7637,7 +7655,7 @@ isRec
 	`mÆloc
 ((property));
 
-283 
+281 
 ªcPr›îty
  = (
 ¥›îty
@@ -7645,7 +7663,7 @@ isRec
 	`mÆloc
 ((property));
 
-288 
+286 
 ›íCV_ˇmPr›
  = 
 √w
@@ -7655,7 +7673,7 @@ isRec
 isRec
 );
 
-290 
+288 
 ªc_ˇmPr›
  = 
 √w
@@ -7665,23 +7683,23 @@ isRec
 isRec
 );
 
-293 
+291 
 ›íCV_ˇmPr›
 ->
 	`InôSh¨edPr›îtyToT¨gë
+(
+›íCVPr›îty
+);
+
+292 
+›íCV_ˇmPr›
+->
+	`£tPr›îty
 (
 ›íCVPr›îty
 );
 
 294 
-›íCV_ˇmPr›
-->
-	`£tPr›îty
-(
-›íCVPr›îty
-);
-
-296 
 ªc_ˇmPr›
 ->
 	`InôSh¨edPr›îtyToT¨gë
@@ -7689,7 +7707,7 @@ isRec
 ªcPr›îty
 );
 
-297 
+295 
 ªc_ˇmPr›
 ->
 	`£tPr›îty
@@ -7697,14 +7715,22 @@ isRec
 ªcPr›îty
 );
 
-299 
+297 
 ›íCV_ˇmPr›
 ->
 	`öôSem≠h‹e
 ();
 
-300 
+298 
 ªc_ˇm
+ = 
+√w
+ 
+	`O≥nCVSuµ‹t
+();
+
+299 
+›íCV_ˇm
  = 
 √w
  
@@ -7713,21 +7739,13 @@ isRec
 
 301 
 ›íCV_ˇm
- = 
-√w
- 
-	`O≥nCVSuµ‹t
-();
-
-303 
-›íCV_ˇm
 ->
 	`£tCamîaPr›îty
 (
 ›íCV_ˇmPr›
 );
 
-304 
+302 
 ªc_ˇm
 ->
 	`£tCamîaPr›îty
@@ -7735,7 +7753,7 @@ isRec
 ªc_ˇmPr›
 );
 
-305 
+303 
 	`±hªad_muãx_öô
 (&
 muãx_lock
@@ -7743,7 +7761,7 @@ muãx_lock
 NULL
 );
 
-307 
+305 
 ˇmSètus
  = 
 CamîaSètus
@@ -7751,7 +7769,7 @@ CamîaSètus
 	`gëIn°™˚
 ();
 
-309 
+307 
 ˇmSètus
 ->
 	`InôSh¨edPr›îtyToT¨gë
@@ -7759,7 +7777,7 @@ CamîaSètus
 °
 );
 
-310 
+308 
 ˇmSètus
 ->
 	`£tSètusObje˘
@@ -7767,13 +7785,13 @@ CamîaSètus
 °
 );
 
-311 
+309 
 ˇmSètus
 ->
 	`öôSem≠h‹e
 ();
 
-312 
+310 
 ˇmSètus
 ->
 	`gëThrMuãx
@@ -7781,7 +7799,7 @@ CamîaSètus
 muãx_lock
 );
 
-313 
+311 
 ›íCV_ˇm
 ->
 	`£tThrMuãx
@@ -7789,31 +7807,31 @@ muãx_lock
 muãx_lock
 );
 
-315 
+313 
 fú°
  = 
 åue
 ;
 
-316 
+314 
 DBusC⁄√˘i⁄
  *
 c⁄n
 ;
 
-317 
+315 
 DBusEº‹
  
 îr
 ;
 
-318 
+316 
 GMaöLo›
  *
 lo›
 ;
 
-319 
+317 
 lo›
  = 
 	`g_maö_lo›_√w
@@ -7823,13 +7841,13 @@ NULL
 Ál£
 );
 
-320 
+318 
 	`dbus_îr‹_öô
 (&
 îr
 );
 
-321 
+319 
 c⁄n
  = 
 	`dbus_bus_gë
@@ -7839,13 +7857,13 @@ DBUS_BUS_SYSTEM
 îr
 );
 
-322 if(
+320 if(
 	`dbus_îr‹_is_£t
 (&
 îr
 ))
 
-324 
+322 
 	`¥ötf
 ("Eº‹ C⁄√˘ögÅÿthêD´m⁄ Bu†: %s", 
 îr
@@ -7853,13 +7871,13 @@ DBUS_BUS_SYSTEM
 mesßge
 );
 
-325 
+323 
 	`dbus_îr‹_‰ì
 (&
 îr
 );
 
-328 
+326 
 	`dbus_bus_add_m©ch
 (
 c⁄n
@@ -7867,7 +7885,7 @@ c⁄n
 NULL
 );
 
-329 
+327 
 	`dbus_c⁄√˘i⁄_add_fûãr
 (
 c⁄n
@@ -7879,7 +7897,7 @@ lo›
 NULL
 );
 
-330 
+328 
 	`dbus_c⁄√˘i⁄_£tup_wôh_g_maö
 (
 c⁄n
@@ -7887,13 +7905,13 @@ c⁄n
 NULL
 );
 
-331 
+329 
 	`g_maö_lo›_run
 (
 lo›
 );
 
-334 
+332 
 	}
 }
 

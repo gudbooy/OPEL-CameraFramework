@@ -6,24 +6,27 @@ void CameraStatus::getThrMutex(pthread_mutex_t& mutex)
 {
 	this->mutex = mutex;
 }
+
+bool CameraStatus::uinitSemaphore(void)
+{
+	sem_close(this->statusMutex);
+	sem_unlink("CCDSTATUS");
+	return true;
+}
+
 bool CameraStatus::initSemaphore(void)
 {
-	union semun sem_union;
-	semid = semget((key_t)SEM_KEY_FOR_STATUS, 1, 0666 | IPC_CREAT);
-	if(-1 == semid)
+	
+	this->statusMutex = sem_open("CCDSTATUS", O_CREAT, 0666, 1);
+	if(this->statusMutex == SEM_FAILED)
 	{
-		fprintf(stderr, "[CameraStatus::initSemaphore] : Semaphore semget Error\n");
-		return false;
-	}
-	sem_union.val = 1;
-	if(-1 == semctl(semid, 0, SETVAL, sem_union))
-	{
-		fprintf(stderr, "[CameraStatus::initSemaphore] : Semaphore Initialization Error\n");
+		fprintf(stderr, "[CameraStatus::uinitSemaphore] : Init Semaphore Failed\n");
+		sem_unlink("CCDSTATUS");
 		return false;
 	}
 	return true;
 }
-bool CameraStatus::InitSharedPropertyToTarget(status* st)
+bool CameraStatus::InitSharedPropertyToTarget(status** st)
 {
 	if(!(this->shmPtr_for_status)){
 		this->shmid_for_status = shmget((key_t)SHM_KEY_FOR_STATUS, sizeof(status), 0666|IPC_CREAT);
@@ -38,12 +41,12 @@ bool CameraStatus::InitSharedPropertyToTarget(status* st)
 			fprintf(stderr, "[CameraStatus::InitSharedPropertyToTarget] : shmat Error\n");
 			return false;
 		}
-		st = (status*)shmPtr_for_status;
-		st->isCCDRunning = this->isCCDRunning;
-		st->isOpenCVRunning = this->isOpenCVRunning;
-		st->isOpenCVInitialized = this->isOpenCVInitialized;
-		st->isRecRunning = this->isRecRunning;
-		st->isRecInitialized = this->isRecInitialized;
+		*st = (status*)shmPtr_for_status;
+		(*st)->isCCDRunning = this->isCCDRunning;
+		(*st)->isOpenCVRunning = this->isOpenCVRunning;
+		(*st)->isOpenCVInitialized = this->isOpenCVInitialized;
+		(*st)->isRecRunning = this->isRecRunning;
+		(*st)->isRecInitialized = this->isRecInitialized;
 		return true;
 	}
 	else{

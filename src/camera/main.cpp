@@ -275,7 +275,7 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 int main(int argc, char** argv)
 {
 	bool isRec = true;		
-	st = (status*)malloc(sizeof(status));
+//	st = (status*)malloc(sizeof(status));
 
 	openCVProperty = (property*)malloc(sizeof(property));
 	recProperty = (property*)malloc(sizeof(property));
@@ -304,7 +304,7 @@ int main(int argc, char** argv)
 	
 	camStatus = CameraStatus::getInstance();
 
-	camStatus->InitSharedPropertyToTarget(st);
+	camStatus->InitSharedPropertyToTarget(&st);
 	camStatus->setStatusObject(st);
  	camStatus->initSemaphore();
 	camStatus->getThrMutex(mutex_lock);

@@ -30,7 +30,6 @@ InitSharedPropertyToTarget	cam_property.cpp	/^bool CameraProperty::InitSharedPro
 InitSharedPropertyToTarget	cam_status.cpp	/^bool CameraStatus::InitSharedPropertyToTarget(status* st)$/;"	f	class:CameraStatus
 MAX_V4L2_BUFFERS	cam_core.h	47;"	d
 NUM_OF_THREADS	main.cpp	17;"	d	file:
-NumOfClient	main.cpp	/^static int NumOfClient;$/;"	v	file:
 OPELCamThread	main.cpp	/^static pthread_t OPELCamThread[NUM_OF_THREADS]; $/;"	v	file:
 OPELCamera	cam_core.cpp	/^OPELCamera::OPELCamera()$/;"	f	class:OPELCamera
 OPELCamera	cam_core.h	/^class OPELCamera$/;"	c
@@ -70,6 +69,7 @@ _CAM_PROPERTY_H_	cam_property.h	2;"	d
 _CAM_PROXY_H_	cam_proxy.h	2;"	d
 _CAM_REQUEST_H_	cam_request.h	2;"	d
 _CAM_STATUS_H_	cam_status.h	2;"	d
+_CTRL_API_H_	ctrlAPI.h	2;"	d
 allowRunning	cam_property.h	/^	bool allowRunning;$/;"	m	struct:property
 array	cam_property.h	/^	unsigned short int *array;$/;"	m	union:semun
 buf	cam_property.h	/^								struct v4l2_buffer* buf;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_buffer
@@ -175,7 +175,7 @@ length	cam_core.h	/^	int* length;$/;"	m	struct:buffer
 libv4l2_init	cam_core.cpp	/^static bool libv4l2_init(CameraProperty* camProp)$/;"	f	file:
 libv4l2_open	cam_core.cpp	/^static bool libv4l2_open(CameraProperty* camProp)$/;"	f	file:
 main	deletesem.c	/^int main()$/;"	f
-main	main.cpp	/^int main()$/;"	f
+main	main.cpp	/^int main(int argc, char** argv)$/;"	f
 main	test.cpp	/^int main()$/;"	f
 mainLoop	cam_core.cpp	/^bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)$/;"	f	class:OpenCVSupport
 mode	cam_property.h	/^								int mode;$/;"	m	class:CameraProperty
@@ -214,7 +214,7 @@ recProperty	main.cpp	/^static property* recProperty;$/;"	v	file:
 rec_cam	main.cpp	/^static OpenCVSupport* rec_cam;$/;"	v	file:
 rec_camProp	main.cpp	/^static CameraProperty* rec_camProp;$/;"	v	file:
 req	cam_property.h	/^								struct v4l2_requestbuffers* req;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_requestbuffers
-reqQueue	main.cpp	/^std::queue<CameraRequest*> reqQueue;$/;"	v
+returnMSG	main.cpp	/^inline static DBusHandlerResult returnMSG(const char* errMsg)$/;"	f	file:
 sem_status_id	main.cpp	/^int sem_status_id;$/;"	v
 semid	cam_core.h	/^			int semid;$/;"	m	class:OpenCVSupport
 semid	cam_property.h	/^								int semid;$/;"	m	class:CameraProperty
