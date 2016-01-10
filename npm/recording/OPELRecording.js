@@ -22,10 +22,9 @@ recObj.start("/home/pi/camData/some.mjpg", 300, function(error, data){
 			console.log('/home/pi/camData/some.mjpg Saved\n');		
 		});
 
-/*
-recObj.start("/home/pi/camData/some4.mjpg", 200, function(error, data){
+recObj.start("/home/pi/camData/some1.mjpg", 200, function(error, data){
 		if(data == 1)
-			console.log('/home/pi/camData/some4.mjpg Saved\n');
+			console.log('/home/pi/camData/some1.mjpg Saved\n');
 		});
 
 recObj.start(path+'['+d+'].jpeg', 1, function(err, data){
@@ -39,4 +38,3 @@ var repeat = setInterval(function(){
 			console.log(path+'['+d+']['+count+'].jpeg saved');
 		}); 
 }, 5000);
-*/

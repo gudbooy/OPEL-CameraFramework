@@ -23,10 +23,10 @@ streamObj.init(function(width, height, buffer_size){
 // streamObj.start(int n, function(err, data); n != 0 : finite Number of Frame n == 0 : Infinite Number of Frame 
 // streamObj.stop(); //aborting
 
-streamObj.start(300/*30Sec*/, function(error, data){
+streamObj.start(0/*30Sec*/, function(error, data){
 		if(data == 1)
 			console.log('Streaming Done');
-		)};
+		});
 
 /*
 streamObj.start(0, function(error, data){

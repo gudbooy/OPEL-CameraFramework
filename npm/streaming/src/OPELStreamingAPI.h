@@ -22,6 +22,7 @@ extern "C"{
 	#include <fcntl.h>
 	#include <errno.h>
 	#include <sys/stat.h>
+	#include <sys/socket.h>
 }
 #include <v8.h>
 #include <node.h>
@@ -37,6 +38,10 @@ extern "C"{
 #define REC_BUFFER_INDEX 4
 #define SEM_FOR_PAYLOAD_SIZE 9948
 #define INFINITE_NUM 10000000
+#define PORT_NUM 9488
+
+//const char lengthPassword[] = "Esevan Length Encryption Algorithm";
+
 char SEM_NAME[] = "vik";
 static bool eos;
 class StreamingWorker : public Nan::AsyncWorker
@@ -71,8 +76,9 @@ class StreamingWorker : public Nan::AsyncWorker
 						{
 							break;
 						}
-					if(writeFrame())
+					if(writeFrame()){
 							break;
+					}	
 					}
 				}
 			//PES 
@@ -97,6 +103,8 @@ class StreamingWorker : public Nan::AsyncWorker
 				void* buffer = _buffer; 
 				int* length = (int*)_length;
 
+				bool res = false;
+
 					
 				sem_wait(mutex);
 				if(*check)
@@ -104,6 +112,51 @@ class StreamingWorker : public Nan::AsyncWorker
 						fprintf(stderr, "length : %d\n", *length);
 						//Network Write - Target Buffer : (char*)buffer, Length : *length
 						//PES
+						int curr, bytes, total, i;
+						unsigned int len;
+						unsigned int offset;
+						
+
+						bytes = 0;
+						curr = 0;
+						total = *length;
+						len = htonl(*length);
+
+						unsigned char buff[1460] = {0,};
+
+						memcpy(buff, &len, sizeof(len));
+
+						while(curr < total){
+							offset = htonl(curr);
+							memcpy(buff+4, &offset, sizeof(offset));
+							for(i=0; i<1452; i++){
+								buff[i+8] = *((char*)buffer+(curr+i));
+							}
+							bytes = write(client_desc, buff, 1460);
+							if(bytes < 0){
+								fprintf(stderr, "Writing error\n");
+								close(client_desc);
+								break;
+							}
+							else if(bytes == 0){
+								fprintf(stderr, "Disconnected \n");
+								close(client_desc);
+								break;
+							}
+
+							curr += bytes-8;							
+						}
+
+						if(curr >= total){
+							fprintf(stderr, "Frame has successfully sent\n");
+						//	sem_post(mutex);
+							res = true;
+						//		break;
+						}
+						else{
+							fprintf(stderr, "Something woring happens, check the bugs\n");
+						//		break;
+						}
 				}
 				else{
 					printf("skip!!!\n");
@@ -166,6 +219,36 @@ class StreamingWorker : public Nan::AsyncWorker
 			//PES
 			//Network Connection Initialization code
 			fprintf(stderr, "InitConnection\n");
+			socket_desc = socket(AF_INET, SOCK_STREAM, 0);
+
+			if(socket_desc == -1){
+				fprintf(stderr, "Could not create socket\n");
+				return false;
+			}
+
+			server.sin_family = AF_INET;
+			server.sin_addr.s_addr = INADDR_ANY;
+			server.sin_port = htons(PORT_NUM);
+
+			if ( bind(socket_desc, (struct sockaddr*)&server, sizeof(server)) < 0){
+				fprintf(stderr, "Bind failed\n");
+				return false;
+			}
+
+			listen(socket_desc, 3);
+
+			fprintf(stderr, "Wating for incomming connection...");
+			struct sockaddr_in cli_addr;
+			int c = sizeof(struct sockaddr_in);
+			client_desc = accept(socket_desc, (struct sockaddr *)&cli_addr, (socklen_t *)&c);
+			if (client_desc < 0){
+				fprintf(stderr, "failed\n");
+				return false;
+			}
+			else{
+				fprintf(stderr, "OK \n");
+			}
+
 			return true;
 		}
 		bool closeConnection(void)
@@ -173,6 +256,9 @@ class StreamingWorker : public Nan::AsyncWorker
 			//PES
 			//Network Connection  Close code
 			fprintf(stderr, "CloseConnection\n");
+			close(client_desc);
+			close(socket_desc);
+
 			return true;
 		}
 
@@ -189,6 +275,11 @@ class StreamingWorker : public Nan::AsyncWorker
 			void* shmPtr;
 			bool isInfinite;
 			sem_t *mutex;
+
+			int socket_desc;
+			int client_desc;
+			struct sockaddr_in server;
+
 };
 
 class OPELStreaming : public Nan::ObjectWrap{
