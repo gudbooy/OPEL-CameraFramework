@@ -83,6 +83,8 @@ class StreamingWorker : public Nan::AsyncWorker
 				}
 			//PES 
 			this->closeConnection();
+			//sendDbusMsg(Done);
+			sendDbusMsgCnt("recStart", 0); //termination
 		}
 		bool writeFrame()
 		{
@@ -136,11 +138,13 @@ class StreamingWorker : public Nan::AsyncWorker
 							if(bytes < 0){
 								fprintf(stderr, "Writing error\n");
 								close(client_desc);
+								eos = false;
 								break;
 							}
 							else if(bytes == 0){
 								fprintf(stderr, "Disconnected \n");
 								close(client_desc);
+								eos = false;
 								break;
 							}
 
@@ -155,6 +159,7 @@ class StreamingWorker : public Nan::AsyncWorker
 						}
 						else{
 							fprintf(stderr, "Something woring happens, check the bugs\n");
+							eos = false;
 						//		break;
 						}
 				}
@@ -251,6 +256,27 @@ class StreamingWorker : public Nan::AsyncWorker
 
 			return true;
 		}
+		bool sendDbusMsgCnt(const char* msg, int count)
+		{
+			DBusMessageIter args;
+			dbus_int32_t cnt = (dbus_int32_t)count;
+			DBusMessage* message;
+			message = dbus_message_new_signal("/org/opel/camera/daemon", "org.opel.camera.daemon", msg);
+			dbus_message_iter_init_append(message, &args);
+			if(!dbus_message_iter_append_basic(&args, DBUS_TYPE_INT32, &cnt))
+			{
+				fprintf(stderr, "[OPELRecording::sendDbusMsgCnt] : dbus append args error\n");
+				return false;
+			}
+			dbus_connection_send(conn, message, NULL);
+			dbus_message_unref(message);
+			return true;
+		}
+		void setDbusConnection(DBusConnection* conn, DBusError err)
+		{
+			this->conn = conn;
+			this->err = err;
+		}
 		bool closeConnection(void)
 		{
 			//PES
@@ -279,7 +305,8 @@ class StreamingWorker : public Nan::AsyncWorker
 			int socket_desc;
 			int client_desc;
 			struct sockaddr_in server;
-
+			DBusConnection* conn;
+			DBusError err;
 };
 
 class OPELStreaming : public Nan::ObjectWrap{
@@ -300,7 +327,8 @@ class OPELStreaming : public Nan::ObjectWrap{
 		int getBufferSize() { return this->buffer_size; }
 		int getBufferIndex() { return this->buffer_index; }
 		void* getShmPtr() { return this->shmPtr; }
-
+		DBusConnection* getConn() { return this->conn; }
+		DBusError getErr() { return this->err; }
 	private:
 		explicit OPELStreaming();
 		~OPELStreaming();

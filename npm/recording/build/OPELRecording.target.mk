@@ -13,10 +13,10 @@ DEFS_Debug := \
 # Flags passed to all source files.
 CFLAGS_Debug := \
 	-fPIC \
-	-pthread \
 	-Wall \
 	-Wextra \
 	-Wno-unused-parameter \
+	-pthread \
 	-I/usr/include/dbus-1.0 \
 	-I/usr/lib/arm-linux-gnueabihf/dbus-1.0/include \
 	-g \
@@ -33,10 +33,9 @@ CFLAGS_CC_Debug := \
 	-I/usr/lib/arm-linux-gnueabihf/dbus-1.0/include
 
 INCS_Debug := \
-	-I/home/pi/.node-gyp/0.12.6/include/node \
-	-I/home/pi/.node-gyp/0.12.6/src \
-	-I/home/pi/.node-gyp/0.12.6/deps/uv/include \
-	-I/home/pi/.node-gyp/0.12.6/deps/v8/include \
+	-I/home/pi/.node-gyp/0.10.28/src \
+	-I/home/pi/.node-gyp/0.10.28/deps/uv/include \
+	-I/home/pi/.node-gyp/0.10.28/deps/v8/include \
 	-I$(srcdir)/node_modules/nan \
 	-I$(srcdir)/src
 
@@ -49,15 +48,14 @@ DEFS_Release := \
 # Flags passed to all source files.
 CFLAGS_Release := \
 	-fPIC \
-	-pthread \
 	-Wall \
 	-Wextra \
 	-Wno-unused-parameter \
+	-pthread \
 	-I/usr/include/dbus-1.0 \
 	-I/usr/lib/arm-linux-gnueabihf/dbus-1.0/include \
-	-O3 \
-	-ffunction-sections \
-	-fdata-sections \
+	-O2 \
+	-fno-strict-aliasing \
 	-fno-tree-vrp \
 	-fno-omit-frame-pointer
 
@@ -72,10 +70,9 @@ CFLAGS_CC_Release := \
 	-I/usr/lib/arm-linux-gnueabihf/dbus-1.0/include
 
 INCS_Release := \
-	-I/home/pi/.node-gyp/0.12.6/include/node \
-	-I/home/pi/.node-gyp/0.12.6/src \
-	-I/home/pi/.node-gyp/0.12.6/deps/uv/include \
-	-I/home/pi/.node-gyp/0.12.6/deps/v8/include \
+	-I/home/pi/.node-gyp/0.10.28/src \
+	-I/home/pi/.node-gyp/0.10.28/deps/uv/include \
+	-I/home/pi/.node-gyp/0.10.28/deps/v8/include \
 	-I$(srcdir)/node_modules/nan \
 	-I$(srcdir)/src
 

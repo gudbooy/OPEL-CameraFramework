@@ -59,7 +59,7 @@ NAN_METHOD(OPELStreaming::streamStart)
 	
 	fprintf(stderr ,"Count : %d\n", count);
 	OPELStreaming *streamObj = Nan::ObjectWrap::Unwrap<OPELStreaming>(info.This());
-	streamObj->sendDbusMsgCnt("recStart", count*3);	
+	//streamObj->sendDbusMsgCnt("recStart", count*3);	
 
 	for(;;){
 		if((streamObj->initSharedMemorySpace()))
@@ -70,6 +70,8 @@ NAN_METHOD(OPELStreaming::streamStart)
   
 	Nan::Callback *callback = new Nan::Callback(info[1].As<v8::Function>());
 	StreamingWorker* streamWorker = new StreamingWorker(callback, count);	
+	streamWorker->setDbusConnection(streamObj->getConn(), streamObj->getErr());
+
 	if(streamWorker == NULL)
 	{
 		Nan::ThrowError("recWorker Error\n");
@@ -88,6 +90,7 @@ NAN_METHOD(OPELStreaming::streamStart)
 		Nan::ThrowError("Init Network Connection Error\n");
 		return ;
 	}
+
 	if(!(streamWorker->initSEM()))
 	{
 		Nan::ThrowError("init Semaphore Error\n");
@@ -95,12 +98,14 @@ NAN_METHOD(OPELStreaming::streamStart)
 	}
 	eos = true;
 	
+	streamObj->sendDbusMsgCnt("recStart", count*3);	
 	Nan::AsyncQueueWorker(streamWorker);
 }
 NAN_METHOD(OPELStreaming::streamStop)
 {	
 	fprintf(stderr, "Stop Call invoked\n");
-	eos = false;
+//	eos = false;
+	
 }
 
 OPELStreaming::OPELStreaming()

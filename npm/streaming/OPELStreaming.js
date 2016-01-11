@@ -24,8 +24,10 @@ streamObj.init(function(width, height, buffer_size){
 // streamObj.stop(); //aborting
 
 streamObj.start(0/*30Sec*/, function(error, data){
-		if(data == 1)
+		if(data == 1){
 			console.log('Streaming Done');
+			streamObj.stop();
+			}
 		});
 
 /*

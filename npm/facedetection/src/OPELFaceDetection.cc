@@ -16,7 +16,7 @@
 using namespace std;
 using namespace cv;
 
-string face_cascade = "/home/pi/OPEL-CameraFramework/npm/facedetection/haarcascade_frontalface_alt.xml";
+string face_cascade = "/home/pi/Desktop/ProtoType/nil_camera/haarcascade_frontalface_alt.xml";
 
 class OPELFaceDetection : public Nan::AsyncWorker
 {

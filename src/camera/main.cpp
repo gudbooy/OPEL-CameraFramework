@@ -24,6 +24,9 @@ inline static DBusHandlerResult returnMSG(const char* errMsg)
 	fprintf(stderr, errMsg);
 	return DBUS_HANDLER_RESULT_HANDLED;
 }
+
+unsigned maxCount;
+unsigned nextMaxCount;
 /*Global Property*/
 static CameraProperty* openCV_camProp;
 static CameraProperty* rec_camProp;
@@ -85,10 +88,27 @@ void* openCVCameraSupportThr(void* args)
 		printf("opencv Done!!!\n");
 		return (void*)1;
 }
-
+void setMaxCount(int curr)
+{
+	if(curr > maxCount)
+	{
+		maxCount = curr;
+	}
+	else
+	{
+		if(curr > nextMaxCount)
+		{
+			nextMaxCount = curr;
+		}
+	}	
+}
 void setCount(unsigned curr)
 {
 	//lock
+	fprintf(stderr, "curr : %d\n", curr);
+ 	setMaxCount(curr);
+	fprintf(stderr, "maxCount : %d\n", maxCount);
+	fprintf(stderr, "nextMaxCount : %d\n", nextMaxCount);
 	pthread_mutex_lock(&mutex_lock);
 	unsigned* prev = rec_camProp->getCount();
 	if((2*curr) > *prev){
@@ -97,6 +117,12 @@ void setCount(unsigned curr)
 		else
 			*prev = 2*curr;
 	}
+	else
+	{
+		if(curr == 0)
+			*prev = 2*nextMaxCount;	
+	}
+	fprintf(stderr, "prev : %d\n", *prev);
 	pthread_mutex_unlock(&mutex_lock);
 	//unlock
 }
@@ -274,6 +300,9 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 /*MAIN*/
 int main(int argc, char** argv)
 {
+	
+	unsigned maxCount = 0;
+	unsigned nextMaxCount = 0;
 	bool isRec = true;		
 //	st = (status*)malloc(sizeof(status));
 

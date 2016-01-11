@@ -247,7 +247,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 		
 				sem_wait(mx);
 					*length = buf->bytesused;
-					printf("length : %d\n", *length);
+	//				printf("length : %d\n", *length);
 					memcpy((char*)ptr, (char*)buf->m.userptr, *length);		
 					*check = 1;
 				sem_post(mx);			
@@ -266,7 +266,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 	
 //		fprintf(stderr, "%c", ch);
 //		fflush(stderr);
-
+/*MINI
 		if(cnt == 0)
 		{
 						gettimeofday(&tv_last, NULL);
@@ -283,7 +283,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 						}
 		}
 		cnt++;
-
+		*/
 		return true;
 }
 bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
