@@ -1,18 +1,68 @@
 #include "cam_core.h"
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
 static bool init_SharedMemorySpace(int req_count, int buffer_size, int shmid, void** shmptr);
 static bool uinit_SharedMemorySpace(int shmid);
 char SEM_NAME[] = "vik";
-
-
+/*MINI ADD*/
+char SEM_FOR_SELECT[]= "vvik";
+static int openFifo(const char* path)
+{	
+	int fifo_fd;
+	if(mkfifo(path, 0666) == -1)
+	{
+		fprintf(stderr, "MKFIFO FAILED\n");
+		return -1;
+	}
+	if((fifo_fd = open(path, O_RDWR))<0){	
+		fprintf(stderr, "GET FIFO FD FAILED\n");
+		return -1;
+	}	
+	return fifo_fd;
+}
+static bool checkFPS(unsigned& cnt, unsigned& last, struct timeval &tv_last, FILE* profile_fp) 
+{
+	struct timeval cur;
+	gettimeofday(&cur, NULL);
+	fprintf(profile_fp, "%dSec %dUsec\n", cur.tv_sec ,cur.tv_usec);
+	if(cnt == 0)
+	{
+		gettimeofday(&tv_last, NULL);
+	}else
+	{
+		struct timeval tv_cur, res;
+		gettimeofday(&tv_cur, NULL);
+		timersub(&tv_cur, &tv_last, &res);
+		if(res.tv_sec){
+			unsigned fps =(cnt - last);
+			last = cnt;
+			tv_last = tv_cur;
+			fprintf(stderr, "Test : %d fps\n", fps);
+		}
+	}
+	cnt++;
+	return true;
+}
 bool OpenCVSupport::init_Semaphore()
 {
+	fifo_fd = openFifo("/tmp/fifo");
+	printf("hihihihihihihihihi");
 	mx = sem_open(SEM_NAME, O_CREAT, 0666, 1);
 	if(mx == SEM_FAILED)
 	{
-
 		fprintf(stderr, "[INIT_SEMAPHORE] : FAILED\n");
 		sem_unlink(SEM_NAME);
+		return false;
+	}
+	/*MINI ADD*/
+	semForSelect = sem_open(SEM_FOR_SELECT, O_CREAT, 0666, 1);
+	if(semForSelect == SEM_FAILED)
+	{
+		fprintf(stderr, "[INIT_SEMAPHORE] : FAILED\n");
+		sem_unlink(SEM_FOR_SELECT);
 		return false;
 	}
 	return true;
@@ -22,6 +72,9 @@ bool OpenCVSupport::uinit_Semaphore()
 {
 	sem_close(mx);
 	sem_unlink(SEM_NAME);
+	/*MINI ADD*/
+	sem_close(semForSelect);
+	sem_unlink(SEM_FOR_SELECT);
 	return true;
 }
 
@@ -62,7 +115,6 @@ void OpenCVSupport::setEos(bool eos)
 }
 bool OpenCVSupport::stop()
 {
-
 	int size = camProp->getBufferSize();
 	int fd = this->camProp->getfd();
 	enum v4l2_buf_type  type;	
@@ -202,7 +254,7 @@ static void processImg(void* p, int* size)
 	fflush(fp);
 	fclose(fp);
 }
-static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last, int semid, void* shmPtr, sem_t* mx)
+static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last, int semid, void* shmPtr, sem_t* mx, sem_t* semForSelect, int fifo_fd)
 {
 		char ch = '<';
 		struct v4l2_buffer* buf = camProp->getBuffer();
@@ -237,35 +289,26 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 		for(i=0; i <n_buffers; ++i)
 					if(buf->m.userptr == (unsigned long)buffers[i].start && buf->length >= (*buffers[i].length))
 						break;
-			
 				assert(i < n_buffers); 
-				
 				sem_wait(mx);
 					*check = 0;
 				sem_post(mx);
-	//			usleep(100);	
 		
 				sem_wait(mx);
 					*length = buf->bytesused;
-					printf("length : %d\n", *length);
 					memcpy((char*)ptr, (char*)buf->m.userptr, *length);		
 					*check = 1;
-				sem_post(mx);			
+				sem_post(mx);
+				write(fifo_fd, "DONE", 5);	
+				//FIFO Message Send To Application
 				usleep(100);
-
-//					processImg((void*)ptr, length);
 					if(-1 == xioctl(fd, VIDIOC_QBUF, buf))
 					{
 						fprintf(stderr, "VIDIOC_QBUF\n"); 
 						return false;
 
 					}
-		//		*length = buf->bytesused;
-		//		printf("length22 : %d\n", *length);
-				//		printf("palying\n");
-	
-//		fprintf(stderr, "%c", ch);
-//		fflush(stderr);
+		fflush(stderr);
 
 		if(cnt == 0)
 		{
@@ -279,7 +322,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 								unsigned fps = (100*(cnt - last)) / (res.tv_sec * 100 + res.tv_usec / 10000);
 								last = cnt; 
 								tv_last = tv_cur;
-		//						fprintf(stderr, " %d fps\n", fps);
+								fprintf(stderr, " %d fps\n", fps);
 						}
 		}
 		cnt++;
@@ -288,7 +331,12 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 }
 bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 {
-			
+		FILE* profile_fp =  fopen("TIMESET.txt", "w");	
+	//profile
+		 unsigned cnt_fps=0;
+		 struct timeval tv_last_fps;
+		 unsigned last_fps=0;
+		//
 			unsigned int* count = camProp->getCount();
 			unsigned int volatile_count;
 			unsigned int cnt=0;
@@ -311,7 +359,6 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 			
 			while((volatile_count > 0) && volatile_eos)
 			{
-			//				printf("cnt : %d\n", volatile_count);
 							for(;;)
 							{
 											fd_set fds;
@@ -336,9 +383,9 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 											{
 														/* Do Nathing */							
 											}
-
-											if(readFrame(camProp, buffers, cnt, last, tv_last, this->semid, this->shmPtr, this->mx))
-														break;	
+											checkFPS(cnt_fps, last_fps, tv_last_fps, profile_fp);
+											if(readFrame(camProp, buffers, cnt, last, tv_last, this->semid, this->shmPtr, this->mx, this->semForSelect, this->fifo_fd))
+													break;	
 							}
 
 							pthread_mutex_lock(&mutex);
@@ -353,7 +400,7 @@ bool OpenCVSupport::mainLoop(CameraProperty* camProp, buffer* buffers)
 			sem_wait(this->mx);
 			*check = 0;
 			sem_post(this->mx);
-			
+			fclose(profile_fp);	
 			return true;
 }
 bool OpenCVSupport::start()
@@ -491,7 +538,8 @@ static bool libv4l2_open(CameraProperty* camProp)
 						fprintf(stderr, "%s is no device\n", deviceName);
 						return false;
 				}
-				fd = open(deviceName, O_RDWR | O_NONBLOCK, 0);
+				//NINI
+				fd = open(deviceName, O_RDWR, 0);
 				if(-1 == fd)
 				{
 								fprintf(stderr, "Cannot open '%s' : %d, %s\n", deviceName, errno, strerror(errno));

@@ -150,6 +150,8 @@ class OpenCVSupport : public OPELCamera
 			bool eos;
 			pthread_mutex_t mutex;
 			sem_t* mx;
+			sem_t* semForSelect;
+			int fifo_fd;
 };
 
 

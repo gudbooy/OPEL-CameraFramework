@@ -167,6 +167,7 @@ class StreamingWorker : public Nan::AsyncWorker
 				}
 				sem_post(mutex);
 				usleep(100000); //10FPS 
+//				usleep(50000);
 				return true;
 		}
 		void HandleOKCallback()

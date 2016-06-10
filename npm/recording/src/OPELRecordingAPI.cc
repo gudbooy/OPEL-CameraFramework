@@ -186,7 +186,8 @@ bool OPELRecording::initDbus()
 
 bool OPELRecording::openDevice()
 {
-	this->fd = open(dev_name, O_RDWR | O_NONBLOCK, 0);
+	this->fd = open(dev_name, O_RDWR, 0);
+//	this->fd = open("tmp/fifo", O_RDONLY);
 	if(-1 == fd)
 		return false;
 	return true;

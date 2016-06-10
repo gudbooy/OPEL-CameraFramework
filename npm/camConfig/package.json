@@ -1,0 +1,15 @@
+{
+  "name": "OPELCameraConfigure",
+  "version": "0.0.1",
+  "description": "OPELCameraConfigure API Set Test",
+  "main": "OPELCameraConfigure.js",
+  "private": true,
+  "dependencies": {
+    "bindings": "~1.2.1",
+    "nan": "^2.0.0"
+  },
+  "scripts": {
+    "test": "node OPELCameraConfigure.js"
+  },
+  "gypfile": true
+}
