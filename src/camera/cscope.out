@@ -1,4 +1,4 @@
-cscope 15 $HOME/OPEL-CameraFramework/src/camera               0000297393
+cscope 15 $HOME/OPEL-CameraFramework/src/camera               0000297392
 	@cam_cap_check.cpp
 
 1 
@@ -4859,13 +4859,13 @@ V4L2_PIX_FMT_RGB24
 
 33 
 	#REC_DEFAULT_WIDTH
- 1920
+ 1280
 
 	)
 
 34 
 	#REC_DEFAULT_HEIGHT
- 1080
+ 720
 
 	)
 

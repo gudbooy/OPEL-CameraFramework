@@ -32,9 +32,9 @@ extern "C"{
 #define REC_SHM_KEY 9447
 #define ERR_INDEX 0
 #define DATA_INDEX 1
-#define REC_WIDTH 1920
-#define REC_HEIGHT 1080
-#define REC_BUFFER_SIZE 4147200
+#define REC_WIDTH 1280
+#define REC_HEIGHT 720
+#define REC_BUFFER_SIZE 1843200
 #define REC_BUFFER_INDEX 4
 #define SEM_FOR_PAYLOAD_SIZE 9948
 char SEM_NAME[] = "vik";
