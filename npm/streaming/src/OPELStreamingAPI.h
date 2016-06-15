@@ -32,9 +32,9 @@ extern "C"{
 #define REC_SHM_KEY 9447
 #define ERR_INDEX 0
 #define DATA_INDEX 1
-#define REC_WIDTH 1920
-#define REC_HEIGHT 1080
-#define REC_BUFFER_SIZE 4147200
+#define REC_WIDTH 1280
+#define REC_HEIGHT 720
+#define REC_BUFFER_SIZE 1843200
 #define REC_BUFFER_INDEX 4
 #define SEM_FOR_PAYLOAD_SIZE 9948
 #define INFINITE_NUM 10000000
@@ -54,61 +54,64 @@ class StreamingWorker : public Nan::AsyncWorker
 
 		void Execute()
 		{
+			
+			bool sz;
+			unsigned offset;
+			unsigned offset_length;
+			unsigned offset_check;
+
+			offset = (buffer_index-1)*buffer_size;
+			offset_length = buffer_index*buffer_size;
+			offset_check = offset_length+sizeof(int);
+
+			void* _buffer = (void*)shmPtr+offset;
+			void* _length = (void*)shmPtr+offset_length;
+			void* _check = (void*)shmPtr+offset_check;
+
+			int* check = (int*)_check;
+			void* buffer = _buffer;
+			int* length = (int*)_length;
+			int previous_length = 0;
+
 				while((count-- > 0) && eos)
 				{
-					for(;;)
+					sem_wait(mutex);
+					if(*check == 0)
 					{
-						fd_set fds;
-						struct timeval tv;
-						int r; 
-						FD_ZERO(&fds);
-						FD_SET(fd, &fds);
-						tv.tv_sec = 10;
-						tv.tv_usec = 0;
-						r = select(fd+1, &fds, NULL, NULL, &tv);
-						if(-1 == r)
-						{
-							if(EINTR == errno){
-								return ;
-							}
-						}
-						if(0 == r)
-						{
-							break;
-						}
-					if(writeFrame()){
-							break;
-					}	
+						sem_post(mutex);
+						count++;
+						continue;
 					}
+					if(previous_length != *length){
+							sz=writeFrame((char*)buffer, length);
+					//		sz = fwrite((char*)buffer, sizeof(char), *length, fout);
+						if(!sz)
+							fprintf(stderr, "Errror Occurred\n");
+						else
+						{
+							previous_length = *length;
+						}
+						sem_post(mutex);
+					}
+					else
+					{
+						sem_post(mutex);
+						usleep(60000);
+						count++;
+						continue;
+					}
+				
 				}
-			//PES 
+				
+				//PES 
 			this->closeConnection();
 		}
-		bool writeFrame()
+		bool writeFrame(void *buffer, int *length)
 		{
-				unsigned sz;
-				unsigned offset;
-				unsigned offset_length;
-				unsigned offset_check;
-			
-				offset = (buffer_index-1)*buffer_size;
-				offset_length = buffer_index*buffer_size;
-				offset_check = offset_length+sizeof(int);
-				
-				void* _buffer = (void*)shmPtr+offset;
-				void* _length = (void*)shmPtr+offset_length;
-				void* _check = (void*)shmPtr+offset_check;
-				
-				int* check = (int*)_check;
-				void* buffer = _buffer; 
-				int* length = (int*)_length;
 
 				bool res = false;
 
 					
-				sem_wait(mutex);
-				if(*check)
-				{
 						fprintf(stderr, "length : %d\n", *length);
 						//Network Write - Target Buffer : (char*)buffer, Length : *length
 						//PES
@@ -151,24 +154,15 @@ class StreamingWorker : public Nan::AsyncWorker
 							fprintf(stderr, "Frame has successfully sent\n");
 						//	sem_post(mutex);
 							res = true;
+							return res;
 						//		break;
 						}
 						else{
 							fprintf(stderr, "Something woring happens, check the bugs\n");
-						//		break;
+							return res;
+							//		break;
 						}
-				}
-				else{
-					printf("skip!!!\n");
-/*					if(count == 0)
-					{
-						this->count = 1;
-					}*/
-				}
-				sem_post(mutex);
-				usleep(100000); //10FPS 
-//				usleep(50000);
-				return true;
+				
 		}
 		void HandleOKCallback()
 		{
