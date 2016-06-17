@@ -21,6 +21,11 @@ NAN_METHOD(OPELStreaming::streamInit)
 		Nan::ThrowError("D-Bus Initialization Failed\n");
 		return;
 	}
+	if(!(streamObj->initUVMutex()))
+	{
+		Nan::ThrowError("Init UV_Mutex Failed\n");
+		return; 
+	}
 	if(!(streamObj->openDevice()))
 	{
 		//error
@@ -59,7 +64,7 @@ NAN_METHOD(OPELStreaming::streamStart)
 	
 	fprintf(stderr ,"Count : %d\n", count);
 	OPELStreaming *streamObj = Nan::ObjectWrap::Unwrap<OPELStreaming>(info.This());
-	streamObj->sendDbusMsgCnt("recStart", count*3);	
+	streamObj->sendDbusMsgCnt("recStart", 0);	
 
 	for(;;){
 		if((streamObj->initSharedMemorySpace()))
@@ -93,16 +98,26 @@ NAN_METHOD(OPELStreaming::streamStart)
 		Nan::ThrowError("init Semaphore Error\n");
 		return ;
 	}
-	eos = true;
-	
+//	eos = true;
+	streamObj->setEos(true);
 	Nan::AsyncQueueWorker(streamWorker);
 }
 NAN_METHOD(OPELStreaming::streamStop)
 {	
 	fprintf(stderr, "Stop Call invoked\n");
-	eos = false;
+//	eos = false;
+	OPELStreaming *streamObj = Nan::ObjectWrap::Unwrap<OPELStreaming>(info.This());
+	streamObj->setEos(false);
+	usleep(10000);
+	streamObj->sendDbusMsg("recStop");
+	//send D-bus stop message here
 }
-
+void OPELStreaming::setEos(bool setEos)
+{
+		uv_mutex_lock(&uv_mutex);
+		eos = setEos;
+		uv_mutex_unlock(&uv_mutex);
+}
 OPELStreaming::OPELStreaming()
 {
 	this->width = REC_WIDTH;
@@ -112,7 +127,7 @@ OPELStreaming::OPELStreaming()
 }
 OPELStreaming::~OPELStreaming()
 {
-
+	
 }
 void OPELStreaming::sendDbusMsg(const char* msg)
 {
@@ -172,6 +187,12 @@ bool OPELStreaming::uInitSharedMemorySpace()
 	if(shmdt(shmPtr) == -1)
 		return false;
 	return true;
+}
+bool OPELStreaming::initUVMutex(void)
+{
+	if(uv_mutex_init(&uv_mutex) == 0)
+		return true;
+	return false;
 }
 NAN_METHOD(OPELStreaming::New)
 {

@@ -50,6 +50,10 @@ static bool is_recInit;
 static pthread_t OPELCamThread[NUM_OF_THREADS]; 
 int thr_id[2] = {0,};
 
+//Set Reference Count
+static int openCVRefCnt;
+static int recRefCnt;
+static bool streamingOn;
 
 void* recCameraSupportThr(void* args)
 {
@@ -91,13 +95,24 @@ void setCount(unsigned curr)
 	//lock
 	pthread_mutex_lock(&mutex_lock);
 	unsigned* prev = rec_camProp->getCount();
+
+	fprintf(stderr, "curr : %d,   *prev : %d\n", curr, *prev);
 	if((2*curr) > *prev){
+		
+		fprintf(stderr, "(2*curr) > *prev !!!!!!!!!\n");
 		if(curr == 1)
 			*prev= 100*curr;
-		else
+		if(curr > 1)
 			*prev = 2*curr;
+
 	}
-	pthread_mutex_unlock(&mutex_lock);
+	else if(curr == 0)//if curr == 0 is streaming support 
+	{
+		fprintf(stderr, "curr == 0 !!!!!!\n");
+		streamingOn = true;	
+		*prev = 10000000;
+	}
+pthread_mutex_unlock(&mutex_lock);
 	//unlock
 }
 
@@ -177,6 +192,14 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		}
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
+
+/****************************** OpenCV Stop ***************************************/
+	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "OpenCVStop"))
+	{
+
+			return DBUS_HANDLER_RESULT_HANDLED;
+	}
+
 /******************************* RECORDING INIT ***********************************/
 	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recInit"))
 	{
@@ -263,10 +286,28 @@ static DBusHandlerResult dbus_filter(DBusConnection *conn, DBusMessage *message,
 		}
 	  return DBUS_HANDLER_RESULT_HANDLED;	
 	}
+
+/****************************** RECORDING STOP ************************************/
+	if(dbus_message_is_signal(message, "org.opel.camera.daemon", "recStop"))
+	{
+		if(streamingOn)
+		{
+			fprintf(stderr, "recStop occurred by streaming Process\n");
+			rec_cam->setEos(false); // EXIT
+			usleep(10000);
+			streamingOn = false;	
+			camStatus->setIsRecRunning(false);
+		//	camStatus->setIsRecInitialized(false);
+		}
+		else
+		{
+			fprintf(stderr, "recStop is occurred by not streaming Process\n");
+			return DBUS_HANDLER_RESULT_HANDLED;
+		}
+		return DBUS_HANDLER_RESULT_HANDLED;
+	}
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
-
-
 
 
 
@@ -276,11 +317,13 @@ int main(int argc, char** argv)
 {
 	bool isRec = true;		
 //	st = (status*)malloc(sizeof(status));
-
+	openCVRefCnt = 0;
+	recRefCnt = 0;
+	streamingOn = false;
 	openCVProperty = (property*)malloc(sizeof(property));
 	recProperty = (property*)malloc(sizeof(property));
-
-//	pthread_mutex_t mutex_lock;
+	
+//pthread_mutex_t mutex_lock;
 	
 	//RGB24 Recording
 	openCV_camProp = new CameraProperty(!isRec);

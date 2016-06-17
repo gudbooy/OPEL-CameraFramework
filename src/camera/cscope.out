@@ -1,4 +1,4 @@
-cscope 15 $HOME/OPEL-CameraFramework/src/camera               0000297392
+cscope 15 $HOME/OPEL-CameraFramework/src/camera               0000299367
 	@cam_cap_check.cpp
 
 1 
@@ -364,12 +364,6 @@ boﬁ
 ::
 	$öô_Sem≠h‹e
 ()
-
-51 
-fifo_fd
- = 
-	`›íFifo
-("/tmp/fifo");
 
 52 
 	`¥ötf
@@ -1432,12 +1426,6 @@ check
 (
 mx
 );
-
-302 
-	`wrôe
-(
-fifo_fd
-, "DONE", 5);
 
 304 
 	`u¶ìp
@@ -6169,6 +6157,68 @@ boﬁ
 	}
 }
 
+	@cam_request.h
+
+1 #i‚de‡
+_CAM_REQUEST_H_
+
+
+2 
+	#_CAM_REQUEST_H_
+
+
+	)
+
+3 
+	~<°dio.h
+>
+
+5 
+	eköds
+ {
+	m›íCV
+=0, 
+	mREC
+};
+
+6 
+	e›î©i⁄s
+ {
+	möô
+=0, 
+	m°¨t
+, 
+	m°›
+, 
+	m˛o£_devi˚
+};
+
+8 
+	sCamîaReque°
+
+
+10 
+pid_t
+ 
+	mpid
+;
+
+12 
+köds
+ 
+	mköd
+;
+
+13 
+›î©i⁄s
+ 
+	m›î©i⁄
+;
+
+15 }
+	tCamîaReque°
+;
+
 	@cam_status.cpp
 
 1 
@@ -6993,6 +7043,224 @@ boﬁ
 	g°©usObje˘
 ;
 
+	@ctrlAPI.h
+
+1 #i‚de‡
+_CTRL_API_H_
+
+
+2 
+	#_CTRL_API_H_
+
+
+	)
+
+	@deletesem.c
+
+1 
+	~<£m≠h‹e.h
+>
+
+2 
+	~<°dio.h
+>
+
+3 
+	~<î∫o.h
+>
+
+4 
+	~<°dlib.h
+>
+
+5 
+	~<uni°d.h
+>
+
+6 
+	~<sys/ty≥s.h
+>
+
+7 
+	~<sys/°©.h
+>
+
+8 
+	~<f˙é.h
+>
+
+9 
+	~<sys/mm™.h
+>
+
+10 
+	gSEM_NAME
+[]= "vik";
+
+11 
+	gSEM_FOR_SELECT
+[]="vvik";
+
+12 
+	$maö
+()
+
+14 
+ch
+;
+
+15 
+shmid
+;
+
+16 
+key_t
+ 
+key
+;
+
+17 *
+shm
+,*
+s
+;
+
+18 
+£m_t
+ *
+muãx
+;
+
+19 
+£m_t
+ *
+£mF‹Sñe˘
+;
+
+20 
+muãx
+ = 
+	`£m_›í
+(
+SEM_NAME
+,
+O_CREAT
+,0644,1);
+
+21 if(
+muãx
+ =
+SEM_FAILED
+)
+
+23 
+	`≥º‹
+("unableÅo create semaphore");
+
+24 
+	`£m_u∆ök
+(
+SEM_NAME
+);
+
+25 
+	`exô
+(-1);
+
+27 
+£mF‹Sñe˘
+ = 
+	`£m_›í
+(
+SEM_FOR_SELECT
+, 
+O_CREAT
+, 0664, 1);
+
+28 if(
+£mF‹Sñe˘
+ =
+SEM_FAILED
+)
+
+30 
+	`≥º‹
+("unableÅo create semaphore");
+
+31 
+	`£m_u∆ök
+(
+SEM_FOR_SELECT
+);
+
+32 
+	`exô
+(-1);
+
+34 
+	`£m_˛o£
+(
+muãx
+);
+
+35 
+	`£m_˛o£
+(
+£mF‹Sñe˘
+);
+
+36 
+	`£m_u∆ök
+(
+SEM_FOR_SELECT
+);
+
+37 
+	`£m_u∆ök
+(
+SEM_NAME
+);
+
+38 
+muãx
+ = 
+	`£m_›í
+("CCDSTATUS", 
+O_CREAT
+, 0666, 1);
+
+39 if(
+muãx
+ =
+SEM_FAILED
+)
+
+41 
+	`≥º‹
+("unableÅo create Semaphore");
+
+42 
+	`£m_u∆ök
+("CCDSTATUS");
+
+43 
+	`exô
+(-1);
+
+45 
+	`£m_˛o£
+(
+muãx
+);
+
+46 
+	`£m_u∆ök
+("CCDSTATUS");
+
+49 
+	}
+}
+
 	@main.cpp
 
 1 
@@ -7201,29 +7469,43 @@ NUM_OF_THREADS
 	gthr_id
 [2] = {0,};
 
-54 * 
+54 
+	g›íCVRefC¡
+;
+
+55 
+	gªcRefC¡
+;
+
+56 
+boﬁ
+ 
+	g°ªamögOn
+;
+
+58 * 
 	$ªcCamîaSuµ‹tThr
 (* 
 ¨gs
 )
 
-56 if(!
+60 if(!
 ªc_ˇm
 ->
 	`°¨t
 ())
 
-58 
+62 
 	`Ârötf
 (
 °dîr
 , "START FIALED\n");
 
-59  
+63  
 NULL
 ;
 
-61 
+65 
 ˇmSètus
 ->
 	`£tIsRecRu¬ög
@@ -7231,7 +7513,7 @@ NULL
 Ál£
 );
 
-62 
+66 
 ªc_ˇm
 ->
 	`£tEos
@@ -7239,53 +7521,53 @@ NULL
 Ál£
 );
 
-63 if(!
+67 if(!
 ªc_ˇm
 ->
 	`°›
 ())
 
-65 
+69 
 	`Ârötf
 (
 °dîr
 , "STOP FAILED\n");
 
-66  
+70  
 NULL
 ;
 
-68 
+72 
 	`¥ötf
 ("recording Done!!!\n");
 
-70 
+74 
 	}
 }
 
-71 * 
+75 * 
 	$›íCVCamîaSuµ‹tThr
 (* 
 ¨gs
 )
 
-73 if(!
+77 if(!
 ›íCV_ˇm
 ->
 	`°¨t
 ())
 
-75 
+79 
 	`Ârötf
 (
 °dîr
 , "START FAIL\n");
 
-76  
+80  
 NULL
 ;
 
-78 
+82 
 ˇmSètus
 ->
 	`£tIsO≥nCVRu¬ög
@@ -7293,7 +7575,7 @@ NULL
 Ál£
 );
 
-79 
+83 
 ›íCV_ˇm
 ->
 	`£tEos
@@ -7301,43 +7583,43 @@ NULL
 Ál£
 );
 
-80 if(!
+84 if(!
 ›íCV_ˇm
 ->
 	`°›
 ())
 
-82 
+86 
 	`Ârötf
 (
 °dîr
 , "STOP FAILED\n");
 
-83  
+87  
 NULL
 ;
 
-85 
+89 
 	`¥ötf
 ("opencv Done!!!\n");
 
-87 
+91 
 	}
 }
 
-89 
+93 
 	$£tCou¡
 (
 cuº
 )
 
-92 
+96 
 	`±hªad_muãx_lock
 (&
 muãx_lock
 );
 
-93 * 
+97 * 
 ¥ev
  = 
 ªc_ˇmPr›
@@ -7345,39 +7627,79 @@ muãx_lock
 	`gëCou¡
 ();
 
-94 if((2*
+99 
+	`Ârötf
+(
+°dîr
+, "cuº : %d, *¥ev : %d\n", 
+cuº
+, *
+¥ev
+);
+
+100 if((2*
 cuº
 Ë> *
 ¥ev
 ){
 
-95 if(
+102 
+	`Ârötf
+(
+°dîr
+, "(2*curr) > *prev !!!!!!!!!\n");
+
+103 if(
 cuº
  == 1)
 
-96 *
+104 *
 ¥ev
 100*
 cuº
 ;
 
-98 *
+105 if(
+cuº
+ > 1)
+
+106 *
 ¥ev
  = 2*
 cuº
 ;
 
-100 
+109 if(
+cuº
+ == 0)
+
+111 
+	`Ârötf
+(
+°dîr
+, "curr == 0 !!!!!!\n");
+
+112 
+°ªamögOn
+ = 
+åue
+;
+
+113 *
+¥ev
+ = 10000000;
+
+115 
 	`±hªad_muãx_u∆ock
 (&
 muãx_lock
 );
 
-102 
+117 
 	}
 }
 
-104 
+119 
 DBusH™dÀrResu…
  
 	$dbus_fûãr
@@ -7393,69 +7715,69 @@ mesßge
 u£r_d©a
 )
 
-107 
+122 
 DBusMesßgeIãr
  
 ¨gs
 ;
 
-110 if(
+125 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "OpenCVInit"))
 
-112 
+127 
 °d
 ::
 cout
  << "Get[DBUS] : OpenCVInit\n";
 
-114 if(
+129 if(
 ˇmSètus
 ->
 	`gëIsRecRu¬ög
 ())
 
-116 
+131 
 	`Ârötf
 (
 °dîr
 , "Recording Process is Running\n");
 
-117  
+132  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-119 if(
+134 if(
 ˇmSètus
 ->
 	`gëIsRecInôülized
 ())
 
-121 
+136 
 	`Ârötf
 (
 °dîr
 , "Recording Process is Not RunningÅhen start openCV Service\n");
 
-122 if(!
+137 if(!
 ªc_ˇm
 ->
 	`˛o£_devi˚
 ())
 
-124 
+139 
 	`Ârötf
 (
 °dîr
 , "recording device_close callÉrror\n");
 
-125  
+140  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-127 
+142 
 ˇmSètus
 ->
 	`£tIsRecInôülized
@@ -7463,7 +7785,7 @@ DBUS_HANDLER_RESULT_HANDLED
 Ál£
 );
 
-130 if(
+145 if(
 ˇmSètus
 ->
 	`gëIsO≥nCVInôülized
@@ -7471,55 +7793,55 @@ DBUS_HANDLER_RESULT_HANDLED
 	`gëIsO≥nCVRu¬ög
 ())
 
-132 
+147 
 	`Ârötf
 (
 °dîr
 , "[OpenCVInit] : OpenCV Already Working or Initialized\n");
 
-133  
+148  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-136 
+151 
 ›íCV_ˇmPr›
 ->
 	`¥ötSëVÆue
 ();
 
-137 if(!
+152 if(!
 ›íCV_ˇm
 ->
 	`›í
 ())
 
-139 
+154 
 	`Ârötf
 (
 °dîr
 , "DEVICE OPEN FAILED\n");
 
-140  
+155  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-142 if(!
+157 if(!
 ›íCV_ˇm
 ->
 	`öô_devi˚
 ())
 
-144 
+159 
 	`Ârötf
 (
 °dîr
 , "DEVICE INIT FAILED\n");
 
-145  
+160  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-147 
+162 
 ˇmSètus
 ->
 	`£tIsO≥nCVInôülized
@@ -7527,23 +7849,23 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-149  
+164  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-152 if(
+167 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "OpenCVStart"))
 
-154 
+169 
 °d
 ::
 cout
  << "Get[DBUS] : OpenCVStart\n";
 
-156 if(
+171 if(
 ˇmSètus
 ->
 	`gëIsO≥nCVInôülized
@@ -7551,7 +7873,7 @@ cout
 	`gëIsO≥nCVRu¬ög
 ()))
 
-158 
+173 
 ›íCV_ˇm
 ->
 	`£tEos
@@ -7559,7 +7881,7 @@ cout
 åue
 );
 
-160 
+175 
 thr_id
 [
 INDEX_OF_OPENCV_THR
@@ -7573,37 +7895,37 @@ NULL
 ›íCVCamîaSuµ‹tThr
 , (*)0);
 
-161 if(
+176 if(
 thr_id
  < 0)
 
-163 
+178 
 	`Ârötf
 (
 °dîr
 , "Create Thread Failed\n");
 
-164  
+179  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-167 if(-1 =
+182 if(-1 =
 	`±hªad_dëach
 (
 OPELCamThªad
 [0]))
 
-169 
+184 
 	`Ârötf
 (
 °dîr
 , "[DBUS_OPENCVSTOP] :Öthread_detach Error\n");
 
-170  
+185  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-172 
+187 
 ˇmSètus
 ->
 	`£tIsO≥nCVRu¬ög
@@ -7611,27 +7933,37 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-176  
+191  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-178  
+193  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-181 if(
+197 if(
+	`dbus_mesßge_is_sig«l
+(
+mesßge
+, "org.opel.camera.daemon", "OpenCVStop"))
+
+200  
+DBUS_HANDLER_RESULT_HANDLED
+;
+
+204 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "recInit"))
 
-183 
+206 
 °d
 ::
 cout
  << "Get[DBUS] :ÑecInit\n";
 
-185 if(
+208 if(
 ˇmSètus
 ->
 	`gëIsO≥nCVRu¬ög
@@ -7639,13 +7971,13 @@ cout
 	`gëIsO≥nCVInôülized
 ())
 
-187 
+210 
 	`Ârötf
 (
 °dîr
 , "Turning OffÅhe OpenCV\n");
 
-188 
+211 
 ›íCV_ˇm
 ->
 	`£tEos
@@ -7653,27 +7985,27 @@ cout
 Ál£
 );
 
-189 
+212 
 	`u¶ìp
 (100000);
 
-191 if(!
+214 if(!
 ›íCV_ˇm
 ->
 	`˛o£_devi˚
 ())
 
-193 
+216 
 	`Ârötf
 (
 °dîr
 , "CLOSE DEVICE FAILED\n");
 
-194  
+217  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-196 
+219 
 ˇmSètus
 ->
 	`£tIsO≥nCVRu¬ög
@@ -7681,7 +8013,7 @@ DBUS_HANDLER_RESULT_HANDLED
 Ál£
 );
 
-197 
+220 
 ˇmSètus
 ->
 	`£tIsO≥nCVInôülized
@@ -7689,7 +8021,7 @@ DBUS_HANDLER_RESULT_HANDLED
 Ál£
 );
 
-200 if(
+223 if(
 ˇmSètus
 ->
 	`gëIsRecRu¬ög
@@ -7697,53 +8029,53 @@ DBUS_HANDLER_RESULT_HANDLED
 	`gëIsRecInôülized
 ())
 
-202 
+225 
 	`¥ötf
 ("Already Recording Initialized\n");
 
-203  
+226  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-207 
+230 
 ªc_ˇmPr›
 ->
 	`¥ötSëVÆue
 ();
 
-208 if(!
+231 if(!
 ªc_ˇm
 ->
 	`›í
 ())
 
-210 
+233 
 	`Ârötf
 (
 °dîr
 , "DEVICE OPEN FAILED\n");
 
-211  
+234  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-213 if(!
+236 if(!
 ªc_ˇm
 ->
 	`öô_devi˚
 ())
 
-215 
+238 
 	`Ârötf
 (
 °dîr
 , "DEVICE INIT FAILED\n");
 
-216  
+239  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-218 
+241 
 ˇmSètus
 ->
 	`£tIsRecInôülized
@@ -7751,31 +8083,31 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-219  
+242  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-221  
+244  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-224 if(
+247 if(
 	`dbus_mesßge_is_sig«l
 (
 mesßge
 , "org.opel.camera.daemon", "recStart"))
 
-226 
+249 
 cuºCou¡
  = 0;
 
-227 
+250 
 °d
 ::
 cout
  << "Get[DBUS] :ÑecStart\n";
 
-230 
+253 
 	`dbus_mesßge_ôî_öô
 (
 mesßge
@@ -7783,7 +8115,7 @@ mesßge
 ¨gs
 );
 
-232 
+255 
 	`dbus_mesßge_ôî_gë_basic
 (&
 ¨gs
@@ -7791,19 +8123,19 @@ mesßge
 cuºCou¡
 );
 
-233 }
+256 }
 	`dbus_mesßge_ôî_√xt
 (&
 ¨gs
 ));
 
-234 
+257 
 	`£tCou¡
 (
 cuºCou¡
 );
 
-235 
+258 
 ªc_ˇm
 ->
 	`£tEos
@@ -7811,27 +8143,27 @@ cuºCou¡
 åue
 );
 
-237 if(
+260 if(
 ˇmSètus
 ->
 	`gëIsRecRu¬ög
 ()){
 
-238 
+261 
 	`¥ötf
 ("Recording Already Running\n");
 
-239  
+262  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-243 if(
+266 if(
 ˇmSètus
 ->
 	`gëIsRecInôülized
 ()){
 
-244 
+267 
 ªc_ˇm
 ->
 	`£tEos
@@ -7839,7 +8171,7 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-245 
+268 
 thr_id
 [
 INDEX_OF_REC_THR
@@ -7853,23 +8185,23 @@ NULL
 ªcCamîaSuµ‹tThr
 , (*)0);
 
-247 if(
+270 if(
 thr_id
 [
 INDEX_OF_REC_THR
 ] < 0)
 
-249 
+272 
 	`Ârötf
 (
 °dîr
 , "CREATE THREAD FAILED\n");
 
-250  
+273  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-252 if(-1 =
+275 if(-1 =
 	`±hªad_dëach
 (
 OPELCamThªad
@@ -7877,17 +8209,17 @@ OPELCamThªad
 INDEX_OF_REC_THR
 ]))
 
-254 
+277 
 	`Ârötf
 (
 °dîr
 , "DetatchingÅheÖ_thread Failed\n");
 
-255  
+278  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-257 
+280 
 ˇmSètus
 ->
 	`£tIsRecRu¬ög
@@ -7895,29 +8227,77 @@ DBUS_HANDLER_RESULT_HANDLED
 åue
 );
 
-261 
+284 
 	`Ârötf
 (
 °dîr
 , "CAMERA PROPERTY NOT INITIALIZED YET\n");
 
-262  
+285  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-264  
+287  
 DBUS_HANDLER_RESULT_HANDLED
 ;
 
-266  
+291 if(
+	`dbus_mesßge_is_sig«l
+(
+mesßge
+, "org.opel.camera.daemon", "recStop"))
+
+293 if(
+°ªamögOn
+)
+
+295 
+	`Ârötf
+(
+°dîr
+, "recStop occurred by streaming Process\n");
+
+296 
+ªc_ˇm
+->
+	`£tEos
+(
+Ál£
+);
+
+297 
+	`u¶ìp
+(10000);
+
+298 
+°ªamögOn
+ = 
+Ál£
+;
+
+302 
+	`Ârötf
+(
+°dîr
+, "recStop is occurred byÇot streaming Process\n");
+
+303  
+DBUS_HANDLER_RESULT_HANDLED
+;
+
+305  
+DBUS_HANDLER_RESULT_HANDLED
+;
+
+307  
 DBUS_HANDLER_RESULT_NOT_YET_HANDLED
 ;
 
-267 
+308 
 	}
 }
 
-275 
+314 
 	$maö
 (
 ¨gc
@@ -7925,7 +8305,7 @@ DBUS_HANDLER_RESULT_NOT_YET_HANDLED
 ¨gv
 )
 
-277 
+316 
 boﬁ
  
 isRec
@@ -7933,7 +8313,21 @@ isRec
 åue
 ;
 
-280 
+318 
+›íCVRefC¡
+ = 0;
+
+319 
+ªcRefC¡
+ = 0;
+
+320 
+°ªamögOn
+ = 
+Ál£
+;
+
+321 
 ›íCVPr›îty
  = (
 ¥›îty
@@ -7941,7 +8335,7 @@ isRec
 	`mÆloc
 ((property));
 
-281 
+322 
 ªcPr›îty
  = (
 ¥›îty
@@ -7949,7 +8343,7 @@ isRec
 	`mÆloc
 ((property));
 
-286 
+327 
 ›íCV_ˇmPr›
  = 
 √w
@@ -7959,7 +8353,7 @@ isRec
 isRec
 );
 
-288 
+329 
 ªc_ˇmPr›
  = 
 √w
@@ -7969,7 +8363,7 @@ isRec
 isRec
 );
 
-291 
+332 
 ›íCV_ˇmPr›
 ->
 	`InôSh¨edPr›îtyToT¨gë
@@ -7977,7 +8371,7 @@ isRec
 ›íCVPr›îty
 );
 
-292 
+333 
 ›íCV_ˇmPr›
 ->
 	`£tPr›îty
@@ -7985,7 +8379,7 @@ isRec
 ›íCVPr›îty
 );
 
-294 
+335 
 ªc_ˇmPr›
 ->
 	`InôSh¨edPr›îtyToT¨gë
@@ -7993,7 +8387,7 @@ isRec
 ªcPr›îty
 );
 
-295 
+336 
 ªc_ˇmPr›
 ->
 	`£tPr›îty
@@ -8001,13 +8395,13 @@ isRec
 ªcPr›îty
 );
 
-297 
+338 
 ›íCV_ˇmPr›
 ->
 	`öôSem≠h‹e
 ();
 
-298 
+339 
 ªc_ˇm
  = 
 √w
@@ -8015,7 +8409,7 @@ isRec
 	`O≥nCVSuµ‹t
 ();
 
-299 
+340 
 ›íCV_ˇm
  = 
 √w
@@ -8023,7 +8417,7 @@ isRec
 	`O≥nCVSuµ‹t
 ();
 
-301 
+342 
 ›íCV_ˇm
 ->
 	`£tCamîaPr›îty
@@ -8031,7 +8425,7 @@ isRec
 ›íCV_ˇmPr›
 );
 
-302 
+343 
 ªc_ˇm
 ->
 	`£tCamîaPr›îty
@@ -8039,7 +8433,7 @@ isRec
 ªc_ˇmPr›
 );
 
-303 
+344 
 	`±hªad_muãx_öô
 (&
 muãx_lock
@@ -8047,7 +8441,7 @@ muãx_lock
 NULL
 );
 
-305 
+346 
 ˇmSètus
  = 
 CamîaSètus
@@ -8055,7 +8449,7 @@ CamîaSètus
 	`gëIn°™˚
 ();
 
-307 
+348 
 ˇmSètus
 ->
 	`InôSh¨edPr›îtyToT¨gë
@@ -8063,7 +8457,7 @@ CamîaSètus
 °
 );
 
-308 
+349 
 ˇmSètus
 ->
 	`£tSètusObje˘
@@ -8071,13 +8465,13 @@ CamîaSètus
 °
 );
 
-309 
+350 
 ˇmSètus
 ->
 	`öôSem≠h‹e
 ();
 
-310 
+351 
 ˇmSètus
 ->
 	`gëThrMuãx
@@ -8085,7 +8479,7 @@ CamîaSètus
 muãx_lock
 );
 
-311 
+352 
 ›íCV_ˇm
 ->
 	`£tThrMuãx
@@ -8093,31 +8487,31 @@ muãx_lock
 muãx_lock
 );
 
-313 
+354 
 fú°
  = 
 åue
 ;
 
-314 
+355 
 DBusC⁄√˘i⁄
  *
 c⁄n
 ;
 
-315 
+356 
 DBusEº‹
  
 îr
 ;
 
-316 
+357 
 GMaöLo›
  *
 lo›
 ;
 
-317 
+358 
 lo›
  = 
 	`g_maö_lo›_√w
@@ -8127,13 +8521,13 @@ NULL
 Ál£
 );
 
-318 
+359 
 	`dbus_îr‹_öô
 (&
 îr
 );
 
-319 
+360 
 c⁄n
  = 
 	`dbus_bus_gë
@@ -8143,13 +8537,13 @@ DBUS_BUS_SYSTEM
 îr
 );
 
-320 if(
+361 if(
 	`dbus_îr‹_is_£t
 (&
 îr
 ))
 
-322 
+363 
 	`¥ötf
 ("Eº‹ C⁄√˘ögÅÿthêD´m⁄ Bu†: %s", 
 îr
@@ -8157,13 +8551,13 @@ DBUS_BUS_SYSTEM
 mesßge
 );
 
-323 
+364 
 	`dbus_îr‹_‰ì
 (&
 îr
 );
 
-326 
+367 
 	`dbus_bus_add_m©ch
 (
 c⁄n
@@ -8171,7 +8565,7 @@ c⁄n
 NULL
 );
 
-327 
+368 
 	`dbus_c⁄√˘i⁄_add_fûãr
 (
 c⁄n
@@ -8183,7 +8577,7 @@ lo›
 NULL
 );
 
-328 
+369 
 	`dbus_c⁄√˘i⁄_£tup_wôh_g_maö
 (
 c⁄n
@@ -8191,13 +8585,13 @@ c⁄n
 NULL
 );
 
-329 
+370 
 	`g_maö_lo›_run
 (
 lo›
 );
 
-332 
+373 
 	}
 }
 
@@ -38443,68 +38837,6 @@ __f‹tify_fun˘i⁄
 __END_DECLS
 
 
-	@cam_request.h
-
-1 #i‚de‡
-_CAM_REQUEST_H_
-
-
-2 
-	#_CAM_REQUEST_H_
-
-
-	)
-
-3 
-	~<°dio.h
->
-
-5 
-	eköds
- {
-	m›íCV
-=0, 
-	mREC
-};
-
-6 
-	e›î©i⁄s
- {
-	möô
-=0, 
-	m°¨t
-, 
-	m°›
-, 
-	m˛o£_devi˚
-};
-
-8 
-	sCamîaReque°
-
-
-10 
-pid_t
- 
-	mpid
-;
-
-12 
-köds
- 
-	mköd
-;
-
-13 
-›î©i⁄s
- 
-	m›î©i⁄
-;
-
-15 }
-	tCamîaReque°
-;
-
 	@/usr/include/alloca.h
 
 18 #i‚def 
@@ -49772,8 +50104,8 @@ __END_DECLS
 .
 1
 /usr/include
-45
-913
+47
+935
 cam_cap_check.cpp
 cam_cap_check.h
 cam_core.cpp
@@ -49783,8 +50115,11 @@ cam_property.cpp
 cam_property.h
 cam_proxy.h
 cam_record.cpp
+cam_request.h
 cam_status.cpp
 cam_status.h
+ctrlAPI.h
+deletesem.c
 main.cpp
 test.cpp
 /usr/include/assert.h
@@ -49801,7 +50136,6 @@ test.cpp
 /usr/include/stdlib.h
 /usr/include/string.h
 /usr/include/unistd.h
-cam_request.h
 /usr/include/alloca.h
 /usr/include/endian.h
 /usr/include/features.h

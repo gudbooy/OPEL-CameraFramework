@@ -27,14 +27,14 @@ H_XGA	cam_ctrl.h	13;"	d
 INDEX_OF_OPENCV_THR	main.cpp	19;"	d	file:
 INDEX_OF_REC_THR	main.cpp	20;"	d	file:
 InitSharedPropertyToTarget	cam_property.cpp	/^bool CameraProperty::InitSharedPropertyToTarget(property* prop)$/;"	f	class:CameraProperty
-InitSharedPropertyToTarget	cam_status.cpp	/^bool CameraStatus::InitSharedPropertyToTarget(status* st)$/;"	f	class:CameraStatus
+InitSharedPropertyToTarget	cam_status.cpp	/^bool CameraStatus::InitSharedPropertyToTarget(status** st)$/;"	f	class:CameraStatus
 MAX_V4L2_BUFFERS	cam_core.h	47;"	d
 NUM_OF_THREADS	main.cpp	17;"	d	file:
 OPELCamThread	main.cpp	/^static pthread_t OPELCamThread[NUM_OF_THREADS]; $/;"	v	file:
 OPELCamera	cam_core.cpp	/^OPELCamera::OPELCamera()$/;"	f	class:OPELCamera
 OPELCamera	cam_core.h	/^class OPELCamera$/;"	c
 OPENCV_DEFAULT_PIXFORMAT	cam_property.h	25;"	d
-OPENCV_PROP_SHM	cam_status.h	19;"	d
+OPENCV_PROP_SHM	cam_status.h	20;"	d
 OPENCV_SEMAPHORE_FOR_PROPERTY	cam_property.h	31;"	d
 OPENCV_SHM_KEY	cam_property.h	28;"	d
 OPENCV_SHM_KEY_FOR_PROPERTY	cam_property.h	30;"	d
@@ -49,11 +49,13 @@ REC_SHM_KEY_FOR_PROPERTY	cam_property.h	38;"	d
 REC_SHM_KEY_SIZE	cam_property.h	36;"	d
 Record	cam_core.h	/^class Record : public OPELCamera$/;"	c
 SEM_FOR_PAYLOAD_SIZE	cam_core.h	51;"	d
-SEM_KEY_FOR_STATUS	cam_status.h	20;"	d
+SEM_FOR_SELECT	cam_core.cpp	/^char SEM_FOR_SELECT[]= "vvik";$/;"	v
+SEM_FOR_SELECT	deletesem.c	/^char SEM_FOR_SELECT[]="vvik";$/;"	v
+SEM_KEY_FOR_STATUS	cam_status.h	21;"	d
 SEM_NAME	cam_core.cpp	/^char SEM_NAME[] = "vik";$/;"	v
 SEM_NAME	deletesem.c	/^char SEM_NAME[]= "vik";$/;"	v
 SHM_KEY	cam_core.h	40;"	d
-SHM_KEY_FOR_STATUS	cam_status.h	21;"	d
+SHM_KEY_FOR_STATUS	cam_status.h	22;"	d
 V4L2_DEFAULT_HEIGHT	cam_core.h	43;"	d
 V4L2_DEFAULT_WIDTH	cam_core.h	42;"	d
 W_FHD	cam_ctrl.h	21;"	d
@@ -87,11 +89,12 @@ cam	cam_ctrl.h	/^		Camera* cam;$/;"	m	class:Camera_Ctrl
 camProp	cam_cap_check.h	/^				CameraProperty* camProp;$/;"	m	class:CamV4l2CapCheck
 camProp	cam_core.h	/^								CameraProperty* camProp;			$/;"	m	class:OPELCamera
 camStats	cam_status.cpp	/^CameraStatus* CameraStatus::camStats = NULL;$/;"	m	class:CameraStatus	file:
-camStats	cam_status.h	/^	  static CameraStatus* camStats;$/;"	m	class:CameraStatus
+camStats	cam_status.h	/^		static CameraStatus* camStats;$/;"	m	class:CameraStatus
 camStatus	main.cpp	/^CameraStatus* camStatus;$/;"	v
 cap	cam_property.h	/^								struct v4l2_capability* cap;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_capability
 capabilities	cam_cap_check.h	/^				unsigned capabilities;$/;"	m	class:CamV4l2CapCheck
 checkDeviceCapabilities	cam_cap_check.cpp	/^void CamV4l2CapCheck::checkDeviceCapabilities()$/;"	f	class:CamV4l2CapCheck
+checkFPS	cam_core.cpp	/^static bool checkFPS(unsigned& cnt, unsigned& last, struct timeval &tv_last, FILE* profile_fp) $/;"	f	file:
 close_device	cam_core.cpp	/^bool OpenCVSupport::close_device()$/;"	f	class:OpenCVSupport
 close_device	cam_record.cpp	/^bool Record::close_device()$/;"	f	class:Record
 close_device	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	e	enum:operations
@@ -113,6 +116,7 @@ errno_exit	cam_core.cpp	/^static void errno_exit(const char *s)$/;"	f	file:
 fd	cam_property.h	/^								int fd;$/;"	m	class:CameraProperty
 fd_name	cam_core.h	/^	char fd_name[80];$/;"	m	struct:ctl_parameters
 field	cam_property.h	/^								enum v4l2_field field;$/;"	m	class:CameraProperty	typeref:enum:CameraProperty::v4l2_field
+fifo_fd	cam_core.h	/^			int fifo_fd;$/;"	m	class:OpenCVSupport
 filename_active	cam_core.h	/^	bool filename_active;$/;"	m	struct:ctl_parameters
 first	main.cpp	/^bool first;$/;"	v
 fmt	cam_property.h	/^								struct v4l2_format* fmt;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_format
@@ -130,10 +134,10 @@ getField	cam_property.h	/^								enum v4l2_field getField() { return this->fiel
 getFormat	cam_property.h	/^								struct v4l2_format* getFormat(void) {return this->fmt; }$/;"	f	class:CameraProperty
 getHeight	cam_property.h	/^								int getHeight() { return this->height; }$/;"	f	class:CameraProperty
 getInstance	cam_status.cpp	/^CameraStatus* CameraStatus::getInstance(void)$/;"	f	class:CameraStatus
-getIsOpenCVInitialized	cam_status.h	/^	 bool getIsOpenCVInitialized() { return this->isOpenCVInitialized; }$/;"	f	class:CameraStatus
-getIsOpenCVRunning	cam_status.h	/^	 bool getIsOpenCVRunning() { return this->isOpenCVRunning; }$/;"	f	class:CameraStatus
-getIsRecInitialized	cam_status.h	/^	 bool getIsRecInitialized() { return this->isRecInitialized; }$/;"	f	class:CameraStatus
-getIsRecRunning	cam_status.h	/^	 bool getIsRecRunning() { return this->isRecRunning; }$/;"	f	class:CameraStatus
+getIsOpenCVInitialized	cam_status.h	/^		bool getIsOpenCVInitialized() { return this->isOpenCVInitialized; }$/;"	f	class:CameraStatus
+getIsOpenCVRunning	cam_status.h	/^		bool getIsOpenCVRunning() { return this->isOpenCVRunning; }$/;"	f	class:CameraStatus
+getIsRecInitialized	cam_status.h	/^		bool getIsRecInitialized() { return this->isRecInitialized; }$/;"	f	class:CameraStatus
+getIsRecRunning	cam_status.h	/^		bool getIsRecRunning() { return this->isRecRunning; }$/;"	f	class:CameraStatus
 getN_buffers	cam_property.h	/^						    unsigned int getN_buffers(void) {return this->n_buffer; }	$/;"	f	class:CameraProperty
 getPixelformat	cam_property.h	/^								unsigned int getPixelformat() { return this->pixelformat; }$/;"	f	class:CameraProperty
 getRequestbuffers	cam_property.h	/^								struct v4l2_requestbuffers* getRequestbuffers(void) { return this->req; } 	$/;"	f	class:CameraProperty
@@ -193,6 +197,7 @@ openCVCameraSupportThr	main.cpp	/^void* openCVCameraSupportThr(void* args)$/;"	f
 openCVProperty	main.cpp	/^static property* openCVProperty;$/;"	v	file:
 openCV_cam	main.cpp	/^static OpenCVSupport* openCV_cam;$/;"	v	file:
 openCV_camProp	main.cpp	/^static CameraProperty* openCV_camProp;$/;"	v	file:
+openFifo	cam_core.cpp	/^static int openFifo(const char* path)$/;"	f	file:
 operation	cam_request.h	/^	enum operations operation;$/;"	m	struct:CameraRequest	typeref:enum:CameraRequest::operations
 operations	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	g
 options	cam_core.h	/^	char options[OptLast];$/;"	m	struct:ctl_parameters
@@ -207,7 +212,7 @@ prop	cam_property.h	/^								property* prop;$/;"	m	class:CameraProperty
 property	cam_property.h	/^typedef struct property$/;"	s
 property	cam_property.h	/^}property;$/;"	t	typeref:struct:property
 queryctrl	cam_property.h	/^								struct v4l2_queryctrl* queryctrl;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_queryctrl
-readFrame	cam_core.cpp	/^static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last, int semid, void* shmPtr, sem_t* mx)$/;"	f	file:
+readFrame	cam_core.cpp	/^static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, unsigned &last, struct timeval &tv_last, int semid, void* shmPtr, sem_t* mx, sem_t* semForSelect, int fifo_fd)$/;"	f	file:
 recCameraSupportThr	main.cpp	/^void* recCameraSupportThr(void* args)$/;"	f
 recMainLoop	cam_record.cpp	/^static bool recMainLoop(CameraProperty* camProp, buffer* buffers)$/;"	f	file:
 recProperty	main.cpp	/^static property* recProperty;$/;"	v	file:
@@ -215,6 +220,7 @@ rec_cam	main.cpp	/^static OpenCVSupport* rec_cam;$/;"	v	file:
 rec_camProp	main.cpp	/^static CameraProperty* rec_camProp;$/;"	v	file:
 req	cam_property.h	/^								struct v4l2_requestbuffers* req;$/;"	m	class:CameraProperty	typeref:struct:CameraProperty::v4l2_requestbuffers
 returnMSG	main.cpp	/^inline static DBusHandlerResult returnMSG(const char* errMsg)$/;"	f	file:
+semForSelect	cam_core.h	/^			sem_t* semForSelect;$/;"	m	class:OpenCVSupport
 sem_status_id	main.cpp	/^int sem_status_id;$/;"	v
 semid	cam_core.h	/^			int semid;$/;"	m	class:OpenCVSupport
 semid	cam_property.h	/^								int semid;$/;"	m	class:CameraProperty
@@ -227,10 +233,10 @@ setCameraProperty	cam_core.cpp	/^void OPELCamera::setCameraProperty(CameraProper
 setCount	cam_property.h	/^								void setCount(unsigned int count) { *(this->count) = count; }$/;"	f	class:CameraProperty
 setCount	main.cpp	/^void setCount(unsigned curr)$/;"	f
 setEos	cam_core.cpp	/^void OpenCVSupport::setEos(bool eos)$/;"	f	class:OpenCVSupport
-setIsOpenCVInitialized	cam_status.h	/^	 void setIsOpenCVInitialized(bool isInitialized) $/;"	f	class:CameraStatus
-setIsOpenCVRunning	cam_status.h	/^	 void setIsOpenCVRunning(bool isRunning) $/;"	f	class:CameraStatus
-setIsRecInitialized	cam_status.h	/^	 void setIsRecInitialized(bool isInitialized) $/;"	f	class:CameraStatus
-setIsRecRunning	cam_status.h	/^	 void setIsRecRunning(bool isRunning) $/;"	f	class:CameraStatus
+setIsOpenCVInitialized	cam_status.h	/^		void setIsOpenCVInitialized(bool isInitialized) $/;"	f	class:CameraStatus
+setIsOpenCVRunning	cam_status.h	/^		void setIsOpenCVRunning(bool isRunning) $/;"	f	class:CameraStatus
+setIsRecInitialized	cam_status.h	/^		void setIsRecInitialized(bool isInitialized) $/;"	f	class:CameraStatus
+setIsRecRunning	cam_status.h	/^		void setIsRecRunning(bool isRunning) $/;"	f	class:CameraStatus
 setN_buffers	cam_property.h	/^								void setN_buffers(unsigned int n_buffer) {this->n_buffer = n_buffer; }$/;"	f	class:CameraProperty
 setProperty	cam_property.h	/^								void setProperty(property* prop){ this->prop = prop; } 	$/;"	f	class:CameraProperty
 setStatusObject	cam_status.h	/^		void setStatusObject(status* st){ this->statusObject = st; } $/;"	f	class:CameraStatus
@@ -254,8 +260,6 @@ status	cam_status.h	/^typedef struct status$/;"	s
 status	cam_status.h	/^}status;$/;"	t	typeref:struct:status
 statusMutex	cam_status.h	/^		sem_t* statusMutex;    $/;"	m	class:CameraStatus
 statusObject	cam_status.h	/^		status* statusObject;$/;"	m	class:CameraStatus
-status_post	cam_status.h	/^static struct sembuf status_post = {0, -1, SEM_UNDO};$/;"	v	typeref:struct:sembuf
-status_wait	cam_status.h	/^static struct sembuf status_wait = {0, 1, SEM_UNDO};$/;"	v	typeref:struct:sembuf
 stop	cam_core.cpp	/^bool OpenCVSupport::stop()$/;"	f	class:OpenCVSupport
 stop	cam_record.cpp	/^bool Record::stop()$/;"	f	class:Record
 stop	cam_request.h	/^enum operations {init=0, start, stop, close_device};$/;"	e	enum:operations
@@ -265,6 +269,7 @@ timestamp	cam_property.h	/^								struct timeval* timestamp;$/;"	m	class:Camera
 tuner_index	cam_core.h	/^	uint8_t tuner_index;$/;"	m	struct:ctl_parameters
 type	cam_property.h	/^								enum v4l2_buf_type type;$/;"	m	class:CameraProperty	typeref:enum:CameraProperty::v4l2_buf_type
 uInitSharedPropertyToTarget	cam_property.cpp	/^bool CameraProperty::uInitSharedPropertyToTarget(property* prop)$/;"	f	class:CameraProperty
+uinitSemaphore	cam_status.cpp	/^bool CameraStatus::uinitSemaphore(void)$/;"	f	class:CameraStatus
 uinit_Semaphore	cam_core.cpp	/^bool OpenCVSupport::uinit_Semaphore()$/;"	f	class:OpenCVSupport
 uinit_SharedMemorySpace	cam_core.cpp	/^static bool uinit_SharedMemorySpace(int shmid, void** shmPtr)$/;"	f	file:
 uninit_SharedMemorySpace	cam_core.cpp	/^static bool uninit_SharedMemorySpace(int shmid)$/;"	f	file:

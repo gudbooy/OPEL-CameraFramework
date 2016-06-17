@@ -1,3 +1,4 @@
+var sleep = require('sleep');
 var addon = require('./build/Release/OPELStreaming');
 var streamObj = new addon.OPELStreaming();
 var path = '/home/pi/camData/'
@@ -27,6 +28,11 @@ streamObj.start(0/*30Sec*/, function(error, data){
 		if(data == 1)
 			console.log('Streaming Done');
 		});
+sleep.sleep(5);
+
+console.log("done");
+
+streamObj.stop();
 
 /*
 streamObj.start(0, function(error, data){

@@ -40,7 +40,7 @@ static bool checkFPS(unsigned& cnt, unsigned& last, struct timeval &tv_last, FIL
 			unsigned fps =(cnt - last);
 			last = cnt;
 			tv_last = tv_cur;
-			fprintf(stderr, "Test : %d fps\n", fps);
+			//fprintf(stderr, "Test : %d fps\n", fps);
 		}
 	}
 	cnt++;
@@ -48,7 +48,7 @@ static bool checkFPS(unsigned& cnt, unsigned& last, struct timeval &tv_last, FIL
 }
 bool OpenCVSupport::init_Semaphore()
 {
-	fifo_fd = openFifo("/tmp/fifo");
+//	fifo_fd = openFifo("/tmp/fifo");
 	printf("hihihihihihihihihi");
 	mx = sem_open(SEM_NAME, O_CREAT, 0666, 1);
 	if(mx == SEM_FAILED)
@@ -299,7 +299,7 @@ static bool readFrame(CameraProperty* camProp, buffer* buffers, unsigned& cnt, u
 					memcpy((char*)ptr, (char*)buf->m.userptr, *length);		
 					*check = 1;
 				sem_post(mx);
-				write(fifo_fd, "DONE", 5);	
+			//	write(fifo_fd, "DONE", 5);	
 				//FIFO Message Send To Application
 				usleep(100);
 					if(-1 == xioctl(fd, VIDIOC_QBUF, buf))

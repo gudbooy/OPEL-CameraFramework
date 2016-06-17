@@ -44,18 +44,24 @@ extern "C"{
 
 char SEM_NAME[] = "vik";
 static bool eos;
+uv_mutex_t uv_mutex;
+
 class StreamingWorker : public Nan::AsyncWorker
 {
 	public:
 
-		StreamingWorker(Nan::Callback* callback, int count) : Nan::AsyncWorker(callback), count(count), fd(0), width(0), height(0), buffer_size(0), buffer_index(0), fout(NULL), shmPtr(NULL) {}
+		StreamingWorker(Nan::Callback* callback, int count) : Nan::AsyncWorker(callback), count(count), fd(0), width(0), height(0), buffer_size(0), buffer_index(0), fout(NULL), shmPtr(NULL) {
+		  cpyBuffer = (char*)malloc(sizeof(char)*REC_BUFFER_SIZE);
+		}
 
-		~StreamingWorker() {}
+		~StreamingWorker() {
+			if(cpyBuffer != NULL)
+				free(cpyBuffer);
+		}
 
 		void Execute()
 		{
-			
-			bool sz;
+			bool volatile_eos;	
 			unsigned offset;
 			unsigned offset_length;
 			unsigned offset_check;
@@ -72,8 +78,12 @@ class StreamingWorker : public Nan::AsyncWorker
 			void* buffer = _buffer;
 			int* length = (int*)_length;
 			int previous_length = 0;
+			
+			uv_mutex_lock(&uv_mutex);
+			volatile_eos = eos; 
+			uv_mutex_unlock(&uv_mutex);
 
-				while((count-- > 0) && eos)
+				while(volatile_eos)
 				{
 					sem_wait(mutex);
 					if(*check == 0)
@@ -83,15 +93,11 @@ class StreamingWorker : public Nan::AsyncWorker
 						continue;
 					}
 					if(previous_length != *length){
-							sz=writeFrame((char*)buffer, length);
-					//		sz = fwrite((char*)buffer, sizeof(char), *length, fout);
-						if(!sz)
-							fprintf(stderr, "Errror Occurred\n");
-						else
-						{
-							previous_length = *length;
-						}
+						memcpy(cpyBuffer, buffer, *length);	
+						previous_length = *length;
 						sem_post(mutex);
+					if(!(writeFrame((char*)buffer, length)))
+							break;
 					}
 					else
 					{
@@ -100,7 +106,6 @@ class StreamingWorker : public Nan::AsyncWorker
 						count++;
 						continue;
 					}
-				
 				}
 				
 				//PES 
@@ -110,8 +115,6 @@ class StreamingWorker : public Nan::AsyncWorker
 		{
 
 				bool res = false;
-
-					
 						fprintf(stderr, "length : %d\n", *length);
 						//Network Write - Target Buffer : (char*)buffer, Length : *length
 						//PES
@@ -186,7 +189,7 @@ class StreamingWorker : public Nan::AsyncWorker
 		void setBufferSize(int buffer_size) { this->buffer_size = buffer_size; }
 		void setBufferIndex(int buffer_index) { this->buffer_index = buffer_index; } 
 	  void setShmPtr(void* shmPtr) { this->shmPtr = shmPtr;
-		}	
+		}
 		bool initSEM(void)
 		{
 			mutex = sem_open(SEM_NAME, 0, 0666, 0); 
@@ -250,6 +253,7 @@ class StreamingWorker : public Nan::AsyncWorker
 		{
 			//PES
 			//Network Connection  Close code
+			free(cpyBuffer);
 			fprintf(stderr, "CloseConnection\n");
 			close(client_desc);
 			close(socket_desc);
@@ -274,7 +278,7 @@ class StreamingWorker : public Nan::AsyncWorker
 			int socket_desc;
 			int client_desc;
 			struct sockaddr_in server;
-
+			char* cpyBuffer;
 };
 
 class OPELStreaming : public Nan::ObjectWrap{
@@ -284,6 +288,7 @@ class OPELStreaming : public Nan::ObjectWrap{
   	void sendDbusMsg(const char* msg); 
 		bool sendDbusMsgCnt(const char* msg, int count);
 		bool initDbus();
+		bool initUVMutex();
 		//void init(const Nan::FunctionCallbackInfo<v8::value>& info);
 		bool openDevice();
 
@@ -295,7 +300,7 @@ class OPELStreaming : public Nan::ObjectWrap{
 		int getBufferSize() { return this->buffer_size; }
 		int getBufferIndex() { return this->buffer_index; }
 		void* getShmPtr() { return this->shmPtr; }
-
+		void setEos(bool setEos);
 	private:
 		explicit OPELStreaming();
 		~OPELStreaming();
